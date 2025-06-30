@@ -1,0 +1,37 @@
+@page "/sidebar-no-icons"
+@model Inspinia.Pages.Layouts.Sidebar.NoIconsModel
+
+@{
+    ViewBag.Title = "No Icons with Lines";
+    ViewBag.HTMLClass = "sidebar-no-icons sidebar-with-line";
+}
+
+@section styles
+{
+
+}
+
+<div class="container-fluid">
+    @await Html.PartialAsync("~/Pages/Shared/Partials/_PageTitle.cshtml")
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    If you want to remove icons and display sidebar items in line style, add the class
+                    <code>"sidebar-no-icons sidebar-with-line"</code> to the
+                    <code>&lt;html&gt;</code> tag.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts
+{
+
+}
+

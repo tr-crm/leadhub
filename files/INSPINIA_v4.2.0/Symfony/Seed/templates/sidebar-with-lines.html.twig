@@ -1,0 +1,28 @@
+{% extends 'layouts/vertical.html.twig' %}
+
+{% set html_attribute = 'sidebar-with-line' %}
+
+{% set title = 'Sidebar with Lines' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/plugins/jsvectormap/jsvectormap.min.css">
+{% endblock %}
+
+{% block content %}
+
+{{ include('partials/page-title.html.twig', {'title': 'Sidebar with Lines'}) }}
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+            <i class="ti ti-info-circle fs-xxl"></i>
+            <div>
+                If you want to display a line with each menu item, add the class
+                <code>"sidebar-with-line"</code> to the
+                <code>&lt;html&gt;</code> tag.
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

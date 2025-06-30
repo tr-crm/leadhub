@@ -1,0 +1,20 @@
+<div class="container-fluid">
+    <app-page-title title="Compact"/>
+
+    <div class="row">
+        <div class="col-12">
+            <ngb-alert type="info" class="alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <ng-icon name="tablerInfoCircle" class="fs-xxl"/>
+                <div>
+                    To enable the boxed layout, add
+                    <code>data-layout-width="boxed"</code> to the
+                    <code>&lt;html&gt;</code> tag. For optimal spacing and usability, we also recommend adding
+                    <code>data-sidenav-size="on-hover"</code> to make the sidebar compact while keeping more room for
+                    content. You can apply this dynamically using the
+                    <code>LayoutStoreService</code> with
+                    <code>setLayoutWidth('boxed')</code> and <code>setSidenavSize('on-hover')</code> respectively.
+                </div>
+            </ngb-alert>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="topbar-item d-none d-md-flex">
+    <div ngbDropdown class="dropdown">
+        <button ngbDropdownToggle class="topbar-link btn fw-medium btn-link dropdown-toggle drop-arrow-none">
+            Boom Boom! 😍
+            <ng-icon name="tablerChevronDown" class="ms-1"/>
+        </button>
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-xxl p-0">
+            <div class="h-100" style="max-height: 380px;" data-simplebar>
+                <div class="row g-0">
+                    <div class="col-12">
+                        <div class="p-3 text-center bg-light bg-opacity-50">
+                            <h4 class="mb-0 fs-lg fw-semibold">Welcome to <span
+                                class="text-primary">INSPINIA+</span> Admin Theme.</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-0">
+                    <div *ngFor="let item of megaMenuItems" class="col-md-4">
+                        <div class="p-3">
+                            <h5 class="mb-2 fw-semibold fs-sm dropdown-header">{{ item.title }}</h5>
+                            <ul class="list-unstyled megamenu-list">
+                                <li *ngFor="let link of item.links">
+                                    <a [routerLink]="link.url" class="dropdown-item">{{ link.label }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

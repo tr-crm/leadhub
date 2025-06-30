@@ -1,0 +1,17 @@
+{{ include('./partials/html.html.twig') }}
+
+    <head>
+        {{ include('./partials/title-meta.html.twig') }}
+        {% block css %}{% endblock %}
+        {{ include('./partials/head-css.html.twig') }}
+    </head>
+
+    <body>
+        {% block content %}{% endblock %}
+
+        {{ include('./partials/footer-scripts.html.twig') }}
+
+        {% block script %}{% endblock %}
+    </body>
+
+</html>

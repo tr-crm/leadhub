@@ -1,0 +1,84 @@
+@page "/charts-echart-geo-map"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime;
+
+<div class="container-fluid">
+
+    <PageBreadcrumb Title="GEO Echart" SubTitle="Charts"/>
+
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">USA Map</h4>
+                </div>
+                <div class="card-body">
+                    <div id="usa-map" style="min-height:400px"></div>
+                </div>
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Morphing between Map and Bar Chart</h4>
+                </div>
+                <div class="card-body">
+                    <div id="map-bar-morphing" style="min-height:400px"></div>
+                </div>
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+
+
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Pie Chart on Geo Map </h4>
+                </div>
+                <div class="card-body">
+                    <div id="pie-chart-on-map" style="min-height:400px"></div>
+                </div>
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">GEO SVG Scatter</h4>
+                </div>
+                <div class="card-body">
+                    <div id="geo-svg-scatter-map" style="min-height:400px"></div>
+                </div>
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+
+</div>
+<!-- container -->
+
+@code {
+    private IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/pages/chart-echart-geo-map.js");
+            await JsRuntime.InvokeVoidAsync("loadEchartsGeomap");
+            await JsRuntime.InvokeVoidAsync("loadConfig");
+            await JsRuntime.InvokeVoidAsync("loadApps");
+        }
+    }
+
+}

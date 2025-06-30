@@ -1,0 +1,29 @@
+@page "/layouts-preloader"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime;
+
+<!-- Preloader -->
+<div id="preloader">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <PageBreadcrumb Title="Preloader"/>
+
+</div>
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("loadConfig");
+            await JsRuntime.InvokeVoidAsync("loadApps");
+        }
+    }
+
+}

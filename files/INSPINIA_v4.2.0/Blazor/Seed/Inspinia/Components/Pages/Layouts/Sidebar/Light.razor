@@ -1,0 +1,38 @@
+@page "/sidebar-light"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime;
+
+
+<div class="container-fluid">
+
+    <PageBreadcrumb Title="Light Menu"/>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To switch to a light sidebar, add
+                    <code>data-menu-color="light"</code> to the
+                    <code>&lt;html&gt;</code> tag in your layout.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@code {
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("updateHtmlAttributes", "data-menu-color", "light");
+            await JsRuntime.InvokeVoidAsync("loadConfig");
+            await JsRuntime.InvokeVoidAsync("loadApps");
+        }
+    }
+
+}

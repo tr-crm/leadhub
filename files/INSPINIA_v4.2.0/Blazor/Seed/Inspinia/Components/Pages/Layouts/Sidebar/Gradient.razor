@@ -1,0 +1,38 @@
+@page "/sidebar-gradient"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime;
+
+<div class="container-fluid">
+
+    <PageBreadcrumb Title="Gradient"/>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-warning alert-bordered border-start border-warning d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To enable a gradient sidebar style, add
+                    <code>data-menu-color="gradient"</code> to the
+                    <code>&lt;html&gt;</code> tag in your layout.
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<!-- container -->
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("updateHtmlAttributes", "data-menu-color", "gradient");
+            await JsRuntime.InvokeVoidAsync("loadConfig");
+            await JsRuntime.InvokeVoidAsync("loadApps");
+        }
+    }
+
+}

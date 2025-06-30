@@ -1,0 +1,32 @@
+<div class="container-fluid">
+
+    <app-page-title title="Dashboard"/>
+
+    <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+        <div *ngFor="let item of statistics" class="col">
+            <app-statistics-widget [item]="item"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <app-order-statistics/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xxl-6">
+            <app-product-inventory/>
+        </div>
+
+        <div class="col-xxl-6">
+            <app-recent-orders/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <app-transactions/>
+        </div>
+    </div>
+</div>

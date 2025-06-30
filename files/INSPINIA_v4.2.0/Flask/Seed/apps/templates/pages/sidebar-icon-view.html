@@ -1,0 +1,33 @@
+{% extends 'layouts/vertical.html' %}
+
+{% block html_attribute %}data-sidenav-size="condensed"{% endblock html_attribute %}
+
+{% block title %}Icon View Sidebar Layout{% endblock title %}
+
+{% block extra_css %}
+
+{% endblock extra_css %}
+
+{% block page_content %}
+<div class="container-fluid">
+
+    {% set title='Icon View' %}
+    {% include 'partials/page-title.html' %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To enable icon view menu scrolling and see all content, add
+                    <code>data-sidenav-size="condensed"</code> to the
+                    <code>&lt;html&gt;</code> tag.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- container -->
+
+{% endblock page_content %}

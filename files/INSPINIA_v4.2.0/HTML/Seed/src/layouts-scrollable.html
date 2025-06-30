@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-layout-position="scrollable">
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Scrollable Layout"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"title":"Scrollable"})
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                            <i class="ti ti-info-circle fs-xxl"></i>
+                            <div>
+                                To enable full scrolling and view all content, please add
+                                <code>data-layout-position="scrollable"</code> to the
+                                <code>&lt;html&gt;</code> tag.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- For Demo Only -->
+                <div class="card" style="height: 1000px;"></div>
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/footer-scripts.html')
+
+</body>
+
+</html>

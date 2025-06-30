@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html <%= @html_attributes || "" %> class="<%= @html_class || "" %>">
+
+<head>
+  <%= render 'layouts/partials/title_meta', title: @title %>
+  <%= render 'layouts/partials/head_css' %>
+</head>
+
+<body <%= @body_attributes || "" %>>
+
+<div class="wrapper">
+
+  <%= render 'layouts/partials/sidenav' %>
+
+  <%= render 'layouts/partials/topbar' %>
+
+  <div class="content-page">
+
+      <%= yield %>
+
+    <%= render 'layouts/partials/footer' %>
+
+  </div>
+</div>
+
+<%= render 'layouts/partials/customizer' %>
+
+<%= render 'layouts/partials/footer_scripts' %>
+
+</body>
+</html>

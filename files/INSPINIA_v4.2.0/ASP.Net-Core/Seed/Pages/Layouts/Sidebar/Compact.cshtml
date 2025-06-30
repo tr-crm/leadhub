@@ -1,0 +1,39 @@
+@page "/sidebar-compact"
+@model Inspinia.Pages.Layouts.Sidebar.CompactModel
+
+@{
+    ViewBag.HTMLAttributes = "data-sidenav-size=compact";
+    ViewBag.Title = "Compact";
+   
+}
+
+@section styles
+{
+
+}
+
+<div class="container-fluid">
+    @await Html.PartialAsync("~/Pages/Shared/Partials/_PageTitle.cshtml")
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To enable the medium-sized (compact) sidebar, add
+                    <code>data-sidenav-size="compact"</code> to the
+                    <code>&lt;html&gt;</code> tag.
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@section scripts
+{
+
+}
+

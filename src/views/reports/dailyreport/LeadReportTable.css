@@ -1,0 +1,97 @@
+
+          .table-wrapper {
+            max-height: 310px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+          }
+
+          table.styled-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 900px;
+          }
+
+          thead th,
+          tfoot td {
+            position: sticky;
+            background-color: #1ab394 !important;
+            color: #fff !important;
+            font-weight: 600;
+            padding: 10px 12px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+            z-index: 2;
+            white-space: nowrap;
+            user-select: none;
+            cursor: pointer;
+          }
+
+          thead th {
+            top: 0;
+            z-index: 5;
+          }
+
+          tfoot td {
+            bottom: 0;
+            z-index: 4;
+            cursor: default;
+          }
+
+          tbody td {
+            padding: 10px 12px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            vertical-align: middle;
+            white-space: nowrap;
+            font-weight:bold;
+          }
+
+          tbody tr:hover {
+            background-color: #f8fdfc;
+          }
+
+          thead th:first-child,
+          thead th:last-child {
+            z-index: 7;
+          }
+
+          tbody td:first-child,
+          tfoot td:first-child {
+            position: sticky;
+            left: 0;
+            background-color: #e0f7f4 !important;
+            color: #000;
+            font-weight: 600;
+            z-index: 6;
+          }
+           
+          tfoot td:first-child {
+            position: sticky;
+            left: 0;
+            background-color: #1ab394 !important;
+            color: #fff;
+            font-weight: 600;
+            z-index: 6;
+          }
+
+          tbody td:last-child {
+            position: sticky;
+            right: 0;
+            background-color: #e0f7f4 !important;
+            color: #000;
+            font-weight: 600;
+            z-index: 6;
+          }
+           
+          tfoot td:last-child {
+            position: sticky;
+            right: 0;
+              background-color: #1ab394 !important;
+            color: #fff;
+            font-weight: 600;
+            z-index: 6;
+          }
+      

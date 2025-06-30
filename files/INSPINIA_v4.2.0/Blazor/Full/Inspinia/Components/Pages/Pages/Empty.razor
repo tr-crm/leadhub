@@ -1,0 +1,22 @@
+@page "/pages-empty"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime;
+
+<div class="container-fluid">
+	<PageBreadcrumb Title="Starter" SubTitle="Pages"/>
+
+	@* content here *@
+	
+</div>
+
+@code {
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await JsRuntime.InvokeVoidAsync("loadConfig");
+			await JsRuntime.InvokeVoidAsync("loadApps");
+		}
+	}
+
+}

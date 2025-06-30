@@ -1,0 +1,67 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/vertical}">
+
+<head>
+
+    <th:block layout:fragment="page-meta" th:replace="~{partials/page-meta :: page-meta('Flags')}" />
+
+</head>
+
+<body>
+    <th:block layout:fragment="content">
+
+        <div class="container-fluid">
+
+            <th:block th:replace="~{partials/page-title :: page-title('Flags','Icons')}" />
+
+            <div class="row justify-content-center">
+                <div class="col-xxl-10">
+                    <div class="card">
+                        <div class="card-header justify-content-between">
+                            <div>
+                                <h4 class="card-title mb-1 d-flex align-items-center gap-2">
+                                    Flags Listing (SVG)
+                                </h4>
+                                <p class="mb-0 text-muted">We offer a set of scalable SVG flags, perfect for language
+                                    selectors and international content.</p>
+                            </div>
+                            <div class="app-search">
+                                <input type="search" class="form-control" placeholder="Search country..."
+                                    id="countrySearch">
+                                <i data-lucide="search" class="app-search-icon text-muted"></i>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="flagTable" class="table table-bordered align-middle text-center w-100">
+                                    <thead>
+                                        <tr class="fs-xxs">
+                                            <th>Flag</th>
+                                            <th>Country Name</th>
+                                            <th>Path</th>
+                                            <th>Flag</th>
+                                            <th>Country Name</th>
+                                            <th>Path</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div> <!-- end card-body-->
+                    </div> <!-- end card-->
+                </div> <!-- end col-->
+            </div> <!-- end row-->
+        </div>
+
+    </th:block>
+
+    <th:block layout:fragment="javascripts">
+
+        <!-- Page only -->
+        <script src="/js/pages/flags-listing.js"></script>
+
+    </th:block>
+
+</body>
+
+</html>

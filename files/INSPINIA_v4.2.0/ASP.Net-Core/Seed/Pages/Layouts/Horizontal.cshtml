@@ -1,0 +1,24 @@
+﻿@page "/layouts-horizontal"
+@model Inspinia.Pages.Layouts.HorizontalModel
+
+@{
+    ViewBag.Title = "Horizontal";
+    Layout = "~/Pages/Shared/_HorizontalLayout.cshtml";
+    ViewBag.HTMLAttributes = "data-topbar-color=dark data-menu-color=light";
+}
+
+
+@section styles
+{
+   
+}
+
+<div class="container-fluid">
+    @await Html.PartialAsync("~/Pages/Shared/Partials/_PageTitle.cshtml")
+</div>
+
+@section scripts
+{
+ 
+}
+

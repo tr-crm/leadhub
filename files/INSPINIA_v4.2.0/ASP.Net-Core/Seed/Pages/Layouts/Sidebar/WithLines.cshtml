@@ -1,0 +1,39 @@
+@page "/sidebar-with-lines"
+@model Inspinia.Pages.Layouts.Sidebar.WithLinesModel
+
+@{
+    ViewBag.Title = "Sidebar with Lines";
+    ViewBag.HTMLClass = "sidebar-with-line";
+}
+
+@section styles
+{
+
+}
+
+<div class="container-fluid">
+    @await Html.PartialAsync("~/Pages/Shared/Partials/_PageTitle.cshtml")
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    If you want to display a line with each menu item, add the class
+                    <code>"sidebar-with-line"</code> to the
+                    <code>&lt;html&gt;</code> tag.
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+</div>
+
+@section scripts
+{
+
+
+}
+

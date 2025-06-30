@@ -1,0 +1,121 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Treemap Apexchart"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Page Content here -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"subtitle":"Charts","title":"Treemap Apexchart"})
+
+                <div class="row">
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Basic Treemap</h4>
+                            </div>
+                            <div class="card-body">
+                                <div dir="ltr">
+                                    <div id="basic-treemap" class="apex-charts"></div>
+                                </div>
+                            </div>
+                            <!-- end card body-->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col-->
+
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Treemap Multiple Series</h4>
+                            </div>
+                            <div class="card-body">
+                                <div dir="ltr">
+                                    <div id="multiple-treemap" class="apex-charts"></div>
+                                </div>
+                            </div>
+                            <!-- end card body-->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col-->
+                </div>
+                <!-- end row-->
+
+                <div class="row">
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Distributed Treemap</h4>
+                            </div>
+                            <div class="card-body">
+                                <div dir="ltr">
+                                    <div id="distributed-treemap" class="apex-charts"></div>
+                                </div>
+                            </div>
+                            <!-- end card body-->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col-->
+
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Color Range Treemap</h4>
+                            </div>
+                            <div class="card-body">
+                                <div dir="ltr">
+                                    <div id="color-range-treemap" class="apex-charts"></div>
+                                </div>
+                            </div>
+                            <!-- end card body-->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col-->
+                </div>
+                <!-- end row-->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <!-- Apex Chart js -->
+    <script src="assets/plugins/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Apex Chart Polar Area Demo js -->
+    <script src="assets/js/pages/chart-apex-treemap.js"></script>
+
+</body>
+
+</html>

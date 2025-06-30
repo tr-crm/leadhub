@@ -1,0 +1,464 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Reviews"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+                
+                @@include("./partials/page-title.html", {"subtitle": "Ecommerce", "title":"Reviews"})
+
+                <div class="row justify-content-center">
+                    <div class="col-xxl-10">
+                        <div data-table data-table-rows-per-page="5" class="card">
+                            <div class="card-header p-0 d-block">
+                                <div class="row g-0 align-items-center">
+                                    <div class="col-xl-6 border-end border-dashed">
+
+                                        <div class="row align-items-center g-0">
+                                            <div class="col-xl-7">
+                                                <div class="d-flex align-items-center gap-4 p-4">
+                                                    <img src="assets/images/ratings.svg" alt="Product" height="80">
+                                                    <div>
+                                                        <h3 class="text-primary d-flex align-items-center gap-2 mb-2 fw-bold">
+                                                            4.92 <i class="ti ti-star-filled"></i>
+                                                        </h3>
+                                                        <p class="mb-2">Based on 245 verified reviews</p>
+                                                        <p class="pe-2 h6 text-muted mb-2 lh-base">Feedback collected from real customers who purchased our templates</p>
+                                                        <span class="badge badge-label text-bg-success">+12 new this week</span>
+                                                    </div>                                            
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-5">
+                                                <div class="p-3">
+                                                    <!-- 5 Star -->
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <div class="flex-shrink-0" style="width: 50px;">5 Star</div>
+                                                        <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <div class="flex-shrink-0 text-end" style="width: 30px;"><span class="badge text-bg-light">128</span></div>
+                                                    </div>
+                                        
+                                                    <!-- 4 Star -->
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <div class="flex-shrink-0" style="width: 50px;">4 Star</div>
+                                                        <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 10%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <div class="flex-shrink-0 text-end" style="width: 30px;"><span class="badge text-bg-light">37</span></div>
+                                                    </div>
+                                        
+                                                    <!-- 3 Star -->
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <div class="flex-shrink-0" style="width: 50px;">3 Star</div>
+                                                        <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 3%;" aria-valuenow="3" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <div class="flex-shrink-0 text-end" style="width: 30px;"><span class="badge text-bg-light">15</span></div>
+                                                    </div>
+                                        
+                                                    <!-- 2 Star -->
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <div class="flex-shrink-0" style="width: 50px;">2 Star</div>
+                                                        <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 1%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <div class="flex-shrink-0 text-end" style="width: 30px;"><span class="badge text-bg-light">7</span></div>
+                                                    </div>
+                                        
+                                                    <!-- 1 Star -->
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="flex-shrink-0" style="width: 50px;">1 Star</div>
+                                                        <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 1%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <div class="flex-shrink-0 text-end" style="width: 30px;"><span class="badge text-bg-light">2</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end col-->
+                                    <div class="col-xl-6">
+                                        <div class="pe-3 ps-1">
+                                            <div id="reviews-30days-chart"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end row-->
+                            </div> 
+                            
+                            <div class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+
+                                <div class="d-flex gap-2">
+                                    <div class="app-search">
+                                        <input data-table-search type="search" class="form-control"
+                                               placeholder="Search reviews...">
+                                        <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                    </div>
+                                    <button data-table-delete-selected class="btn btn-danger d-none">Delete</button>
+                                </div>
+                            
+                                <div class="d-flex align-items-center gap-2">
+
+                                    <!-- Records Per Page -->
+                                    <div>
+                                        <select data-table-set-rows-per-page class="form-select form-control my-1 my-md-0">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="15">15</option>
+                                            <option value="20">20</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Export Dropdown -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-default dropdown-toggle drop-arrow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i data-lucide="download" class="me-1"></i> Export <i class="ti ti-chevron-down align-middle ms-1"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#">Export as PDF</a></li>
+                                            <li><a class="dropdown-item" href="#">Export as CSV</a></li>
+                                            <li><a class="dropdown-item" href="#">Export as Excel</a></li>
+                                        </ul>
+                                    </div>
+                            
+                                    <!-- View All Dropdown -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-default dropdown-toggle drop-arrow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            View All <i class="ti ti-chevron-down align-middle ms-1"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#">All</a></li>
+                                            <li><a class="dropdown-item" href="#">Pending</a></li>
+                                            <li><a class="dropdown-item" href="#">Approved</a></li>
+                                            <li><a class="dropdown-item" href="#">Disabled</a></li>
+                                        </ul>
+                                    </div>
+                            
+                                    <!-- Add New Review Button -->
+                                    <!-- <a href="#!" class="btn btn-danger btn-icon">
+                                        <i data-lucide="plus" class="fs-sm"></i>
+                                    </a> -->
+                                </div>
+                            </div> 
+                        
+                            <div class="table-responsive">
+                                <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                    <thead class="bg-light align-middle bg-opacity-25">
+                                        <tr class="text-uppercase fs-xxs">
+                                            <th class="ps-3" style="width: 1%;">
+                                                <input data-table-select-all class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" id="select-all-products" value="option">
+                                            </th>
+                                            <th data-table-sort="product">Product</th>
+                                            <th data-table-sort="reviewer">Reviewer</th>
+                                            <th style="width: 18rem;">Review</th>
+                                            <th data-table-sort>Date</th>
+                                            <th data-table-sort>Status</th>
+                                            <th class="text-center" style="width: 1%;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input  class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-lg me-3">
+                                                        <img src="assets/images/products/2.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-0">
+                                                            <a data-sort="product" href="ecommerce-product-details.html" class="link-reset">Wireless Earbuds</a>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-8.jpg" alt="avatar-8" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 data-sort="reviewer" class="text-nowrap fs-sm mb-0 lh-base">Sophia Lee</h5>
+                                                        <p class="text-muted fs-xs mb-0">sophia.lee@digitalshop.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-warning fs-lg">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                </span>
+                                                <h5 class="mt-2">Great product, would buy again!</h5>
+                                                <p class="text-muted fst-italic mb-0">"These earbuds are amazing, the sound quality is top-notch. Totally worth the price!"</p>
+                                            </td>
+                                            <td>22 Apr, 2025 <small class="text-muted">04:10 PM</small></td>
+                                            <td><span class="badge badge-soft-success fs-xxs">Published</span></td>
+                                            <td>
+                                                <div class="d-flex justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-lg me-3">
+                                                        <img src="assets/images/products/3.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-0">
+                                                            <a data-sort="product" href="ecommerce-product-details.html" class="link-reset">Smart Watch</a>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-6.jpg" alt="avatar-6" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 data-sort="reviewer" class="text-nowrap fs-sm mb-0 lh-base">David Smith</h5>
+                                                        <p class="text-muted fs-xs mb-0">david.smith@healthstore.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-warning fs-lg">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-half-filled"></span>
+                                                </span>
+                                                <h5 class="mt-2">Decent, but overpriced</h5>
+                                                <p class="text-muted fst-italic mb-0">"It does the job, but I feel like it's a little expensive for what it offers."</p>
+                                            </td>
+                                            <td>23 Apr, 2025 <small class="text-muted">02:20 PM</small></td>
+                                            <td><span class="badge badge-soft-warning fs-xxs">Pending</span></td>
+                                            <td>
+                                                <div class="d-flex justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-lg me-3">
+                                                        <img src="assets/images/products/4.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-0">
+                                                            <a data-sort="product" href="ecommerce-product-details.html" class="link-reset">4K Ultra HD TV</a>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-3.jpg" alt="avatar-3" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 data-sort="reviewer" class="text-nowrap fs-sm mb-0 lh-base">Alice Johnson</h5>
+                                                        <p class="text-muted fs-xs mb-0">alice.johnson@homesupplies.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-warning fs-lg">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                </span>
+                                                <h5 class="mt-2">Amazing quality!</h5>
+                                                <p class="text-muted fst-italic mb-0">"The TV has incredible picture quality. Totally worth the investment!"</p>
+                                            </td>
+                                            <td>24 Apr, 2025 <small class="text-muted">09:15 AM</small></td>
+                                            <td><span class="badge badge-soft-success fs-xxs">Published</span></td>
+                                            <td>
+                                                <div class="d-flex justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-lg me-3">
+                                                        <img src="assets/images/products/5.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-0">
+                                                            <a data-sort="product" href="ecommerce-product-details.html" class="link-reset">Smartphone X</a>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-2.jpg" alt="avatar-2" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 data-sort="reviewer" class="text-nowrap fs-sm mb-0 lh-base">Michael Green</h5>
+                                                        <p class="text-muted fs-xs mb-0">michael.green@mobileshop.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-warning fs-lg">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                </span>
+                                                <h5 class="mt-2">Perfect phone, highly recommended!</h5>
+                                                <p class="text-muted fst-italic mb-0">"The camera is amazing and the performance is smooth. Definitely the best smartphone I have used!"</p>
+                                            </td>
+                                            <td>25 Apr, 2025 <small class="text-muted">11:30 AM</small></td>
+                                            <td><span class="badge badge-soft-success fs-xxs">Published</span></td>
+                                            <td>
+                                                <div class="d-flex justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-lg me-3">
+                                                        <img src="assets/images/products/6.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-0">
+                                                            <a data-sort="product" href="ecommerce-product-details.html" class="link-reset">Gaming Laptop</a>
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-4.jpg" alt="avatar-4" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 data-sort="reviewer" class="text-nowrap fs-sm mb-0 lh-base">Chris Evans</h5>
+                                                        <p class="text-muted fs-xs mb-0">chris.evans@gamestore.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-warning fs-lg">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-half-filled"></span>
+                                                </span>
+                                                <h5 class="mt-2">Great for gaming but heavy</h5>
+                                                <p class="text-muted fst-italic mb-0">"The performance is amazing, but it's a bit too heavy to carry around all day."</p>
+                                            </td>
+                                            <td>26 Apr, 2025 <small class="text-muted">10:00 AM</small></td>
+                                            <td><span class="badge badge-soft-warning fs-xxs">Pending</span></td>
+                                            <td>
+                                                <div class="d-flex justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>                                                                              
+                                        
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                            <div class="card-footer border-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div data-table-pagination-info="reviews"></div>
+                                    <div data-table-pagination></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div><!-- end col -->
+                </div><!-- end row -->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <!-- Apex Charts js -->
+    <script src="assets/plugins/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Custom table -->
+    <script src="assets/js/pages/custom-table.js"></script>
+
+    <!-- Ecommerce Review Page Js -->
+    <script src="assets/js/pages/ecommerce-reviews.js"></script>
+
+</body>
+
+</html>

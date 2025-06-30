@@ -1,0 +1,48 @@
+<footer class="section-custom section-footer pb-2">
+
+    <div class="container">
+        <div class="row g-4 justify-content-between">
+            <div class="col-lg-3">
+                <img src="assets/images/logo-white.png" alt="logo" height="30">
+                <p class="mt-3 fs-sm">INSPINIA is the top-selling admin dashboard template on WrapBootstrap, known for
+                    its sleek design, flexibility, and powerful features. Build modern web applications with ease using
+                    the best in class!</p>
+
+                <div class="d-flex gap-2 mt-4 mb-2">
+                    <a *ngFor="let link of socialLinks" [routerLink]="link.url"
+                        class="btn btn-sm btn-icon rounded-circle btn-dark" [attr.title]="link.title">
+                        <ng-icon [name]="link.icon" class="fs-lg"/>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="col-lg-8 col-xxl-7">
+                <div class="row g-4">
+                    <div class="col-6 col-md-4" *ngFor="let section of footerLinks">
+                        <h5 class="text-white mb-4 ps-2">{{ section.title }}</h5>
+                        <ul class="nav flex-column">
+                            <li class="nav-item" *ngFor="let link of section.links">
+                                <a class="nav-link" [class.pt-0]="section.links[0] === link" [routerLink]="link.url">
+                                    {{ link.name }}
+                                    <span *ngIf="link.badge" [class]="'badge text-bg-' + link.badge.variant"
+                                        class="ms-2">
+                                        {{ link.badge.title }}
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <p class="mb-4">© 2014 -
+                    {{currentYear}} Inspinia By <span class="fw-semibold">{{credits.name}}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,40 @@
+@page "/layouts-boxed"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime;
+
+<div class="container-fluid">
+
+    <PageBreadcrumb Title="Boxed"/>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To enable the boxed layout, add
+                    <code>data-layout-width="boxed"</code> to the
+                    <code>&lt;html&gt;</code> tag. For optimal spacing and usability, we also recommend adding
+                    <code>data-sidenav-size="on-hover"</code> to make the sidebar compact while keeping more room for
+                    content.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- container -->
+
+@code {
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("updateHtmlAttributes", "data-layout-width", "boxed");
+            await JsRuntime.InvokeVoidAsync("updateHtmlAttributes", "data-sidenav-size", "on-hover");
+            await JsRuntime.InvokeVoidAsync("loadConfig");
+            await JsRuntime.InvokeVoidAsync("loadApps");
+        }
+    }
+
+}

@@ -1,0 +1,38 @@
+{{ include('partials/html.html.twig') }}
+
+    <head>
+
+        {{ include('./partials/title-meta.html.twig') }}
+
+        {% block css %}{% endblock %}
+
+        {{ include('./partials/head-css.html.twig') }}
+
+    </head>
+
+    <body>
+
+        <div class="wrapper">
+
+            {{ include('./partials/topbar.html.twig') }}
+
+            {{ include('./partials/horizontal-nav.html.twig') }}
+
+            <div class="content-page">
+                <div class="container-fluid">
+
+                    {% block content %}{% endblock %}
+
+                </div>
+
+                {{ include('./partials/footer.html.twig') }}
+
+            </div>
+        </div>
+
+        {{ include('./partials/footer-scripts.html.twig') }}
+
+        {% block script %}{% endblock %}
+
+    </body>
+</html>

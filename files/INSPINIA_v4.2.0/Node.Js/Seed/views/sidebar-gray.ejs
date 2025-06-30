@@ -1,0 +1,29 @@
+<%- contentFor('html_attribute') %>
+lang="en" data-menu-color="gray"
+
+<%- contentFor('extra_css') %>
+<link rel="stylesheet" href="/plugins/jsvectormap/jsvectormap.min.css">
+
+<%- contentFor('body_attribute') %>
+
+<%- contentFor('content') %>
+<div class="container-fluid">
+    <%- include('partials/page-title') %>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To switch to a gray sidebar, add 
+                    <code>data-menu-color="gray"</code> to the 
+                    <code>&lt;html&gt;</code> tag in your layout.
+                </div>
+            </div>                                                
+        </div>
+    </div>
+    
+</div>
+<!-- container -->
+
+<%- contentFor('extra_javascript') %>

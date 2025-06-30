@@ -1,0 +1,28 @@
+{% extends 'layouts/vertical.html' %}
+
+{% block html_attribute %}data-sidenav-size="offcanvas"{% endblock html_attribute %}
+
+{% block title %}Offcanvas Menu{% endblock title %}
+
+{% block page_content %}
+
+<div class="container-fluid">
+
+    {% set title='Offcanvas Menu' %}
+    {%include "partials/page-title.html" %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To enable the offcanvas menu, add
+                    <code>data-sidenav-size="offcanvas"</code> to the
+                    <code>&lt;html&gt;</code> tag.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock page_content %}

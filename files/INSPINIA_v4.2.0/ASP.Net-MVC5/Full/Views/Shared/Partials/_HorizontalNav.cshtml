@@ -1,0 +1,491 @@
+﻿<header class="topnav">
+    <nav class="navbar navbar-expand-lg">
+        <nav class="container-fluid">
+            <div class="collapse navbar-collapse" id="topnav-menu-content">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="topnav-dashboards" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="menu-icon"><i class="ti ti-layout-dashboard"></i></span>
+                            <span class="menu-text"> Dashboards </span>
+                            <div class="menu-arrow"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-dashboards">
+                            <a href=@Url.Action("Index1", "Dashboards") class="dropdown-item">Dashboard v.1</a>
+                            <a href=@Url.Action("Index2", "Dashboards") class="dropdown-item">Dashboard v.2</a>
+                            <a href=@Url.Action("Index3", "Dashboards") class="dropdown-item">Dashboard v.3</a>
+                            <a href="#!" class="dropdown-item disabled">Dashboard v.4 <span class="badge text-bg-light opacity-50">soon</span></a>
+                            <a href="#!" class="dropdown-item disabled">Dashboard v.5 <span class="badge text-bg-light opacity-50">soon</span></a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="topnav-apps" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="menu-icon"><i class="ti ti-apps"></i></span>
+                            <span class="menu-text">Apps</span>
+                            <div class="menu-arrow"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-apps">
+                            <a href=@Url.Action("Calendar", "Apps") class="dropdown-item"><i class="ti ti-calendar"></i> Calendar</a>
+                            <a href=@Url.Action("Chat", "Apps") class="dropdown-item"><i class="ti ti-message"></i> Chat</a>
+                            <a href=@Url.Action("FileManager", "Apps") class="dropdown-item"><i class="ti ti-folder"></i> File Manager</a>
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-ecommerce" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-basket"></i> Ecommerce <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-ecommerce">
+                                    <a href=@Url.Action("Products", "Ecommerce") class="dropdown-item">Products</a>
+                                    <a href=@Url.Action("ProductsGrid", "Ecommerce") class="dropdown-item">Products Grid</a>
+                                    <a href=@Url.Action("ProductDetails", "Ecommerce") class="dropdown-item">Product Details</a>
+                                    <a href=@Url.Action("AddProduct", "Ecommerce") class="dropdown-item">Add Product</a>
+                                    <a href=@Url.Action("Categories", "Ecommerce") class="dropdown-item">Categories</a>
+                                    <a href=@Url.Action("Orders", "Ecommerce") class="dropdown-item">Orders</a>
+                                    <a href=@Url.Action("OrderDetails", "Ecommerce") class="dropdown-item">Order Details</a>
+                                    <a href=@Url.Action("Customers", "Ecommerce") class="dropdown-item">Customers</a>
+                                    <a href=@Url.Action("Sellers", "Ecommerce") class="dropdown-item">Sellers</a>
+                                    <a href=@Url.Action("SellerDetails", "Ecommerce") class="dropdown-item">Sellers Details</a>
+                                    <a href=@Url.Action("Reviews", "Ecommerce") class="dropdown-item">Reviews</a>
+                                    <a href=@Url.Action("ProductViews", "Ecommerce") class="dropdown-item">Product Views</a>
+                                    <a href=@Url.Action("Sales", "Ecommerce") class="dropdown-item">Sales</a>
+                                </div>
+                            </div>
+
+                            <!-- Email Dropdown -->
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-email" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-mail"></i> Email <span class="badge text-bg-danger ms-1">New</span> <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-email">
+                                    <a href=@Url.Action("Email", "Apps") class="dropdown-item">Inbox</a>
+                                    <a href=@Url.Action("EmailDetails", "Apps") class="dropdown-item">Details</a>
+                                    <a href=@Url.Action("EmailCompose", "Apps") class="dropdown-item">Compose</a>
+                                </div>
+                            </div>
+
+                            <!-- Users Dropdown -->
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-users" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-users"></i> Users <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-users">
+                                    <a href=@Url.Action("Contacts", "Users") class="dropdown-item">Contacts</a>
+                                    <a href=@Url.Action("Roles", "Users") class="dropdown-item">Roles</a>
+                                    <a href=@Url.Action("Permissions", "Users") class="dropdown-item">Permissions</a>
+                                </div>
+                            </div>
+
+                            <!-- Projects Dropdown -->
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-projects" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-briefcase"></i> Projects <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-projects">
+                                    <a href=@Url.Action("Index", "Project") class="dropdown-item">My Projects</a>
+                                    <a href=@Url.Action("List", "Project") class="dropdown-item">Projects List</a>
+                                    <a href=@Url.Action("Details", "Project") class="dropdown-item">View Project</a>
+                                    <a href=@Url.Action("Kanban", "Project") class="dropdown-item">Kanban Board</a>
+                                    <a href=@Url.Action("TeamBoard", "Project") class="dropdown-item">Team Board</a>
+                                    <a href=@Url.Action("Activity", "Project") class="dropdown-item">Activity Stream</a>
+                                </div>
+                            </div>
+
+                            <!-- Invoice Dropdown -->
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-invoice" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-invoice"></i> Invoice <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-invoice">
+                                    <a href=@Url.Action("Invoice", "Apps") class="dropdown-item">Invoices</a>
+                                    <a href=@Url.Action("InvoiceDetails", "Apps") class="dropdown-item">Single Invoice</a>
+                                    <a href=@Url.Action("InvoiceCreate", "Apps") class="dropdown-item">New Invoice</a>
+                                </div>
+                            </div>
+
+                            <!-- Other Apps Dropdown -->
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-otherapps" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-circle-dashed-plus"></i> Other Apps <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-otherapps">
+                                    <a href=@Url.Action("Companies", "OtherApps") class="dropdown-item">Companies</a>
+                                    <a href=@Url.Action("Clients", "OtherApps") class="dropdown-item">Clients</a>
+                                    <a href=@Url.Action("Outlook", "OtherApps") class="dropdown-item">Outlook View</a>
+                                    <a href=@Url.Action("VoteList", "OtherApps") class="dropdown-item">Vote List</a>
+                                    <a href=@Url.Action("IssueTracker", "OtherApps") class="dropdown-item">Issue Tracker</a>
+                                    <a href=@Url.Action("ApiKeys", "OtherApps") class="dropdown-item">API Keys</a>
+                                    <a href=@Url.Action("Blog", "OtherApps") class="dropdown-item">Blog</a>
+                                    <a href=@Url.Action("Article", "OtherApps") class="dropdown-item">Article</a>
+                                    <a href=@Url.Action("PinBoard", "OtherApps") class="dropdown-item">Pin Board</a>
+                                    <a href=@Url.Action("ForumView", "OtherApps") class="dropdown-item">Forum View</a>
+                                    <a href=@Url.Action("ForumPost", "OtherApps") class="dropdown-item">Forum Post</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="topnav-pages" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="menu-icon"><i class="ti ti-files"></i></span>
+                            <span class="menu-text">Pages</span>
+                            <div class="menu-arrow"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                            <!-- Pages Dropdown -->
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-genr-pages" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-notebook"></i>General Pages <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-genr-pages">
+                                    <a href=@Url.Action("Profile", "Pages") class="dropdown-item">Profile</a>
+                                    <a href=@Url.Action("Faq", "Pages") class="dropdown-item">FAQ</a>
+                                    <a href=@Url.Action("Pricing", "Pages") class="dropdown-item">Pricing</a>
+                                    <a href=@Url.Action("EmptyPage", "Pages") class="dropdown-item">Empty Page</a>
+                                    <a href=@Url.Action("Timeline", "Pages") class="dropdown-item">Timeline</a>
+                                    <a href=@Url.Action("SearchResults", "Pages") class="dropdown-item">Search Results</a>
+                                    <a href=@Url.Action("ComingSoon", "Pages") class="dropdown-item">Coming Soon</a>
+                                    <a href=@Url.Action("TermsConditions", "Pages") class="dropdown-item">Terms & Conditions</a>
+                                </div>
+                            </div>
+
+                            <!-- Miscellaneous Dropdown -->
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-misc" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-package"></i> Miscellaneous <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-misc">
+                                    <a href=@Url.Action("Nestable", "Miscellaneous") class="dropdown-item">Nestable List</a>
+                                    <a href=@Url.Action("TextDiff", "Miscellaneous") class="dropdown-item">Text Diff</a>
+                                    <a href=@Url.Action("PdfViewer", "Miscellaneous") class="dropdown-item">PDF Viewer</a>
+                                    <a href=@Url.Action("I18", "Miscellaneous") class="dropdown-item">i18 Support</a>
+                                    <a href=@Url.Action("SweetAlerts", "Miscellaneous") class="dropdown-item">Sweet Alerts</a>
+                                    <a href=@Url.Action("IdleTimer", "Miscellaneous") class="dropdown-item">Idle Timer</a>
+                                    <a href=@Url.Action("PassMeter", "Miscellaneous") class="dropdown-item">Password Meter</a>
+                                    <a href=@Url.Action("LiveFavicon", "Miscellaneous") class="dropdown-item">Live Favicon</a>
+                                    <a href=@Url.Action("Clipboard", "Miscellaneous") class="dropdown-item">Clipboard</a>
+                                    <a href=@Url.Action("TreeView", "Miscellaneous") class="dropdown-item">Tree View</a>
+                                    <a href=@Url.Action("LoadingButtons", "Miscellaneous") class="dropdown-item">Loading Buttons</a>
+                                    <a href=@Url.Action("Gallery", "Miscellaneous") class="dropdown-item">Gallery</a>
+                                    <a href=@Url.Action("Masonry", "Miscellaneous") class="dropdown-item">Masonry</a>
+                                    <a href=@Url.Action("Tour", "Miscellaneous") class="dropdown-item">Tour</a>
+                                    <a href=@Url.Action("Animation", "Miscellaneous") class="dropdown-item">Animation</a>
+                                </div>
+                            </div>
+
+                            <!-- Auth Version 1 Dropdown -->
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-auth-v1" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-shield-lock"></i> Authentication 1 <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-auth-v1">
+                                    <a href=@Url.Action("SignIn", "Auth1") class="dropdown-item">Sign In</a>
+                                    <a href=@Url.Action("SignUp", "Auth1") class="dropdown-item">Sign Up</a>
+                                    <a href=@Url.Action("ResetPass", "Auth1") class="dropdown-item">Reset Password</a>
+                                    <a href=@Url.Action("NewPass", "Auth1") class="dropdown-item">New Password</a>
+                                    <a href=@Url.Action("TwoFactor", "Auth1") class="dropdown-item">Two Factor</a>
+                                    <a href=@Url.Action("LockScreen", "Auth1") class="dropdown-item">Lock Screen</a>
+                                    <a href=@Url.Action("SuccessMail", "Auth1") class="dropdown-item">Success Mail</a>
+                                    <a href=@Url.Action("LoginPin", "Auth1") class="dropdown-item">Login with PIN</a>
+                                    <a href=@Url.Action("DeleteAccount", "Auth1") class="dropdown-item">Delete Account</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-auth-v2" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-user-hexagon"></i> Authentication 2 <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-auth-v2">
+                                    <a href=@Url.Action("SignIn", "Auth2") class="dropdown-item">Sign In</a>
+                                    <a href=@Url.Action("SignUp", "Auth2") class="dropdown-item">Sign Up</a>
+                                    <a href=@Url.Action("ResetPass", "Auth2") class="dropdown-item">Reset Password</a>
+                                    <a href=@Url.Action("NewPass", "Auth2") class="dropdown-item">New Password</a>
+                                    <a href=@Url.Action("TwoFactor", "Auth2") class="dropdown-item">Two Factor</a>
+                                    <a href=@Url.Action("LockScreen", "Auth2") class="dropdown-item">Lock Screen</a>
+                                    <a href=@Url.Action("SuccessMail", "Auth2") class="dropdown-item">Success Mail</a>
+                                    <a href=@Url.Action("LoginPin", "Auth2") class="dropdown-item">Login with PIN</a>
+                                    <a href=@Url.Action("DeleteAccount", "Auth2") class="dropdown-item">Delete Account</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-auth-v3" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-lock-access"></i> Authentication 3 <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-auth-v3">
+                                    <a href=@Url.Action("SignIn", "Auth3") class="dropdown-item">Sign In</a>
+                                    <a href=@Url.Action("SignUp", "Auth3") class="dropdown-item">Sign Up</a>
+                                    <a href=@Url.Action("ResetPass", "Auth3") class="dropdown-item">Reset Password</a>
+                                    <a href=@Url.Action("NewPass", "Auth3") class="dropdown-item">New Password</a>
+                                    <a href=@Url.Action("TwoFactor", "Auth3") class="dropdown-item">Two Factor</a>
+                                    <a href=@Url.Action("LockScreen", "Auth3") class="dropdown-item">Lock Screen</a>
+                                    <a href=@Url.Action("SuccessMail", "Auth3") class="dropdown-item">Success Mail</a>
+                                    <a href=@Url.Action("LoginPin", "Auth3") class="dropdown-item">Login with PIN</a>
+                                    <a href=@Url.Action("DeleteAccount", "Auth3") class="dropdown-item">Delete Account</a>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-error" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-alert-hexagon"></i> Error Pages <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="topnav-error">
+                                    <a href=@Url.Action("Error400", "Error") class="dropdown-item">400 - Bad Request</a>
+                                    <a href=@Url.Action("Error401", "Error") class="dropdown-item">401 - Unauthorized</a>
+                                    <a href=@Url.Action("Error403", "Error") class="dropdown-item">403 - Forbidden</a>
+                                    <a href=@Url.Action("Error404", "Error") class="dropdown-item">404 - Not Found</a>
+                                    <a href=@Url.Action("Error408", "Error") class="dropdown-item">408 - Timeout</a>
+                                    <a href=@Url.Action("Error500", "Error") class="dropdown-item">500 - Server Error</a>
+                                    <a href=@Url.Action("Maintenance", "Error") class="dropdown-item">Maintenance</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="topnav-components" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="menu-icon"><i class="ti ti-components"></i></span>
+                            <span class="menu-text">Components</span>
+                            <div class="menu-arrow"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-components">
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-baseui" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-palette"></i> Base UI One <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-baseui">
+                                    <a href=@Url.Action("Accordions", "Ui") class="dropdown-item">Accordions</a>
+                                    <a href=@Url.Action("Alerts", "Ui") class="dropdown-item">Alerts</a>
+                                    <a href=@Url.Action("Images", "Ui") class="dropdown-item">Images</a>
+                                    <a href=@Url.Action("Badges", "Ui") class="dropdown-item">Badges</a>
+                                    <a href=@Url.Action("Breadcrumb", "Ui") class="dropdown-item">Breadcrumb</a>
+                                    <a href=@Url.Action("Buttons", "Ui") class="dropdown-item">Buttons</a>
+                                    <a href=@Url.Action("Cards", "Ui") class="dropdown-item">Cards</a>
+                                    <a href=@Url.Action("Carousel", "Ui") class="dropdown-item">Carousel</a>
+                                    <a href=@Url.Action("Collapse", "Ui") class="dropdown-item">Collapse</a>
+                                    <a href=@Url.Action("Colors", "Ui") class="dropdown-item">Colors</a>
+                                    <a href=@Url.Action("Dropdowns", "Ui") class="dropdown-item">Dropdowns</a>
+                                    <a href=@Url.Action("Videos", "Ui") class="dropdown-item">Videos</a>
+                                    <a href=@Url.Action("Grid", "Ui") class="dropdown-item">Grid Options</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-baseuiTwo" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-palette"></i> Base UI Two<div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-baseuiTwo">
+                                    <a href=@Url.Action("Links", "Ui") class="dropdown-item">Links</a>
+                                    <a href=@Url.Action("ListGroup", "Ui") class="dropdown-item">List Group</a>
+                                    <a href=@Url.Action("Modals", "Ui") class="dropdown-item">Modals</a>
+                                    <a href=@Url.Action("Notifications", "Ui") class="dropdown-item">Notifications</a>
+                                    <a href=@Url.Action("Offcanvas", "Ui") class="dropdown-item">Offcanvas</a>
+                                    <a href=@Url.Action("Placeholders", "Ui") class="dropdown-item">Placeholders</a>
+                                    <a href=@Url.Action("Pagination", "Ui") class="dropdown-item">Pagination</a>
+                                    <a href=@Url.Action("Popovers", "Ui") class="dropdown-item">Popovers</a>
+                                    <a href=@Url.Action("Progress", "Ui") class="dropdown-item">Progress</a>
+                                    <a href=@Url.Action("Scrollspy", "Ui") class="dropdown-item">Scrollspy</a>
+                                    <a href=@Url.Action("Spinners", "Ui") class="dropdown-item">Spinners</a>
+                                    <a href=@Url.Action("Tabs", "Ui") class="dropdown-item">Tabs</a>
+                                    <a href=@Url.Action("Tooltips", "Ui") class="dropdown-item">Tooltips</a>
+                                    <a href=@Url.Action("Typography", "Ui") class="dropdown-item">Typography</a>
+                                    <a href=@Url.Action("Utilities", "Ui") class="dropdown-item">Utilities</a>
+                                </div>
+                            </div>
+
+                            <a href=@Url.Action("Widgets", "Components") class="dropdown-item"><i class="ti ti-category"></i> Widgets</a>
+                            <a href=@Url.Action("Metrics", "Components") class="dropdown-item"><i class="ti ti-chart-histogram"></i> Metrics</a>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-apexcharts" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-chart-bar"></i> Apex Charts 1<div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-apexcharts">
+                                    <a href=@Url.Action("ApexArea", "Charts") class="dropdown-item">Area</a>
+                                    <a href=@Url.Action("ApexBar", "Charts") class="dropdown-item">Bar</a>
+                                    <a href=@Url.Action("ApexBubble", "Charts") class="dropdown-item">Bubble</a>
+                                    <a href=@Url.Action("ApexCandlestick", "Charts") class="dropdown-item">Candlestick</a>
+                                    <a href=@Url.Action("ApexColumn", "Charts") class="dropdown-item">Column</a>
+                                    <a href=@Url.Action("ApexHeatmap", "Charts") class="dropdown-item">Heatmap</a>
+                                    <a href=@Url.Action("ApexLine", "Charts") class="dropdown-item">Line</a>
+                                    <a href=@Url.Action("ApexMixed", "Charts") class="dropdown-item">Mixed</a>
+                                    <a href=@Url.Action("ApexTimeline", "Charts") class="dropdown-item">Timeline</a>
+                                    <a href=@Url.Action("ApexBoxplot", "Charts") class="dropdown-item">Boxplot</a>
+                                    <a href=@Url.Action("ApexTreemap", "Charts") class="dropdown-item">Treemap</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-apexchartsTwo" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-chart-bar"></i> Apex Charts 2<div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-apexchartsTwo">
+                                    <a href=@Url.Action("ApexPie", "Charts") class="dropdown-item">Pie</a>
+                                    <a href=@Url.Action("ApexRadar", "Charts") class="dropdown-item">Radar</a>
+                                    <a href=@Url.Action("ApexRadialbar", "Charts") class="dropdown-item">RadialBar</a>
+                                    <a href=@Url.Action("ApexScatter", "Charts") class="dropdown-item">Scatter</a>
+                                    <a href=@Url.Action("ApexPolarArea", "Charts") class="dropdown-item">Polar Area</a>
+                                    <a href=@Url.Action("ApexSparklines", "Charts") class="dropdown-item">Sparklines</a>
+                                    <a href=@Url.Action("ApexRange", "Charts") class="dropdown-item">Range</a>
+                                    <a href=@Url.Action("ApexFunnel", "Charts") class="dropdown-item">Funnel</a>
+                                    <a href=@Url.Action("ApexSlope", "Charts") class="dropdown-item">Slope</a>
+                                    <a href=@Url.Action("Apextree", "Charts") class="dropdown-item">Apex Tree</a>
+                                    <a href=@Url.Action("Apexsankey", "Charts") class="dropdown-item">Apex Sankey</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-echarts" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-chart-pie"></i> Echarts <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-echarts">
+                                    <a href=@Url.Action("EChartLine", "Charts") class="dropdown-item">Line</a>
+                                    <a href=@Url.Action("EChartBar", "Charts") class="dropdown-item">Bar</a>
+                                    <a href=@Url.Action("EChartPie", "Charts") class="dropdown-item">Pie</a>
+                                    <a href=@Url.Action("EChartScatter", "Charts") class="dropdown-item">Scatter</a>
+                                    <a href=@Url.Action("EChartGeoMap", "Charts") class="dropdown-item">GEO Map</a>
+                                    <a href=@Url.Action("EChartGauge", "Charts") class="dropdown-item">Gauge</a>
+                                    <a href=@Url.Action("EChartCandlestick", "Charts") class="dropdown-item">Candlestick</a>
+                                    <a href=@Url.Action("EChartArea", "Charts") class="dropdown-item">Area</a>
+                                    <a href=@Url.Action("EChartRadar", "Charts") class="dropdown-item">Radar</a>
+                                    <a href=@Url.Action("EChartHeatmap", "Charts") class="dropdown-item">Heatmap</a>
+                                    <a href=@Url.Action("EChartOther", "Charts") class="dropdown-item">Other</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-forms" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-checkup-list"></i> Forms <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-forms">
+                                    <a href=@Url.Action("Elements", "Form") class="dropdown-item">Basic Elements</a>
+                                    <a href=@Url.Action("Pickers", "Form") class="dropdown-item">Pickers</a>
+                                    <a href=@Url.Action("Select", "Form") class="dropdown-item">Select</a>
+                                    <a href=@Url.Action("Validation", "Form") class="dropdown-item">Validation</a>
+                                    <a href=@Url.Action("Wizard", "Form") class="dropdown-item">Wizard</a>
+                                    <a href=@Url.Action("Fileuploads", "Form") class="dropdown-item">File Uploads</a>
+                                    <a href=@Url.Action("TextEditors", "Form") class="dropdown-item">Text Editors</a>
+                                    <a href=@Url.Action("RangeSlider", "Form") class="dropdown-item">Range Slider</a>
+                                    <a href=@Url.Action("Layouts", "Form") class="dropdown-item">Layouts</a>
+                                    <a href=@Url.Action("OtherPlugins", "Form") class="dropdown-item">Other Plugins</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-icons" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-icons"></i> Icons <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-icons">
+                                    <a href=@Url.Action("Tabler", "Icons") class="dropdown-item">Tabler</a>
+                                    <a href=@Url.Action("Lucide", "Icons") class="dropdown-item">Lucide</a>
+                                    <a href=@Url.Action("Flags", "Icons") class="dropdown-item">Flags</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-maps" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-map"></i> Maps <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-maps">
+                                    <a href=@Url.Action("Google", "Maps") class="dropdown-item">Google Maps</a>
+                                    <a href=@Url.Action("Vector", "Maps") class="dropdown-item">Vector Maps</a>
+                                    <a href=@Url.Action("Leaflet", "Maps") class="dropdown-item">Leaflet Maps</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="topnav-tables" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="menu-icon"><i class="ti ti-table-column"></i></span>
+                            <span class="menu-text">Tables</span>
+                            <div class="menu-arrow"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-tables">
+                            <a href=@Url.Action("Static", "Tables") class="dropdown-item"><i class="ti ti-border-all"></i> Static Tables</a>
+                            <a href=@Url.Action("Custom", "Tables") class="dropdown-item"><i class="ti ti-stack-forward"></i> Custom Tables</a>
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-datatables" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-table"></i> DataTables <span class="badge bg-success ms-1">14</span> <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-datatables">
+                                    <a href=@Url.Action("DataTableBasic", "Tables") class="dropdown-item">Basic</a>
+                                    <a href=@Url.Action("DataTableExportData", "Tables") class="dropdown-item">Export Data</a>
+                                    <a href=@Url.Action("DataTableSelect", "Tables") class="dropdown-item">Select</a>
+                                    <a href=@Url.Action("DataTableAjax", "Tables") class="dropdown-item">Ajax</a>
+                                    <a href=@Url.Action("DataTableJavascript", "Tables") class="dropdown-item">Javascript Source</a>
+                                    <a href=@Url.Action("DataTableRendering", "Tables") class="dropdown-item">Data Rendering</a>
+                                    <a href=@Url.Action("DataTableScroll", "Tables") class="dropdown-item">Scroll</a>
+                                    <a href=@Url.Action("DataTableColumns", "Tables") class="dropdown-item">Show & Hide Column</a>
+                                    <a href=@Url.Action("DataTableChildRows", "Tables") class="dropdown-item">Child Rows</a>
+                                    <a href=@Url.Action("DataTableColumnSearching", "Tables") class="dropdown-item">Column Searching</a>
+                                    <a href=@Url.Action("DataTableRangeSearch", "Tables") class="dropdown-item">Range Search</a>
+                                    <a href=@Url.Action("DataTableFixedHeader", "Tables") class="dropdown-item">Fixed Header</a>
+                                    <a href=@Url.Action("DataTableAddRows", "Tables") class="dropdown-item">Add Rows</a>
+                                    <a href=@Url.Action("DataTableCheckboxSelect", "Tables") class="dropdown-item">Checkbox Select</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle drop-arrow-none" href="#" id="topnav-layouts" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="menu-icon"><i class="ti ti-layout"></i></span>
+                            <span class="menu-text">Layouts</span>
+                            <div class="menu-arrow"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-layouts">
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-layouts-one" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-layout"></i> Layout Options <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-layouts-one">
+                                    <a href=@Url.Action("Scrollable", "Layouts") class="dropdown-item" target="_blank">Scrollable</a>
+                                    <a href=@Url.Action("Compact", "Layouts") class="dropdown-item" target="_blank">Compact</a>
+                                    <a href=@Url.Action("Boxed", "Layouts") class="dropdown-item" target="_blank">Boxed</a>
+                                    <a href=@Url.Action("Horizontal", "Layouts") class="dropdown-item" target="_blank">Horizontal</a>
+                                    <a href=@Url.Action("Preloader", "Layouts") class="dropdown-item" target="_blank">Preloader</a>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-sidebars" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-layout-sidebar"></i> Sidebars <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-sidebars">
+                                    <a href=@Url.Action("Light", "Sidebars") class="dropdown-item" target="_blank">Light Menu</a>
+                                    <a href=@Url.Action("Gradient", "Sidebars") class="dropdown-item" target="_blank">Gradient Menu</a>
+                                    <a href=@Url.Action("Image", "Sidebars") class="dropdown-item" target="_blank">Image Menu</a>
+                                    <a href=@Url.Action("Compact", "Sidebars") class="dropdown-item" target="_blank">Compact Menu</a>
+                                    <a href=@Url.Action("IconView", "Sidebars") class="dropdown-item" target="_blank">Icon View Menu</a>
+                                    <a href=@Url.Action("OnHover", "Sidebars") class="dropdown-item" target="_blank">On Hover Menu</a>
+                                    <a href=@Url.Action("OnHoverActive", "Sidebars") class="dropdown-item" target="_blank">On Hover Active</a>
+                                    <a href=@Url.Action("Offcanvas", "Sidebars") class="dropdown-item" target="_blank">Offcanvas Menu</a>
+                                    <a href=@Url.Action("NoIcons", "Sidebars") class="dropdown-item" target="_blank">No Icons with Lines</a>
+                                    <a href=@Url.Action("WithLines", "Sidebars") class="dropdown-item" target="_blank">Sidebar with Lines</a>
+                                    <a href="sidebar-user" class="dropdown-item" target="_blank">With User</a>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <a class="dropdown-item dropdown-toggle drop-arrow-none" href="#" id="topnav-topbars" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-box-align-top"></i> Topbar <div class="menu-arrow"></div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="topnav-topbars">
+                                    <a href=@Url.Action("Dark", "Topbars") class="dropdown-item" target="_blank">Dark Topbar</a>
+                                    <a href=@Url.Action("Gray", "Topbars") class="dropdown-item" target="_blank">Gray Topbar</a>
+                                    <a href=@Url.Action("Gradient", "Topbars") class="dropdown-item" target="_blank">Gradient Topbar</a>
+                                    <a href=@Url.Action("SubItems", "Topbars") class="dropdown-item">Topbar with Sub Items</a>
+                                    <a href=@Url.Action("Tools", "Topbars") class="dropdown-item">Topbar with Tools</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href=@Url.Action("Index", "Landing")>
+                            <span class="menu-icon"><i class="ti ti-rocket"></i></span>
+                            <span class="menu-text">Landing</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </nav>
+</header>

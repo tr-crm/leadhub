@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "sass": "1.77.6",
+    "vite": "^5.4.19",
+    "vite-plugin-ruby": "^5.1.1"
+  },
+  "dependencies": {    
+    "@tabler/icons-webfont": "^3.31.0",    
+    "bootstrap": "^5.3.6",    
+    "jquery": "3.7.1",    
+    "lucide": "^0.510.0",  
+    "simplebar": "^6.3.0"    
+  }
+}

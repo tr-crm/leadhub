@@ -1,0 +1,139 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Outlook View"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"subtitle": "Apps", "title":"Outlook View"})
+
+                <div class="outlook-box outlook-box-full">
+                    <div class="offcanvas-lg offcanvas-start outlook-left-menu" tabindex="-1" id="outlookSidebaroffcanvas" aria-labelledby="outlookSidebaroffcanvasLabel">
+                        <div class="card h-100 mb-0 rounded-0 border-0" data-simplebar>
+                            <div class="card-body p-0">
+
+                                <ul class="list-group list-group-flush outlook-list mb-0" role="tablist">
+                                    <li class="list-group-item p-0" role="presentation">
+                                        <a href="#outlook-tab-1" class="nav-link p-3" data-bs-toggle="tab" role="tab" aria-controls="outlook-tab-1" aria-selected="false">
+                                            <h4>Tab Title 1</h4>
+                                        </a>
+                                    </li>
+
+                                    <li class="list-group-item p-0" role="presentation">
+                                        <a href="#outlook-tab-2" class="nav-link p-3 active" data-bs-toggle="tab" role="tab" aria-controls="outlook-tab-2" aria-selected="true">
+                                            <h4>Tab Title 2</h4>
+                                        </a>
+                                    </li>
+
+                                    <li class="list-group-item p-0" role="presentation">
+                                        <a href="#outlook-tab-3" class="nav-link p-3" data-bs-toggle="tab" role="tab" aria-controls="outlook-tab-3" aria-selected="false">
+                                            <h4>Tab Title 3</h4>
+                                        </a>
+                                    </li>
+
+                                    <li class="list-group-item p-0" role="presentation">
+                                        <a href="#outlook-tab-4" class="nav-link p-3" data-bs-toggle="tab" role="tab" aria-controls="outlook-tab-4" aria-selected="false">
+                                            <h4>Tab Title 4</h4>
+                                        </a>
+                                    </li>
+
+                                    <li class="list-group-item p-0" role="presentation">
+                                        <a href="#outlook-tab-5" class="nav-link p-3" data-bs-toggle="tab" role="tab" aria-controls="outlook-tab-5" aria-selected="false">
+                                            <h4>Tab Title 5</h4>
+                                        </a>
+                                    </li>
+
+                                    <li class="list-group-item p-0" role="presentation">
+                                        <a href="#outlook-tab-6" class="nav-link p-3" data-bs-toggle="tab" role="tab" aria-controls="outlook-tab-6" aria-selected="false">
+                                            <h4>Tab Title 6</h4>
+                                        </a>
+                                    </li>
+
+                                    <li class="list-group-item p-0" role="presentation">
+                                        <a href="#outlook-tab-7" class="nav-link p-3" data-bs-toggle="tab" role="tab" aria-controls="outlook-tab-7" aria-selected="false">
+                                            <h4>Tab Title 7</h4>
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div>
+
+                    <div class="card h-100 mb-0 rounded-0 border-0 flex-grow-1" data-simplebar data-simplebar-md>
+                        <div class="card-header d-lg-none d-flex">
+                            <button class="btn btn-sm btn-default btn-icon" type="button" data-bs-toggle="offcanvas" data-bs-target="#outlookSidebaroffcanvas" aria-controls="outlookSidebaroffcanvas">
+                                <i class="ti ti-menu-2 fs-lg"></i>
+                            </button>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="tab-pane fade" id="outlook-tab-1" role="tabpanel">
+                                    <h4>Tab Content 1</h4>
+                                </div>
+
+                                <div class="tab-pane fade show active" id="outlook-tab-2" role="tabpanel">
+                                    <h4>Tab Content 2</h4>
+                                </div>
+
+                                <div class="tab-pane fade" id="outlook-tab-3" role="tabpanel">
+                                    <h4>Tab Content 3</h4>
+                                </div>
+
+                                <div class="tab-pane fade" id="outlook-tab-4" role="tabpanel">
+                                    <h4>Tab Content 4</h4>
+                                </div>
+
+                                <div class="tab-pane fade" id="outlook-tab-5" role="tabpanel">
+                                    <h4>Tab Content 5</h4>
+                                </div>
+
+                                <div class="tab-pane fade" id="outlook-tab-6" role="tabpanel">
+                                    <h4>Tab Content 6</h4>
+                                </div>
+
+                                <div class="tab-pane fade" id="outlook-tab-7" role="tabpanel">
+                                    <h4>Tab Content 7</h4>
+                                </div>
+
+                            </div>
+                        </div> <!-- end card-body-->
+                    </div> <!-- end card-->
+                </div> <!-- end row-->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/footer-scripts.html')
+
+</body>
+
+</html>
