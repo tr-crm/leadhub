@@ -1,8 +1,0 @@
-<!-- Theme Config Js -->
-<script src="/js/config.js"></script>
-
-<!-- Vendor css -->
-<link href="/css/vendors.min.css" rel="stylesheet" type="text/css">
-
-<!-- App css -->
-<link href="/css/app.min.css" rel="stylesheet" type="text/css">
