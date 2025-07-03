@@ -1,0 +1,107 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "ApexTree Apexcharts"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Page Content here -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"subtitle":"Charts","title":"ApexTree"})
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Right to left</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div dir="ltr">
+                            <div id="right-to-left" style="margin: 0 auto;"></div>
+                        </div>
+                    </div>
+                    <!-- end card body-->
+                </div>
+                <!-- end card -->
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Bottom</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div dir="ltr">
+                            <div id="bottom-tree" style="margin: 0 auto;"></div>
+                        </div>
+                    </div>
+                    <!-- end card body-->
+                </div>
+                <!-- end card -->
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Top to bottom</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div dir="ltr">
+                            <div id="top-tree" style="margin: 0 auto;"></div>
+                        </div>
+                    </div>
+                    <!-- end card body-->
+                </div>
+                <!-- end card -->
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Collapse Expand</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div dir="ltr">
+                            <div id="collapse-expand" style="margin: 0 auto;"></div>
+                        </div>
+                    </div>
+                    <!-- end card body-->
+                </div>
+                <!-- end card -->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <!-- Apex Chart js -->
+    <script src="assets/plugins/apextree/apextree.min.js"></script>
+
+    <!-- Apex Chart Heatmap Demo js -->
+    <script src="assets/js/pages/chart-apextree.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,16 @@
+<div class="topbar-item">
+    <div ngbDropdown placement="bottom-right" class="dropdown">
+        <button ngbDropdownToggle class="topbar-link fw-bold drop-arrow-none">
+            <img [src]="selectedLang.flag" alt="" class="w-100 rounded me-2"
+                 height="18"> {{ selectedLang.code.toUpperCase() }}
+        </button>
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
+            <a *ngFor="let language of languages" class="dropdown-item" role="button"
+               (click)="changeLanguage(language.code)"
+               [attr.title]="language.name">
+                <img [src]="language.flag" alt="English" class="me-1 rounded" height="18">
+                <span class="align-middle">{{ language.nativeName }}</span>
+            </a>
+        </div>
+    </div>
+</div>

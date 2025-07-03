@@ -1,0 +1,42 @@
+@page "/layouts-scrollable"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime;
+
+<div class="container-fluid">
+
+    <PageBreadcrumb Title="Scrollable"/>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To enable full scrolling and view all content, please add
+                    <code>data-layout-position="scrollable"</code> to the
+                    <code>&lt;html&gt;</code> tag.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card" style="height: 1000px"></div>
+        </div>
+    </div>
+</div>
+<!-- container -->
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("updateHtmlAttributes", "data-layout-position", "scrollable");
+            await JsRuntime.InvokeVoidAsync("loadConfig");
+            await JsRuntime.InvokeVoidAsync("loadApps");
+        }
+    }
+
+}

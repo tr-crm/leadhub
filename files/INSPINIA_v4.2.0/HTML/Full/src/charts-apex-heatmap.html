@@ -1,0 +1,122 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Apex Heatmap Charts"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Page Content here -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"subtitle":"Charts","title":"Heatmap Apexchart"})
+
+                <div class="row">
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title"> Heatmap - Single Series</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <div dir="ltr">
+                                    <div id="basic-heatmap" class="apex-charts"></div>
+                                </div>
+                            </div>
+                            <!-- end card body-->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col-->
+
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title"> Multiple Series</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <div dir="ltr">
+                                    <div id="multiple-series-heatmap" class="apex-charts"></div>
+                                </div>
+                            </div>
+                            <!-- end card body-->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col-->
+
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title"> Heatmap - Color Range</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <div dir="ltr">
+                                    <div id="color-range-heatmap" class="apex-charts"></div>
+                                </div>
+                            </div>
+                            <!-- end card body-->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col-->
+
+                    <div class="col-xl-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title"> Heatmap - Range without Shades</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <div dir="ltr">
+                                    <div id="rounded-heatmap" class="apex-charts"></div>
+                                </div>
+                            </div>
+                            <!-- end card body-->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col-->
+                </div>
+                <!-- end row-->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <!-- Apex Charts js -->
+    <script src="assets/plugins/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Apex Chart Pie Demo js -->
+    <script src="assets/js/pages/chart-apex-heatmap.js"></script>
+
+</body>
+
+</html>

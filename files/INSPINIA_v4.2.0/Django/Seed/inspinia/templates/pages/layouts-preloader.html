@@ -1,0 +1,27 @@
+{% extends 'layouts/vertical.html' %}
+
+{% load static i18n %}
+
+{% block title %}Preloader Layout{% endblock title %}
+
+{% block preloader %}
+
+<!-- Preloader -->
+<div id="preloader">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+{% endblock preloader %}
+
+{% block page_content %}
+
+<div class="container-fluid">
+
+  {% include 'partials/page-title.html' with title='Preloader' %}
+
+</div>
+<!-- container -->
+
+{% endblock page_content %}

@@ -1,0 +1,22 @@
+{% extends 'layouts/vertical.html.twig' %}
+
+{% set title = 'Classic Skin' %}
+
+{% block css %}{% endblock %}
+
+{% block content %}
+
+{{ include('partials/page-title.html.twig', {'title': 'Classic Skin'}) }}
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-primary alert-bordered border-start border-primary d-flex align-items-center gap-2 mb-3">
+            <i class="ti ti-info-circle fs-20"></i>
+            <div class="fw-bold text-decoration-underline">
+                INSPINIA comes with the Classic Theme set as the Default.
+            </div>                            
+        </div>
+    </div>
+</div>
+
+{% endblock %}

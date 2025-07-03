@@ -1,0 +1,36 @@
+{% extends 'layouts/base.html' %}
+
+{% block html_attribute %}{% endblock html_attribute %}
+
+{% block title %}{% endblock title %}
+
+{% block extra_css %}{% endblock extra_css %}
+
+{% block body_attribute %}{% endblock body_attribute %}
+
+{% block preloader %}{% endblock preloader %}
+
+{% block content %}
+
+<div class="wrapper">
+
+  {% include 'partials/sidenav.html' %}
+  {% include 'partials/topbar.html' %}
+
+  <div class="content-page">
+
+    {% block page_content %}{% endblock page_content %}
+
+    {% include 'partials/footer.html' %}
+
+  </div>
+
+{% block right_sidebar %}{% endblock right_sidebar %}
+
+</div>
+
+{% block modal %}{% endblock modal %}
+
+{% endblock content %}
+
+{% block extra_javascript %}{% endblock extra_javascript %}

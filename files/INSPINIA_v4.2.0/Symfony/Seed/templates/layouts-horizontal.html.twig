@@ -1,0 +1,15 @@
+{% extends 'layouts/horizontal.html.twig' %}
+
+{% set html_attribute = 'lang=en data-layout=topnav data-topbar-color=dark data-menu-color=light' %}
+
+{% set title = 'Horizontal Menu' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/plugins/jsvectormap/jsvectormap.min.css">
+{% endblock %}
+
+{% block content %}
+
+{{ include('partials/page-title.html.twig', {'title': 'Horizontal'}) }}
+
+{% endblock %}

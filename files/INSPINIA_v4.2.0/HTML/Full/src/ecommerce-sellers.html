@@ -1,0 +1,575 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Sellers"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"subtitle": "Ecommerce", "title":"Sellers"})
+
+                <div class="row justify-content-center">
+                    <div class="col-xxl-10">
+                        <div data-table data-table-rows-per-page="8" class="card">
+                            <div class="card-header border-light justify-content-between">
+
+                                <div class="d-flex gap-2">
+                                    <div class="app-search">
+                                        <input data-table-search type="search" class="form-control" placeholder="Search seller...">
+                                        <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                    </div>
+                                    <button data-table-delete-selected class="btn btn-danger d-none">Delete</button>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="me-2 fw-semibold">Filter By:</span>
+
+                                    <!-- Orders Filter -->
+                                    <div class="app-search">
+                                        <select data-table-range-filter="orders" class="form-select form-control my-1 my-md-0">
+                                            <option value="All">Orders</option>
+                                            <option value="20000+">Top Orders</option>
+                                            <option value="0-20000">Low Orders</option>
+                                            <option value="0">No Orders</option>
+                                        </select>
+                                        <i data-lucide="shopping-cart" class="app-search-icon text-muted"></i>
+                                    </div>
+
+                                    <!-- Revenue Filter -->
+                                    <div class="app-search">
+                                        <select data-table-range-filter="revenue" class="form-select form-control my-1 my-md-0">
+                                            <option value="All">Revenue</option>
+                                            <option value="100k+">Top Revenue</option>
+                                            <option value="50k-100k">Low Revenue</option>
+                                            <option value="0">No Revenue</option>
+                                        </select>
+                                        <i data-lucide="dollar-sign" class="app-search-icon text-muted"></i>
+                                    </div>
+
+                                    <!-- Ratings Filter -->
+                                    <div class="app-search">
+                                        <select data-table-range-filter="rating" class="form-select form-control my-1 my-md-0">
+                                            <option value="All">Ratings</option>
+                                            <option value="4-5">Top Rated</option>
+                                            <option value="1-3">Low Rated</option>
+                                            <option value="0">No Ratings</option>
+                                        </select>
+                                        <i data-lucide="star" class="app-search-icon text-muted"></i>
+                                    </div>
+
+                                    <!-- Records Per Page -->
+                                    <div>
+                                        <select data-table-set-rows-per-page class="form-select form-control my-1 my-md-0">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="15">15</option>
+                                            <option value="20">20</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                    <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                        <tr class="text-uppercase fs-xxs">
+                                            <th class="ps-3" style="width: 1%;">
+                                                <input data-table-select-all class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" id="select-all-products" value="option">
+                                            </th>
+                                            <th data-table-sort="seller">Seller</th>
+                                            <th data-table-sort>Products</th>
+                                            <th data-table-sort data-column="orders">Orders</th>
+                                            <th data-table-sort="rating" data-column="rating">Rating</th>
+                                            <th data-table-sort>Location</th>
+                                            <th data-table-sort data-column="revenue">Balance</th>
+                                            <th data-table-sort>Rank</th>
+                                            <th style="width: 1%;">Report</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Seller Row 1 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/3.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">GreenTech
+                                                                Solutions</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2005</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>1,456</td>
+                                            <td>18,120</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-half-filled"></span> <!-- half star -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(4.5)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/ca.svg" alt="" class="rounded-circle me-1" height="12"> CA
+                                                </span>
+                                            </td>
+                                            <td>$92.5k</td>
+                                            <td>1st</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="bar"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 2 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/4.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">TechTonic
+                                                                Store</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2010</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>2,378</td>
+                                            <td>25,892</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span> <!-- two empty -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(3)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/gb.svg" alt="" class="rounded-circle me-1" height="12"> UK
+                                                </span>
+                                            </td>
+                                            <td>$145.7k</td>
+                                            <td>2nd</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="line"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 3 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/5.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">UrbanTech
+                                                                Gadgets</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2012</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>3,120</td>
+                                            <td>35,210</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-half-filled"></span>
+                                                    <span class="ti ti-star"></span> <!-- two half stars -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(3.5)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/in.svg" alt="" class="rounded-circle me-1" height="12"> IN
+                                                </span>
+                                            </td>
+                                            <td>$300.4k</td>
+                                            <td>3rd</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="line"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 4 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/6.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">NextGen
+                                                                Electronics</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2018</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>1,748</td>
+                                            <td>12,563</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span> <!-- all empty -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(2)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/fr.svg" alt="" class="rounded-circle me-1" height="12"> FR
+                                                </span>
+                                            </td>
+                                            <td>$78.9k</td>
+                                            <td>4th</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="bar"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 5 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/7.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">SmartHome
+                                                                Goods</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2015</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>520</td>
+                                            <td>3,321</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span> <!-- all empty -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(2)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/de.svg" alt="" class="rounded-circle me-1" height="12"> DE
+                                                </span>
+                                            </td>
+                                            <td>$56.2k</td>
+                                            <td>5th</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="line"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 6 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/8.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">TechMasters</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2013</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>2,160</td>
+                                            <td>40,500</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span> <!-- full stars -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(5)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/us.svg" alt="" class="rounded-circle me-1" height="12"> US
+                                                </span>
+                                            </td>
+                                            <td>$600k</td>
+                                            <td>6th</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="line"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 7 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/9.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">FutureGizmos</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2020</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>1,400</td>
+                                            <td>30,000</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span> <!-- all empty -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(2)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/it.svg" alt="" class="rounded-circle me-1" height="12"> IT
+                                                </span>
+                                            </td>
+                                            <td>$170.2k</td>
+                                            <td>7th</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="line"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 8 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/10.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">GizmoX</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2016</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>2,100</td>
+                                            <td>28,950</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span>
+                                                    <span class="ti ti-star"></span> <!-- all empty -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(2)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/au.svg" alt="" class="rounded-circle me-1" height="12"> AU
+                                                </span>
+                                            </td>
+                                            <td>$210.3k</td>
+                                            <td>8th</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="bar"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 9 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/1.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">NextWave
+                                                                Electronics</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2017</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>1,900</td>
+                                            <td>22,510</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-half-filled"></span>
+                                                    <span class="ti ti-star"></span> <!-- one half star -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(3.5)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/br.svg" alt="" class="rounded-circle me-1" height="12"> BR
+                                                </span>
+                                            </td>
+                                            <td>$125.4k</td>
+                                            <td>9th</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="bar"></div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Seller Row 10 -->
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 product-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-md me-3">
+                                                        <img src="assets/images/sellers/2.png" alt="Product" class="img-fluid rounded">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">
+                                                            <a data-sort="seller" href="ecommerce-seller-details.html" class="link-reset">FutureTech
+                                                                Innovations</a>
+                                                        </h5>
+                                                        <p class="text-muted mb-0 fs-xxs">Since 2019</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>3,250</td>
+                                            <td>40,300</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star-filled"></span>
+                                                    <span class="ti ti-star"></span> <!-- one empty star -->
+                                                </span>
+                                                <span class="ms-1"><a data-sort="rating" href="ecommerce-reviews.html" class="link-reset fw-semibold">(4)</a></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/jp.svg" alt="" class="rounded-circle me-1" height="12"> JP
+                                                </span>
+                                            </td>
+                                            <td>$340.7k</td>
+                                            <td>10th</td>
+                                            <td>
+                                                <div data-chart="apex" data-chart-type="line"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="card-footer border-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div data-table-pagination-info="sellers"></div>
+                                    <div data-table-pagination></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- end col -->
+                </div><!-- end row -->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <!-- Apex Charts js -->
+    <script src="assets/plugins/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Custom table -->
+    <script src="assets/js/pages/custom-table.js"></script>
+
+    <!-- Page only -->
+    <script src="assets/js/pages/ecommerce-product-views.js"></script>
+
+
+</body>
+
+</html>

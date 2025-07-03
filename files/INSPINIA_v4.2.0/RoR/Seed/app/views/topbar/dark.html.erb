@@ -1,0 +1,24 @@
+<% @title = "Dark Topbar" %>
+
+<% @html_attributes = "data-topbar-color=dark data-menu-color=light" %>
+
+    <div class="container-fluid">
+        
+        <%= render 'layouts/partials/page_title', page_title: "Dark Topbar" %>
+
+        <div class="row">
+            <div class="col-12">
+                <div
+                    class="alert alert-warning alert-bordered border-start border-warning d-flex align-items-start gap-2">
+                    <i class="ti ti-info-circle fs-xxl"></i>
+                    <div>
+                        To enable the dark topbar, add
+                        <code>data-topbar-color="dark"</code> to the
+                        <code>&lt;html&gt;</code> tag in your layout.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <!-- container -->

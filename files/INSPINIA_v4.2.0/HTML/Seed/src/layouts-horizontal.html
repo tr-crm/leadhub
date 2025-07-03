@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-layout="topnav" data-topbar-color="dark" data-menu-color="light">
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Horizontal Menu"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/topbar.html')
+
+        @@include('./partials/horizontal-nav.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"title":"Horizontal"})
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/footer-scripts.html')
+
+</body>
+
+</html>

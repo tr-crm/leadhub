@@ -1,0 +1,40 @@
+<% @title = "Echart Candlestick Chart" %>
+
+    <div class="container-fluid">
+
+        <%= render 'layouts/partials/page_title', sub_title: "Charts",page_title: "Candlestick Echart" %>
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Basic Candlestick Chart</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-basic-candlestick" style="min-height:400px"></div>
+                    </div>
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">Mixed Candlestick Chart</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-mixed-candlestick" style="min-height:400px"></div>
+                    </div>
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
+
+    </div>
+    <!-- container -->
+
+<% content_for :javascript do %>
+  <%= vite_javascript_tag 'js/pages/chart-echart-candlestick.js' %>
+<% end %>            

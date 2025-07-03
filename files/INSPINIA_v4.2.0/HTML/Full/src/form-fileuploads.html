@@ -1,0 +1,194 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "File Uploads"})
+
+    <!-- Dropzone Plugin CSS -->
+    <link rel="stylesheet" href="assets/plugins/dropzone/dropzone.css" type="text/css">
+
+    <!-- Filepond Plugin CSS -->
+    <link rel="stylesheet" href="assets/plugins/filepond/filepond.min.css" type="text/css">
+    <link rel="stylesheet" href="assets/plugins/filepond/filepond-plugin-image-preview.min.css">
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container">
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Dropzone</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <p class="text-muted mb-2">
+                                    DropzoneJS is an open source library that provides drag’n’drop file uploads with image previews.
+                                </p>
+
+                                <a class="btn btn-link p-0 fw-semibold" href="https://www.dropzone.dev/" target="_blank">
+                                    Dropzone on View Official Website
+                                    <i class="ti ti-chevron-right ms-1"></i>
+                                </a>
+                            </div>
+
+                            <div class="card-body pt-0">
+                                <form action="/" method="post" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
+                                    <div class="fallback">
+                                        <input name="file" type="file">
+                                    </div>
+
+                                    <div class="dz-message needsclick">
+                                        <div class="avatar-lg mx-auto mb-3">
+                                            <span class="avatar-title bg-info-subtle text-info rounded-circle">
+                                                <i class="fs-24 ti ti-cloud-upload"></i>
+                                            </span>
+                                        </div>
+                                        <h4 class="mb-2">Drop files here or click to upload.</h4>
+                                        <p class="text-muted fst-italic mb-3">You can drag images here, or browse files via the button below.</p>
+                                        <button type="button" class="btn btn-sm shadow btn-default">Browse Images</button>
+                                    </div>
+                                </form>
+
+                                <!-- Preview -->
+                                <div class="dropzone-previews mt-3" id="file-previews"></div>
+
+                                <!-- file preview template -->
+                                <div class="d-none" id="uploadPreviewTemplate">
+                                    <div class="card mt-1 mb-0 border-dashed border">
+                                        <div class="p-2">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <img data-dz-thumbnail src="#" class="avatar-sm rounded bg-light" alt="">
+                                                </div>
+                                                <div class="col ps-0">
+                                                    <a href="javascript:void(0);" class="fw-semibold" data-dz-name></a>
+                                                    <p class="mb-0 text-muted" data-dz-size></p>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <!-- Button -->
+                                                    <a href="" class="btn btn-link btn-lg text-danger" data-dz-remove>
+                                                        <i class="ti ti-x"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end file preview template -->
+
+                            </div> <!-- end card-body -->
+                        </div> <!-- end card-->
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Filepond</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <p class="text-muted mb-2">
+                                    A JavaScript library that can upload anything you throw at it, optimizes images for faster uploads, and offers a great, accessible, silky smooth user experience.
+                                </p>
+
+                                <a class="btn btn-link p-0 fw-semibold" href="https://pqina.nl/filepond/" target="_blank">
+                                    Filepond on View Official Website
+                                    <i class="ti ti-chevron-right ms-1"></i>
+                                </a>
+                            </div>
+
+                            <div class="card-body pt-0">
+
+                                <div class="mb-3">
+                                    <h5 class="mb-3">Basic Example</h5>
+                                    <div class="filepond-uploader">
+                                        <input type="file" class="filepond filepond-input-multiple" multiple name="filepond" data-allow-reorder="true" data-max-file-size="3MB" data-max-files="5">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h5 class="mb-3">Two Grid Example</h5>
+                                    <div class="filepond-uploader two-grid">
+                                        <input type="file" class="filepond filepond-input-multiple" multiple name="filepond" data-allow-reorder="true" data-max-file-size="3MB" data-max-files="5">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5 class="mb-3">Three Grid Example</h5>
+                                    <div class="filepond-uploader three-grid">
+                                        <input type="file" class="filepond filepond-input-multiple" multiple name="filepond" data-allow-reorder="true" data-max-file-size="3MB" data-max-files="5">
+                                    </div>
+                                </div>
+                            </div> <!-- end card body -->
+
+                            <div class="border-top border-dashed"></div>
+
+                            <div class="card-body">
+                                <h4 class="card-title mb-2">Profile Picture</h4>
+
+                                <p class="text-muted">FilePond is a JavaScript library with profile picture-shaped file upload variation.</p>
+                                
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="avatar-xxl">
+                                            <input type="file" class="filepond filepond-input-circle" name="filepond" accept="image/png, image/jpeg, image/gif">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="avatar-xxl">
+                                            <input type="file" class="filepond filepond-input-circle rounded" name="filepond" accept="image/png, image/jpeg, image/gif">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end card body -->
+                        </div> <!-- end card -->
+
+
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+
+            </div> <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <!-- Dropzone Plugin Js -->
+    <script src="assets/plugins/dropzone/dropzone-min.js"></script>
+
+    <!-- Filepond Plugin Js -->
+    <script src="assets/plugins/filepond/filepond.min.js"></script>
+    <script src="assets/plugins/filepond/filepond-plugin-image-preview.min.js"></script>
+    <script src="assets/plugins/filepond/filepond-plugin-file-validate-size.min.js"></script>
+    <script src="assets/plugins/filepond/filepond-plugin-image-exif-orientation.min.js"></script>
+    <script src="assets/plugins/filepond/filepond-plugin-file-encode.min.js"></script>
+
+    <!-- File Upload Demo Js -->
+    <script src="assets/js/pages/form-fileupload.js"></script>
+
+</body>
+
+</html>

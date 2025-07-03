@@ -1,0 +1,169 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Pricing"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+                
+                @@include("./partials/page-title.html", {"subtitle": "Pages", "title":"Pricing"})
+
+                <div class="row justify-content-center">
+                    <div class="col-xxl-10">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <h3 class="fw-bold mt-4">Find the Perfect Fit</h3>
+                                    <div class="fs-24">
+                                        <i class="ti ti-arrow-left-rhombus text-primary"></i>
+                                        <i class="ti ti-arrow-right-rhombus text-primary"></i>
+                                    </div>
+                                    <p class="fst-italic fs-md">Not sure which plan suits you best? Check out our Pricing Guide for detailed insights.</p>
+                                </div>
+                                
+
+                                <div class="px-xxl-4 mt-5">
+                                    <div class="row">
+                                        <div class="col-lg-6 col-xl-4">
+                                            <div class="card h-100 bg-light bg-opacity-30 border-light rounded-4">
+                                                <div class="card-body px-lg-4 p-5 pb-2 text-center">
+                                                    <div class="text-center">
+                                                        <h3 class="fw-bold mb-1">Free Plan</h3>
+                                                        <p class="text-muted mb-0">Great for solo developers trying things out</p>
+                                                    </div>
+                                                    <div class="my-4">
+                                                        <h1 class="display-6 fw-bold mb-0">$0</h1>
+                                                        <small class="d-block text-muted fs-base fw-medium">No credit card required</small>
+                                                        <small class="d-block text-muted fw-medium">Free forever</small>
+                                                    </div>
+                                        
+                                                    <ul class="list-unstyled text-start fs-sm fw-medium mb-0">
+                                                        <li class="mb-2">
+                                                            <i class="ti ti-check text-success me-2 fs-5"></i> 1 user license
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="ti ti-check text-success me-2 fs-5"></i> Access to basic components
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="ti ti-check text-success me-2 fs-5"></i> Community support only
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="ti ti-check text-success me-2 fs-5"></i> Limited documentation
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="ti ti-x text-danger me-2 fs-5"></i> No commercial use
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <i class="ti ti-x text-danger me-2 fs-5"></i> No Figma/design files
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="card-footer bg-transparent border-0 px-5 pb-4">
+                                                    <a href="#!" class="btn btn-dark w-100 py-2 fw-semibold rounded-pill">Start Free</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-lg-6 col-xl-4">
+                                            <div class="card h-100 bg-light bg-opacity-30 border-success border-2 rounded-4">
+                                                <div class="card-body px-lg-4 p-5 pb-2 text-center">
+                                                    <div class="text-center">
+                                                        <h3 class="fw-bold mb-1">Pro Plan</h3>
+                                                        <p class="text-muted mb-0">Ideal for freelancers and small teams with commercial needs</p>
+                                                    </div>
+                                                    <div class="my-4">
+                                                        <h1 class="display-6 fw-bold mb-0">$129</h1>
+                                                        <small class="d-block text-muted fs-base fw-medium">One-time payment</small>
+                                                        <small class="d-block text-muted fw-medium">Plus applicable taxes</small>
+                                                    </div>
+                                        
+                                                    <ul class="list-unstyled text-start fs-sm fw-medium mb-0">
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> 3 user licenses</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Full component access</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Commercial project rights</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Email support</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Lifetime updates</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Figma design files</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="card-footer bg-transparent border-0 px-5 pb-4">
+                                                    <a href="#!" class="btn btn-primary w-100 py-2 fw-semibold rounded-pill">Upgrade Now</a>
+                                                </div>
+                                                <span class="position-absolute fs-xs top-0 start-50 translate-middle-x badge bg-primary-subtle text-primary rounded-pill px-3 py-2 mt-3">
+                                                    Popular Choice
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-lg-6 col-xl-4">
+                                            <div class="card h-100 bg-light bg-opacity-30 border-light rounded-4">
+                                                <div class="card-body px-lg-4 p-5 pb-2 text-center">
+                                                    <div class="text-center">
+                                                        <h3 class="fw-bold mb-1">Enterprise Plan</h3>
+                                                        <p class="text-muted mb-0">Best for companies with scaling teams and critical projects</p>
+                                                    </div>
+                                                    <div class="my-4">
+                                                        <h1 class="display-6 fw-bold mb-0">$499</h1>
+                                                        <small class="d-block text-muted fs-base fw-medium">One-time payment</small>
+                                                        <small class="d-block text-muted fw-medium">Includes extended support</small>
+                                                    </div>
+                                        
+                                                    <ul class="list-unstyled text-start fs-sm fw-medium mb-0">
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Unlimited users</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> All premium components & layouts</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Commercial & SaaS usage rights</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Dedicated support & onboarding</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Custom Figma UI kits</li>
+                                                        <li class="mb-2"><i class="ti ti-check text-success me-2 fs-5"></i> Priority feature requests</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="card-footer bg-transparent border-0 px-5 pb-4">
+                                                    <a href="#!" class="btn btn-dark w-100 py-2 fw-semibold rounded-pill">Contact Sales</a>
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                        
+                                    </div> <!-- end row-->
+                                </div> <!-- end padding classes-->
+
+
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                </div> <!-- end row-->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/vertical}">
+
+<head>
+
+    <th:block layout:fragment="page-meta" th:replace="~{partials/page-meta :: page-meta('Echart Radar Chart')}" />
+
+</head>
+
+<body>
+
+    <th:block layout:fragment="content">
+
+        <div class="container-fluid">
+
+            <th:block th:replace="~{partials/page-title :: page-title('Radar Echart','Charts')}" />
+
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Basic Radar Chart</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-basic-radar" style="min-height:300px"></div>
+                        </div>
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+
+                <div class="col-xl-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Proportion of Browsers</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-radar1" style="min-height:300px"></div>
+                        </div>
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Customized Radar Chart</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-radar2" style="min-height:300px"></div>
+                        </div>
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Multiple Radar Chart</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="chart-radar3" style="min-height:300px"></div>
+                        </div>
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+
+    </th:block>
+
+    <th:block layout:fragment="javascripts">
+
+        <!-- E Charts js -->
+        <script src="/plugins/echarts/echarts.min.js"></script>
+
+        <!-- E Charts Demo js -->
+        <script src="/js/pages/chart-echart-radar.js"></script>
+
+    </th:block>
+
+</body>
+
+</html>

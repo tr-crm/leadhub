@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" <%- html_attribute %> >
+<head>
+    <%- include('./title-meta') %>
+    <%- extra_css %>
+    <%- include ('./head-css') %>
+</head>
+
+<body <%- body_attribute %>>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <%- include('./sidenav') %>
+
+        <%- include('./topbar') %>
+
+        <div class="content-page">
+
+            <%- content %>
+
+            <%- include ('./footer') %>
+        </div>
+
+    </div>
+
+<%- include('./customizer') %>
+
+<%- include ('./footer-scripts') %>
+
+<%- extra_javascript %>
+</body>
+</html>

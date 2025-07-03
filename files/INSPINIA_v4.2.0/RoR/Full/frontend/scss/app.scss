@@ -1,0 +1,133 @@
+/**
+ * Template Name: INSPINIA - Multipurpose Admin & Dashboard Template
+ * By (Author): WebAppLayers
+ * Module/App (File Name): App CSS File
+ * Version: 4.2.0
+*/
+
+//css file
+@import "jsvectormap/dist/jsvectormap.min.css";
+@import "leaflet/dist/leaflet.css";
+
+@import "daterangepicker/daterangepicker.css";
+@import "@simonwep/pickr/dist/themes/classic.min.css";
+@import "@simonwep/pickr/dist/themes/monolith.min.css";
+@import "@simonwep/pickr/dist/themes/nano.min.css";
+@import "flatpickr/dist/flatpickr.min.css";
+@import url('https://cdnjs.cloudflare.com/ajax/libs/tagify/4.33.2/tagify.css');
+@import 'choices.js/public/assets/styles/choices.min.css';
+@import 'select2/dist/css/select2.min.css';
+@import 'nouislider/dist/nouislider.min.css';
+@import 'dropzone/dist/dropzone.css';
+@import 'filepond/dist/filepond.min.css';
+@import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+@import 'quill/dist/quill.bubble.css';
+@import 'quill/dist/quill.core.css';
+@import 'quill/dist/quill.snow.css';
+@import 'summernote/dist/summernote-bs5.min.css';
+@import 'datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css';
+@import 'datatables.net-select-bs5/css/select.bootstrap5.min.css';
+@import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
+@import 'datatables.net-fixedheader-bs5/css/fixedHeader.bootstrap5.min.css';
+@import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
+@import 'spinkit/spinkit.min.css';
+@import 'animate.css/animate.min.css';
+@import 'glightbox/dist/css/glightbox.min.css';
+@import 'ladda/dist/ladda.min.css';
+@import 'ladda/dist/ladda-themeless.min.css';
+@import 'sweetalert2/dist/sweetalert2.min.css';
+@import 'jstree/dist/themes/default/style.min.css';
+@import '@sjmc11/tourguidejs/dist/css/tour.min.css';
+
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.33.0/dist/tabler-icons.min.css');
+
+// Core files
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+@import "variables";
+@import "variables-dark";
+
+@import "bootstrap/scss/bootstrap";
+
+@import "config/root";
+@import "config/theme-classic"; // Default Theme
+@import "config/theme-saas";
+@import "config/theme-modern";
+@import "config/theme-material";
+@import "config/theme-minimal";
+@import "config/theme-flat";
+@import "config/theme-galaxy";
+
+// Structure
+@import "structure/topbar";
+@import "structure/sidenav";
+@import "structure/horizontal";
+@import "structure/layout";
+@import "structure/footer";
+
+// Components
+@import "components/background";
+@import "components/accordions";
+@import "components/alert";
+@import "components/avatar";
+@import "components/breadcrumb";
+@import "components/buttons";
+@import "components/badge";
+@import "components/card";
+@import "components/dropdown";
+@import "components/forms";
+@import "components/modal";
+@import "components/nav";
+@import "components/pagination";
+@import "components/popover";
+@import "components/print";
+@import "components/progress";
+@import "components/reboot";
+@import "components/tables";
+@import "components/tooltip";
+@import "components/preloader";
+@import "components/widgets";
+@import "components/list-group";
+
+
+// Pages
+@import "pages/authentication";
+@import "pages/chat";
+@import "pages/email";
+@import "pages/error";
+@import "pages/kanban-board";
+@import "pages/landing";
+@import "pages/outlook";
+@import "pages/pin-board";
+@import "pages/timeline";
+
+
+// Plugins
+@import "plugins/apexcharts";
+@import "plugins/calendar";
+@import "plugins/choice";
+@import "plugins/colorpicker";
+@import "plugins/datatables";
+@import "plugins/daterangepicker";
+@import "plugins/diff";
+@import "plugins/dropzone";
+@import "plugins/filepond";
+@import "plugins/flatpickr";
+@import "plugins/jvectormap";
+@import "plugins/ladda";
+@import "plugins/noui-rangeslider";
+@import "plugins/pass-bar";
+@import "plugins/prismjs";
+@import "plugins/quill-editor";
+@import "plugins/select2";
+@import "plugins/simplebar";
+@import "plugins/sortablejs";
+@import "plugins/summernote";
+@import "plugins/sweetalert2";
+@import "plugins/tagify";
+@import "plugins/touchpin";
+@import "plugins/tour";
+@import "plugins/treeview";
+@import "plugins/typehead";
+@import "plugins/wizard";

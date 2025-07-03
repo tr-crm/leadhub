@@ -1,0 +1,6 @@
+<div class="topbar-item d-none d-sm-flex">
+  <button (click)="toggleTheme()" class="topbar-link" type="button">
+    <lucide-icon [img]="Moon" *ngIf="layout.theme === 'light'" class="fs-xxl mode-light-moon"/>
+    <lucide-icon [img]="Sun" *ngIf="layout.theme === 'dark'" class="fs-xxl mode-light-sun"/>
+  </button>
+</div>

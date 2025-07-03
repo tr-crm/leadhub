@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" data-sidenav-size="compact">
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Compact Sidebar"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+            <div class="container-fluid">
+                @@include("./partials/page-title.html", {"title":"Compact Sidebar"})
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                            <i class="ti ti-info-circle fs-xxl"></i>
+                            <div>
+                                To enable the medium-sized (compact) sidebar, add
+                                <code>data-sidenav-size="compact"</code> to the
+                                <code>&lt;html&gt;</code> tag.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/footer-scripts.html')
+
+</body>
+
+</html>

@@ -1,0 +1,234 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Invoice Details"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+                
+                @@include("./partials/page-title.html", {"subtitle": "Invoices", "title":"Invoice Details"})
+
+                <div class="row justify-content-center">
+                    <div class="col-xxl-10">
+                        <div class="row">
+                            <div class="col-xl-9">
+                                <div class="card">
+                                    <div class="card-body px-4">
+                                        <!-- Invoice Header -->
+                                        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
+                                            <div class="auth-brand mb-0">
+                                                <a href="index.html" class="logo-dark">
+                                                    <img src="assets/images/logo-black.png" alt="dark logo" height="36">
+                                                </a>
+                                                <a href="index.html" class="logo-light">
+                                                    <img src="assets/images/logo.png" alt="logo" height="36">
+                                                </a>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-warning-subtle text-warning mb-2 fs-xs px-2 py-1">Pending</span>
+                                                <h4 class="fw-bold text-dark m-0">Invoice #INS-0120001</h4>
+                                            </div>
+                                        </div>
+                                    
+                                        <!-- Invoice Info -->
+                                        <div class="row">
+                                            <!-- From -->
+                                            <div class="col-4">
+                                                <h6 class="text-uppercase text-muted mb-2">From</h6>
+                                                <p class="mb-1 fw-semibold">Alina Thompson</p>
+                                                <p class="text-muted mb-1">88 Crescent Ave,<br>Boston, MA - 02125</p>
+                                                <p class="text-muted mb-0">Phone: 617-452-0099</p>
+                                                <div class="mt-4">
+                                                    <h6 class="text-uppercase text-muted">Invoice Date</h6>
+                                                    <p class="mb-0 fw-medium">20 Apr 2025</p>
+                                                </div>
+                                            </div>
+                                    
+                                            <!-- To -->
+                                            <div class="col-4">
+                                                <h6 class="text-uppercase text-muted mb-2">To</h6>
+                                                <p class="mb-1 fw-semibold">Daniel Moore</p>
+                                                <p class="text-muted mb-1">790 Westwood Blvd,<br>Los Angeles, CA - 90024</p>
+                                                <p class="text-muted mb-0">Phone: 310-555-1022</p>
+                                                <div class="mt-4">
+                                                    <h6 class="text-uppercase text-muted">Due Date</h6>
+                                                    <p class="mb-0 fw-medium">05 May 2025</p>
+                                                </div>
+                                            </div>
+                                    
+                                            <!-- Barcode -->
+                                            <div class="col-4 text-end">
+                                                <img src="assets/images/qr.png" alt="Barcode" class="img-fluid" style="max-height: 80px;">
+                                            </div>
+                                        </div>
+                                    
+                                        <!-- Product Table -->
+                                        <div class="table-responsive mt-4">
+                                            <table class="table table-bordered table-nowrap text-center align-middle">
+                                                <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                                    <tr class="text-uppercase fs-xxs">
+                                                        <th style="width: 50px;">#</th>
+                                                        <th class="text-start">Product Details</th>
+                                                        <th>Qty</th>
+                                                        <th>Unit Price</th>
+                                                        <th class="text-end">Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>01</td>
+                                                        <td class="text-start">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <div>
+                                                                    <strong>Figma Design System</strong>
+                                                                    <div class="text-muted small">(Desktop & Mobile UI Kit)</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>1</td>
+                                                        <td>$350.00</td>
+                                                        <td class="text-end">$350.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>02</td>
+                                                        <td class="text-start">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <div>
+                                                                    <strong>Node.js API Development</strong>
+                                                                    <div class="text-muted small">(User auth, dashboard APIs)</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>12</td>
+                                                        <td>$50.00</td>
+                                                        <td class="text-end">$600.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>03</td>
+                                                        <td class="text-start">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <div>
+                                                                    <strong>Bootstrap UI Setup</strong>
+                                                                    <div class="text-muted small">(Homepage, blog layout)</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>1</td>
+                                                        <td>$220.00</td>
+                                                        <td class="text-end">$220.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>04</td>
+                                                        <td class="text-start">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <div>
+                                                                    <strong>Firebase Setup</strong>
+                                                                    <div class="text-muted small">(Hosting & config)</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>1</td>
+                                                        <td>$100.00</td>
+                                                        <td class="text-end">$100.00</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    
+                                        <!-- Summary Table -->
+                                        <div class="d-flex justify-content-end">
+                                            <table class="table w-auto table-borderless text-end">
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="fw-medium">Subtotal</td>
+                                                        <td>$1,270.00</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium">Shipping</td>
+                                                        <td>Free</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium">Discount (5%)</td>
+                                                        <td class="text-danger">- $63.50</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium">Tax (7%)</td>
+                                                        <td>$84.42</td>
+                                                    </tr>
+                                                    <tr class="border-top pt-2 fs-5 fw-bold">
+                                                        <td>Total</td>
+                                                        <td>$1,290.92</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    
+                                        <!-- Note -->
+                                        <div class="mt-lg-4 mt-2 bg-light bg-opacity-50 rounded px-3 py-2">
+                                            <p class="mb-0 text-muted"><strong>Note:</strong> Please make payment within 10 days. For any billing inquiries, contact <a href="mailto:billing@alinadesignco.com" class="fw-medium">billing@alinadesignco.com</a>.</p>
+                                        </div>
+                                    
+                                        <!-- Footer -->
+                                        <div class="mt-4">
+                                            <p class="fw-semibold mb-3">Thank you for your business!</p>
+                                            <!-- <h4 class="fst-italic">WebAppLayers</h4> -->
+                                            <img src="assets/images/sign.png" alt="Company Logo" height="42">
+                                            <p class="text-muted fs-xxs fst-italic">Authorized Signature</p>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                </div> <!-- end card-->
+                            </div> <!-- end col-9-->
+
+                            <div class="col-xl-3 d-print-none">
+                                <div class="card card-top-sticky">
+                                    <div class="card-body">
+                                        <div class="justify-content-center d-flex flex-column gap-2">
+                                            <a href="javascript: void(0);" class="btn btn-light"><i class="ti ti-pencil me-1"></i> Edit</a>
+                                            <a href="javascript:window.print()" class="btn btn-primary"><i class="ti ti-printer me-1"></i> Print</a>
+                                            <a href="javascript: void(0);" class="btn btn-info"><i class="ti ti-download me-1"></i> Download</a>
+                                            <a href="javascript: void(0);" class="btn btn-danger btn-lg"><i class="ti ti-send me-1"></i> Send</a>
+                                        </div>
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div> <!-- end col-9-->
+                        </div> <!-- end row-->
+                    </div> <!-- end col-10-->
+                </div> <!-- end row-->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+</body>
+
+</html>

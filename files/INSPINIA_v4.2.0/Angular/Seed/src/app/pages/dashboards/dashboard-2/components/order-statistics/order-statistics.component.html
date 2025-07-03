@@ -1,0 +1,90 @@
+<div class="card">
+    <div class="card-header border-dashed card-tabs d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="card-title">Orders Statistics</h4>
+        </div>
+        <ul ngbNav #nav="ngbNav" class="nav nav-tabs nav-justified card-header-tabs nav-bordered">
+            <li ngbNavItem class="nav-item">
+                <a ngbNavLink class="nav-link">
+                    <ng-icon name="tablerHome" class="d-md-none d-block"/>
+                    <span class="d-none d-md-block">Today</span>
+                </a>
+                <ng-template ngbNavContent></ng-template> <!--tab content goes here-->
+            </li>
+            <li ngbNavItem class="nav-item">
+                <a ngbNavLink class="nav-link">
+                    <ng-icon name="tablerUserCircle" class="d-md-none d-block"/>
+                    <span class="d-none d-md-block">Monthly</span>
+                </a>
+                <ng-template ngbNavContent></ng-template> <!--tab content goes here-->
+            </li>
+            <li ngbNavItem class="nav-item">
+                <a ngbNavLink class="nav-link">
+                    <ng-icon name="tablerSettings" class="d-md-none d-block"/>
+                    <span class="d-none d-md-block">Annual</span>
+                </a>
+                <ng-template ngbNavContent></ng-template> <!--tab content goes here-->
+            </li>
+        </ul>
+    </div>
+    <div class="card-body p-0">
+        <div class="row g-0">
+            <div class="col-xxl-8 border-end border-dashed">
+                <app-echart [getOptions]="orderStatisticsChartOptions" height="405px"/>
+            </div>
+            <div class="col-xxl-4">
+
+                <div [ngbNavOutlet]="nav"></div> <!--tab content will be added here-->
+
+                <div class="p-3 bg-light-subtle border-bottom border-dashed">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="fs-sm mb-1">Would you like the full report?</h4>
+                            <small class="text-muted fs-xs mb-0">
+                                All 120 orders have been successfully delivered
+                            </small>
+                        </div>
+                        <div class="col-auto align-self-center">
+                            <button type="button" class="btn btn-sm btn-default rounded-circle btn-icon" placement="top"
+                                    ngbTooltip="Download">
+                                <ng-icon name="tablerDownload" class="fs-xl"/>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row-cols-xxl-2 row-cols-md-2 row-cols-1 g-1 p-1">
+
+                    <div *ngFor="let item of orderStatistics" class="col">
+                        <div class="card rounded-0 border shadow-none border-dashed mb-0">
+                            <div class="card-body">
+                                <div class="mb-3 d-flex justify-content-between align-items-center">
+                                    <h5 class="fs-xl mb-0">{{ item.prefix }}{{ item.value }}{{ item.suffix }}</h5>
+                                    <span>{{ item.growth }}%
+                                        <ng-icon *ngIf="item.growth > 20" name="tablerBolt"
+                                                 class="text-success"/>
+                                        <ng-icon *ngIf="item.growth > 0 && item.growth < 20" name="tablerArrowUp"
+                                                 class="text-success"/>
+                                        <ng-icon *ngIf="item.growth < 0" name="tablerArrowDown"
+                                                 class="text-danger"/>
+                                    </span>
+                                </div>
+                                <p class="text-muted mb-2"><span>{{ item.description }}</span></p>
+
+                                <ngb-progressbar height="5px" type="secondary" [value]="Math.abs(item.growth)"
+                                                 class="mb-0"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center my-3">
+                    <a routerLink="/apps/chat"
+                       class="link-reset text-decoration-underline fw-semibold link-offset-3 d-flex">
+                        View all Reports
+                        <ng-icon name="tablerSend2"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

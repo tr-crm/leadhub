@@ -1,0 +1,1392 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Widgets"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+                
+                @@include("./partials/page-title.html", {"title":"Widgets"})
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1 g-3 align-items-center">
+                                    <div class="col">
+                                        <div class="card border-0 bg-success bg-opacity-10 shadow-none mb-0">
+                                            <div class="card-body">
+                                                <h5 title="Number of Orders">Orders</h5>
+                                                <div class="d-flex align-items-center gap-2 my-3">
+                                                    <div class="avatar-md flex-shrink-0">
+                                                        <span class="avatar-title text-bg-success bg-opacity-90 rounded-circle fs-22">
+                                                            <i class="ti ti-shopping-cart"></i>
+                                                        </span>
+                                                    </div>
+                                                    <h3 class="mb-0">1,250</h3>
+                                                </div>
+                                                <p class="mb-0">
+                                                    <span class="text-success"><i class="ti ti-point-filled"></i></span>
+                                                    <span class="text-nowrap text-muted">Total Orders</span>
+                                                    <span class="float-end"><b>15,320</b></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="col">
+                                        <div class="card border-0 bg-warning bg-opacity-10 shadow-none mb-0">
+                                            <div class="card-body">
+                                                <h5 title="Revenue Earned">Revenue</h5>
+                                                <div class="d-flex align-items-center gap-2 my-3">
+                                                    <div class="avatar-md flex-shrink-0">
+                                                        <span class="avatar-title text-bg-warning bg-opacity-90 rounded-circle fs-22">
+                                                            <i class="ti ti-currency-dollar"></i>
+                                                        </span>
+                                                    </div>
+                                                    <h3 class="mb-0">$98.7k</h3>
+                                                </div>
+                                                <p class="mb-0">
+                                                    <span class="text-primary"><i class="ti ti-point-filled"></i></span>
+                                                    <span class="text-nowrap text-muted">Total Revenue</span>
+                                                    <span class="float-end"><b>$1.2M</b></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="col">
+                                        <div class="card border-0 bg-info bg-opacity-10 shadow-none mb-0">
+                                            <div class="card-body">
+                                                <h5 title="Seller Ratings">Ratings</h5>
+                                                <div class="d-flex align-items-center gap-2 my-3">
+                                                    <div class="avatar-md flex-shrink-0">
+                                                        <span class="avatar-title text-bg-info bg-opacity-90 rounded-circle fs-22">
+                                                            <i class="ti ti-star"></i>
+                                                        </span>
+                                                    </div>
+                                                    <h3 class="mb-0">4.8</h3>
+                                                </div>
+                                                <p class="mb-0">
+                                                    <span class="text-info"><i class="ti ti-point-filled"></i></span>
+                                                    <span class="text-nowrap text-muted">Average Rating</span>
+                                                    <span class="float-end"><b>5k Reviews</b></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="col">
+                                        <div class="card border-0 bg-secondary bg-opacity-10 shadow-none mb-0">
+                                            <div class="card-body">
+                                                <h5 title="Total Products">Products</h5>
+                                                <div class="d-flex align-items-center gap-2 my-3">
+                                                    <div class="avatar-md flex-shrink-0">
+                                                        <span class="avatar-title text-bg-secondary bg-opacity-90 rounded-circle fs-22">
+                                                            <i class="ti ti-box"></i>
+                                                        </span>
+                                                    </div>
+                                                    <h3 class="mb-0">350</h3>
+                                                </div>
+                                                <p class="mb-0">
+                                                    <span class="text-secondary"><i class="ti ti-point-filled"></i></span>
+                                                    <span class="text-nowrap text-muted">Total Products</span>
+                                                    <span class="float-end"><b>750 Variants</b></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end row -->
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col -->
+                </div> <!-- end row-->
+
+                <div class="row">
+                    <div class="col-xl-4">
+                        <div class="card">
+                            <div class="card-body p-0">
+                                <div class="p-3 bg-light-subtle border-bottom border-dashed">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h4 class="fs-sm mb-1">Would you like the full report?</h4>
+                                            <small class="text-muted fs-xs mb-0">
+                                                All 120 orders have been successfully delivered
+                                            </small>
+                                        </div>
+                                        <div class="col-auto align-self-center">
+                                            <button type="button" class="btn btn-sm btn-default rounded-circle btn-icon" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Download">
+                                                <i class="ti ti-download fs-xl"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row row-cols-xxl-2 row-cols-md-2 row-cols-1 g-1 p-1">
+                                    <!-- Total Sales Widget -->
+                                    <div class="col">
+                                        <div class="card bg-primary border-primary shadow-none bg-opacity-10 rounded-0 border border-dashed mb-0">
+                                            <div class="card-body">
+                                                <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                    <h5 class="fs-xl mb-0">$24,500</h5>
+                                                    <span>18.45% <i class="ti ti-arrow-up text-success"></i></span>
+                                                </div>
+                                                <p class="text-muted mb-2"><span>Total sales in period</span></p>
+                                                <div class="progress bg-primary bg-opacity-25 progress-sm mb-0">
+                                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 18.45%" aria-valuenow="18.45" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- end col -->
+
+                                    <!-- Number of Customers Widget -->
+                                    <div class="col">
+                                        <div class="card rounded-0 border shadow-none border-dashed mb-0">
+                                            <div class="card-body">
+                                                <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                    <h5 class="fs-xl mb-0">1,240</h5>
+                                                    <span>10.35% <i class="ti ti-arrow-down text-danger"></i></span>
+                                                </div>
+                                                <p class="text-muted mb-2"><span>Number of customers</span></p>
+                                                <div class="progress progress-sm mb-0">
+                                                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 10.35%" aria-valuenow="10.35" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- end col -->
+
+                                    <!-- Average Order Value Widget -->
+                                    <div class="col">
+                                        <div class="card rounded-0 border shadow-none border-dashed mb-0">
+                                            <div class="card-body">
+                                                <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                    <h5 class="fs-xl mb-0">$65.49 <small class="fs-6">USD</small></h5>
+                                                    <span>5.92% <i class="ti ti-arrow-up text-success"></i></span>
+                                                </div>
+                                                <p class="text-muted mb-2"><span>Average order value</span></p>
+                                                <div class="progress progress-sm mb-0">
+                                                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 5.92%" aria-valuenow="5.92" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- end col -->
+
+                                    <!-- Products Sold Widget -->
+                                    <div class="col">
+                                        <div class="card bg-secondary shadow-none border-secondary bg-opacity-10 rounded-0 border border-dashed mb-0">
+                                            <div class="card-body">
+                                                <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                    <h5 class="fs-xl mb-0">3,750</h5>
+                                                    <span>22.61% <i class="ti ti-bolt text-primary"></i></span>
+                                                </div>
+                                                <p class="text-muted mb-2 text-truncate"><span>Products sold in the period</span></p>
+                                                <div class="progress bg-secondary bg-opacity-25 progress-sm mb-0">
+                                                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 22.61%" aria-valuenow="22.61" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- end col -->
+
+                                    <!-- Total Sales Widget -->
+                                    <div class="col">
+                                        <div class="card bg-warning bg-opacity-10 shadow-none rounded-0 border border-warning border-dashed mb-0">
+                                            <div class="card-body">
+                                                <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                    <h5 class="fs-xl mb-0">$24,500</h5>
+                                                    <span>18.45% <i class="ti ti-arrow-up text-success"></i></span>
+                                                </div>
+                                                <p class="text-muted mb-2"><span>Total sales in period</span></p>
+                                                <div class="progress bg-warning bg-opacity-25 progress-sm mb-0">
+                                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 18.45%" aria-valuenow="18.45" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- end col -->
+
+                                    <!-- Number of Customers Widget -->
+                                    <div class="col">
+                                        <div class="card rounded-0 border shadow-none border-dashed mb-0">
+                                            <div class="card-body">
+                                                <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                    <h5 class="fs-xl mb-0">1,240</h5>
+                                                    <span>10.35% <i class="ti ti-arrow-down text-danger"></i></span>
+                                                </div>
+                                                <p class="text-muted mb-2"><span>Number of customers</span></p>
+                                                <div class="progress progress-sm mb-0">
+                                                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 10.35%" aria-valuenow="10.35" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- end col -->
+                                </div><!-- end row -->
+
+                                <div class="text-center my-2">
+                                    <a href="#!" class="link-reset text-decoration-underline fw-semibold link-offset-3">
+                                        View all Links <i class="ti ti-link"></i>
+                                    </a>
+                                </div>
+
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+
+                    </div> <!-- end col-->
+
+                    <div class="col-xxl-4 col-lg-6">
+                        <div class="card">
+                            <div class="card-header justify-content-between align-items-center">
+                                <h5 class="card-title">Traffic Sources</h5>
+                                <div class="card-action">
+                                    <a href="#!" class="card-action-item" data-action="card-toggle"><i class="ti ti-chevron-up"></i></a>
+                                    <a href="#!" class="card-action-item" data-action="card-refresh"><i class="ti ti-refresh"></i></a>
+                                    <a href="#!" class="card-action-item" data-action="card-close"><i class="ti ti-x"></i></a>
+                                </div>
+                            </div>
+                        
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-lg">
+                                        <h3 class="mb-2 fw-bold"><span data-target="8,975">0</span></h3>
+                                        <p class="mb-2 fw-semibold text-muted">Right Now</p>
+                                    </div><!--end col-->
+                                    <div class="col-lg-auto align-self-center">
+                                        <ul class="list-unstyled mb-0 lh-lg">
+                                            <li>
+                                                <i class="ti ti-caret-right-filled fs-lg align-middle text-primary"></i>
+                                                <span class="text-muted">Organic</span>
+                                            </li>
+                                            <li>
+                                                <i class="ti ti-caret-right-filled fs-lg align-middle text-success"></i>
+                                                <span class="text-muted">Direct</span>
+                                            </li>
+                                            <li>
+                                                <i class="ti ti-caret-right-filled fs-lg align-middle"></i>
+                                                <span class="text-muted">Campaign</span>
+                                            </li>
+                                        </ul>
+                                    </div><!--end col-->
+                                </div><!--end row-->
+                                <div class="progress mb-3" style="height: 20px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-custom table-nowrap table-hover table-centered mb-0">
+                                        <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                            <tr class="text-uppercase fs-xxs">
+                                                <th class="text-muted">URL</th>
+                                                <th class="text-muted text-end">Views</th>
+                                                <th class="text-muted text-end">Uniques</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-decoration-underline">/dashboard</td>
+                                                <td class="text-end">9.8k</td>
+                                                <td class="text-end">8.5k</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-decoration-underline">/ecommerce-index</td>
+                                                <td class="text-end">8.2k</td>
+                                                <td class="text-end">7.1k</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-decoration-underline">/apps/projects-overview</td>
+                                                <td class="text-end">7.6k</td>
+                                                <td class="text-end">6.2k</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-decoration-underline">/pages/contact</td>
+                                                <td class="text-end">5.9k</td>
+                                                <td class="text-end">4.8k</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-decoration-underline">/support/faq</td>
+                                                <td class="text-end">5.2k</td>
+                                                <td class="text-end">4.3k</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-decoration-underline">/login</td>
+                                                <td class="text-end">4.7k</td>
+                                                <td class="text-end">3.9k</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div> <!-- ed .table-responsive-->
+                                <div class="text-end mt-3">
+                                    <a href="chat.html" class="link-reset text-decoration-underline fw-semibold link-offset-3">
+                                        View all Links <i class="ti ti-link"></i>
+                                    </a>
+                                </div>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                        
+                    </div> <!-- end col-->
+
+                    <div class="col-xxl-4 col-lg-6">
+                        <div class="card">
+                            <div class="card-header justify-content-between align-items-center">
+                                <h4 class="card-title">Top 10 Countries</h4>
+                                <div class="card-action">
+                                    <a href="#!" class="card-action-item" data-action="card-toggle"><i class="ti ti-chevron-up"></i></a>
+                                    <a href="#!" class="card-action-item" data-action="card-refresh"><i class="ti ti-refresh"></i></a>
+                                    <a href="#!" class="card-action-item" data-action="card-close"><i class="ti ti-x"></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">01.</span> 
+                                    <img src="assets/images/flags/de.svg" alt="Germany" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">Germany</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">10,412</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-success mb-0">+1.5%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">02.</span> 
+                                    <img src="assets/images/flags/fr.svg" alt="France" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">France</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">8,934</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-danger mb-0">-0.8%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">03.</span> 
+                                    <img src="assets/images/flags/in.svg" alt="India" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">India</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">14,217</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-success mb-0">+3.2%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">04.</span> 
+                                    <img src="assets/images/flags/us.svg" alt="United States" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">United States</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">18,522</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-success mb-0">+2.1%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">05.</span> 
+                                    <img src="assets/images/flags/gb.svg" alt="United Kingdom" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">United Kingdom</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">7,614</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-danger mb-0">-1.2%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">06.</span> 
+                                    <img src="assets/images/flags/ca.svg" alt="Canada" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">Canada</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">6,221</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-success mb-0">+0.9%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">07.</span> 
+                                    <img src="assets/images/flags/jp.svg" alt="Japan" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">Japan</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">5,785</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-warning mb-0">0.0%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">08.</span> 
+                                    <img src="assets/images/flags/au.svg" alt="Australia" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">Australia</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">4,918</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-success mb-0">+1.1%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">09.</span> 
+                                    <img src="assets/images/flags/br.svg" alt="Brazil" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">Brazil</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">3,874</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-danger mb-0">-0.5%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fs-sm fw-medium fst-italic text-muted">10.</span> 
+                                    <img src="assets/images/flags/it.svg" alt="Italy" class="avatar-xxs rounded">
+                                    <h5 class="mb-0 fw-medium"><a href="#!" class="link-reset">Italy</a></h5>
+                                    <div class="ms-auto">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <p class="mb-0 fw-medium">4,105</p>
+                                            <p class="badge badge-label fs-xxs badge-soft-success mb-0">+0.7%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <a href="chat.html" class="link-reset text-decoration-underline fw-semibold link-offset-3">
+                                        View all Countries <i class="ti ti-world"></i>
+                                    </a>
+                                </div>
+                            </div> <!-- end card-body -->                                                                        
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                </div> <!-- end row-->
+
+
+                <div class="row">
+                    <div class="col-xl-4">
+                        <div class="card border-top-0">
+                            <div class="position-relative card-side-img overflow-hidden rounded-top" style="height: 180px; background-image: url(assets/images/profile-bg.jpg);">
+                                <div class="p-4 card-img-overlay rounded-start-0 auth-overlay d-flex rounded-top align-items-center justify-content-center">
+                                    <h5 class="text-white m-0 fst-italic">"Welcome!"</h5>
+                                </div>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body position-relative">
+                                <div class="d-flex justify-content-start gap-3">
+                                    <div class="avatar avatar-xxl" style="margin-top: -60px;">
+                                        <a href="pages-profile.html">
+                                            <img src="assets/images/users/user-2.jpg" alt="User Profile" class="img-fluid img-thumbnail rounded-circle">
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-nowrap fw-bold mb-1">
+                                            <a href="pages-profile.html" class="text-reset text-decoration-none">Damian D.</a>
+                                        </h4>
+                                        <p class="text-muted mb-0">Member since Jan 2021</p>
+                                    </div>
+                                    <button class="btn btn-icon btn-primary rounded-circle ms-auto" data-bs-toggle="dropdown" style="margin-top: -40px;">
+                                        <i class="ti ti-dots fs-24"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#!">Edit Profile</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#!">Report</a></li>
+                                    </ul>
+                                </div> 
+                            </div> <!-- card-body-->
+                        </div> <!-- end card-->
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex border border-dashed rounded p-3">
+                                    <div class="flex-shrink-0">
+                                        <img src="assets/images/users/user-8.jpg" alt="" class="avatar-sm rounded-circle shadow-sm">
+                                    </div>
+                                    <div class="flex-grow-1 ms-2">
+                                        <h5 class="mb-1">Liam Carter <small class="text-muted">15 Apr 2025 · 09:20AM</small></h5>
+                                        <p class="mb-2">Loving the new dashboard update! The UI feels much smoother and more intuitive now. Great job!</p>
+
+                                        <div class="d-flex justify-content-between mt-2 text-muted">
+                                            <div class="d-flex gap-3">
+                                                <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-eye"></i> 1.2K</span>
+                                                <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-heart"></i> 320</span>
+                                                <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-message-circle-2"></i> 14</span>
+                                            </div>
+                                            <a href="javascript:void(0);" class="link-primary fw-semibold d-inline-flex align-items-center gap-1">
+                                                <i class="ti ti-arrow-back-up"></i> Reply
+                                            </a>
+                                        </div>
+
+                                        <!-- Nested Comment -->
+                                        <div class="d-flex mt-4">
+                                            <div class="flex-shrink-0">
+                                                <img src="assets/images/users/user-10.jpg" alt="" class="avatar-sm rounded-circle shadow-sm">
+                                            </div>
+                                            <div class="flex-grow-1 ms-2">
+                                                <h5 class="mb-1">Nina Bryant <small class="text-muted">15 Apr 2025 · 10:00AM</small></h5>
+                                                <p class="mb-2">Totally agree! The load speed is noticeably faster too.</p>
+
+                                                <div class="d-flex justify-content-between text-muted">
+                                                    <div class="d-flex gap-3">
+                                                        <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-eye"></i> 860</span>
+                                                        <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-heart"></i> 150</span>
+                                                        <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-message-circle-2"></i> 6</span>
+                                                    </div>
+                                                    <a href="javascript:void(0);" class="link-primary fw-semibold d-inline-flex align-items-center gap-1">
+                                                        <i class="ti ti-arrow-back-up"></i> Reply
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Another Nested Comment -->
+                                        <div class="d-flex mt-4">
+                                            <div class="flex-shrink-0">
+                                                <img src="assets/images/users/user-3.jpg" alt="" class="avatar-sm rounded-circle shadow-sm">
+                                            </div>
+                                            <div class="flex-grow-1 ms-2">
+                                                <h5 class="mb-1">Sophie Allen <small class="text-muted">15 Apr 2025 · 12:10PM</small></h5>
+                                                <p class="mb-2">Hope we get more dark mode themes next!</p>
+
+                                                <div class="d-flex justify-content-between text-muted">
+                                                    <div class="d-flex gap-3">
+                                                        <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-eye"></i> 580</span>
+                                                        <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-heart"></i> 90</span>
+                                                        <span class="d-inline-flex align-items-center gap-1"><i class="ti ti-message-circle-2"></i> 3</span>
+                                                    </div>
+                                                    <a href="javascript:void(0);" class="link-primary fw-semibold d-inline-flex align-items-center gap-1">
+                                                        <i class="ti ti-arrow-back-up"></i> Reply
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div> <!-- end comment box-->
+
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col-xl-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Chat</h4>
+                            </div> <!-- end card-header-->
+
+                            <div class="card-body py-0" style="height: 380px;" id="chat-container" data-simplebar data-simplebar-md>
+
+                                <!-- Message 1 -->
+                                <div class="d-flex align-items-start gap-2 my-3 chat-item">
+                                    <img src="assets/images/users/user-5.jpg" class="avatar-md rounded-circle" alt="User">
+                                    <div>
+                                        <div class="chat-message py-2 px-3 bg-warning-subtle rounded">
+                                            Hey! Are you available for a quick call? 📞
+                                        </div>
+                                        <div class="text-muted fs-xs mt-1"><i class="ti ti-clock"></i> 08:55 am</div>
+                                    </div>
+                                </div>
+                            
+                                <!-- Message 2 -->
+                                <div class="d-flex align-items-start gap-2 my-3 text-end chat-item justify-content-end">
+                                    <div>
+                                        <div class="chat-message py-2 px-3 bg-info-subtle rounded">
+                                            Sure, give me 5 minutes. Just wrapping something up.
+                                        </div>
+                                        <div class="text-muted fs-xs mt-1"><i class="ti ti-clock"></i> 08:57 am</div>
+                                    </div>
+                                    <img src="assets/images/users/user-2.jpg" class="avatar-md rounded-circle" alt="User">
+                                </div>
+                            
+                                <!-- Message 3 -->
+                                <div class="d-flex align-items-start gap-2 my-3 chat-item">
+                                    <img src="assets/images/users/user-5.jpg" class="avatar-md rounded-circle" alt="User">
+                                    <div>
+                                        <div class="chat-message py-2 px-3 bg-warning-subtle rounded">
+                                            Perfect. Let me know when you're ready 👍
+                                        </div>
+                                        <div class="text-muted fs-xs mt-1"><i class="ti ti-clock"></i> 08:58 am</div>
+                                    </div>
+                                </div>
+                            
+                                <!-- Message 4 -->
+                                <div class="d-flex align-items-start gap-2 my-3 text-end chat-item justify-content-end">
+                                    <div>
+                                        <div class="chat-message py-2 px-3 bg-info-subtle rounded">
+                                            Ready now. Calling you!
+                                        </div>
+                                        <div class="text-muted fs-xs mt-1"><i class="ti ti-clock"></i> 09:00 am</div>
+                                    </div>
+                                    <img src="assets/images/users/user-2.jpg" class="avatar-md rounded-circle" alt="User">
+                                </div>
+                            
+                                <!-- Message 5 -->
+                                <div class="d-flex align-items-start gap-2 my-3 chat-item">
+                                    <img src="assets/images/users/user-5.jpg" class="avatar-md rounded-circle" alt="User">
+                                    <div>
+                                        <div class="chat-message py-2 px-3 bg-warning-subtle rounded">
+                                            Thanks for your time earlier!
+                                        </div>
+                                        <div class="text-muted fs-xs mt-1"><i class="ti ti-clock"></i> 09:45 am</div>
+                                    </div>
+                                </div>
+                            
+                                <!-- Message 6 -->
+                                <div class="d-flex align-items-start gap-2 my-3 text-end chat-item justify-content-end">
+                                    <div>
+                                        <div class="chat-message py-2 px-3 bg-info-subtle rounded">
+                                            Of course! It was a productive discussion.
+                                        </div>
+                                        <div class="text-muted fs-xs mt-1"><i class="ti ti-clock"></i> 09:46 am</div>
+                                    </div>
+                                    <img src="assets/images/users/user-2.jpg" class="avatar-md rounded-circle" alt="User">
+                                </div>
+                            
+                                <!-- Message 7 -->
+                                <div class="d-flex align-items-start gap-2 my-3 chat-item">
+                                    <img src="assets/images/users/user-5.jpg" class="avatar-md rounded-circle" alt="User">
+                                    <div>
+                                        <div class="chat-message py-2 px-3 bg-warning-subtle rounded">
+                                            I’ll send over the updated files by noon.
+                                        </div>
+                                        <div class="text-muted fs-xs mt-1"><i class="ti ti-clock"></i> 09:50 am</div>
+                                    </div>
+                                </div>
+                            
+                            </div> <!-- end card-body -->   
+                            
+                            <div class="card-footer bg-body-secondary border-top border-dashed border-bottom-0">
+                                <div class="d-flex gap-2">
+                                    <div class="app-search flex-grow-1">
+                                        <input type="text" class="form-control bg-light-subtle border-light" placeholder="Enter message...">
+                                        <i data-lucide="message-square" class="app-search-icon text-muted"></i>
+                                    </div> 
+                                    <a href="#!" class="btn btn-primary btn-icon"><i class="ti ti-send-2 fs-xl"></i></a>
+                                </div>
+                            </div>
+                        </div> <!-- end card-->
+
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="card text-bg-purple">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3 gap-2">
+                                            <div class="avatar-md">
+                                                <span class="avatar-title bg-light bg-opacity-20 text-white rounded-circle fs-xl">
+                                                    <i class="ti ti-phone"></i>
+                                                </span>
+                                            </div>
+                                            <p class="mb-0 fw-semibold">PHONE</p>
+                                        </div>
+                                        <h5 class="mb-1 text-white text-opacity-75">+1 800 123 4567</h5>
+                                        <h5 class="mb-0 text-white text-opacity-75">+1 800 765 4321</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="card text-bg-success">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3 gap-2">
+                                            <div class="avatar-md">
+                                                <span class="avatar-title bg-light bg-opacity-20 text-white rounded-circle fs-xl">
+                                                    <i class="ti ti-mail"></i>
+                                                </span>
+                                            </div>
+                                            <p class="mb-0 fw-semibold">EMAIL</p>
+                                        </div>
+                                        <h5 class="mb-1 text-white text-opacity-75">support@example.com</h5>
+                                        <h5 class="mb-0 text-white text-opacity-75">sales@example.com</h5>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> <!-- end col-->
+
+                    <div class="col-xl-4">
+                        <div class="card">
+                            <div class="card-header justify-content-between">
+                                <h4 class="card-title">File Manage</h4>
+                                <a href="javascript: void(0);" class="btn btn-light btn-sm btn-icon rounded-circle"><i class="ti ti-plus"></i></a>
+                            </div> <!-- end card-header-->
+
+                            <div class="card-body">
+                                <!-- File Item -->
+                                <div class="d-flex justify-content-between align-items-center pb-2">
+                                    <div class="d-flex align-items-center py-1 gap-2">
+                                        <div class="flex-shrink-0 avatar-md bg-light bg-opacity-50 text-muted rounded-2">
+                                            <i class="ti ti-file-text fs-xl avatar-title"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1 fs-base"><a href="#!" class="link-reset">Meeting-Notes.docx</a></h5>
+                                            <p class="text-muted mb-0 fs-xs">1.2MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="avatar-group avatar-group-xs">
+                                        <div class="avatar"><img src="assets/images/users/user-4.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-7.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-1.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-2.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                    </div>
+                                    <div>
+                                        <a href="#" class="btn btn-sm btn-icon btn-default" title="Download"><i class="ti ti-download fs-lg"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- File Item -->
+                                <div class="d-flex justify-content-between align-items-center pb-2">
+                                    <div class="d-flex align-items-center py-1 gap-2">
+                                        <div class="flex-shrink-0 avatar-md bg-light bg-opacity-50 text-muted rounded-2">
+                                            <i class="ti ti-file-type-pdf fs-xl avatar-title"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1 fs-base"><a href="#!" class="link-reset">Design-Specs.pdf</a></h5>
+                                            <p class="text-muted mb-0 fs-xs">3.6MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="avatar-group avatar-group-xs">
+                                        <div class="avatar"><img src="assets/images/users/user-8.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-2.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-6.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-9.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-10.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                    </div>
+                                    <div>
+                                        <a href="#" class="btn btn-sm btn-icon btn-default" title="Download"><i class="ti ti-download fs-lg"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- File Item -->
+                                <div class="d-flex justify-content-between align-items-center pb-2">
+                                    <div class="d-flex align-items-center py-1 gap-2">
+                                        <div class="flex-shrink-0 avatar-md bg-light bg-opacity-50 text-muted rounded-2">
+                                            <i class="ti ti-file-type-zip fs-xl avatar-title"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1 fs-base"><a href="#!" class="link-reset">Assets-Package.zip</a></h5>
+                                            <p class="text-muted mb-0 fs-xs">7.4MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="avatar-group avatar-group-xs">
+                                        <div class="avatar"><img src="assets/images/users/user-1.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-6.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                    </div>
+                                    <div>
+                                        <a href="#" class="btn btn-sm btn-icon btn-default" title="Download"><i class="ti ti-download fs-lg"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- File Item -->
+                                <div class="d-flex justify-content-between align-items-center pb-2">
+                                    <div class="d-flex align-items-center py-1 gap-2">
+                                        <div class="flex-shrink-0 avatar-md bg-light bg-opacity-50 text-muted rounded-2">
+                                            <i class="ti ti-file-type-ppt fs-xl avatar-title"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1 fs-base"><a href="#!" class="link-reset">Marketing-Plan.pptx</a></h5>
+                                            <p class="text-muted mb-0 fs-xs">5.0MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="avatar-group avatar-group-xs">
+                                        <div class="avatar"><img src="assets/images/users/user-10.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-4.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-1.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-3.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                        <div class="avatar"><img src="assets/images/users/user-6.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                    </div>
+                                    <div>
+                                        <a href="#" class="btn btn-sm btn-icon btn-default" title="Download"><i class="ti ti-download fs-lg"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- File Item -->
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center py-1 gap-2">
+                                        <div class="flex-shrink-0 avatar-md bg-light bg-opacity-50 text-muted rounded-2">
+                                            <i class="ti ti-photo fs-xl avatar-title"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1 fs-base"><a href="#!" class="link-reset">Wireframe.png</a></h5>
+                                            <p class="text-muted mb-0 fs-xs">820KB</p>
+                                        </div>
+                                    </div>
+                                    <div class="avatar-group avatar-group-xs">
+                                        <div class="avatar"><img src="assets/images/users/user-9.jpg" class="rounded-circle avatar-xs" alt=""></div>
+                                    </div>
+                                    <div>
+                                        <a href="#" class="btn btn-sm btn-icon btn-default" title="Download"><i class="ti ti-download fs-lg"></i></a>
+                                    </div>
+                                </div>
+                            </div><!-- end card-body-->
+                        </div> <!-- end card-->
+
+                        <div class="card">
+                            <div class="card-header justify-content-between">
+                                <h4 class="card-title">Today's Schedule</h4>
+                                <a href="javascript: void(0);" class="link-primary fw-semibold"><i class="ti ti-calendar me-1"></i><span>Invite</span></a>
+                            </div> <!-- end card-header-->
+
+                            <div class="card-body">
+                                <div class="pb-2 border-bottom border-light border-dashed">
+                                    <div class="mb-2">
+                                        <p class="mb-1 text-truncate fs-sm fw-medium">Design Review Meeting</p>
+                                        <span class="text-warning fs-xs">30 minute session with UI/UX team</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="avatar-group avatar-group-xs">
+                                            <div class="avatar">
+                                                <img src="assets/images/users/user-5.jpg" alt="Liam Carter" class="avatar-xs rounded-circle">
+                                            </div>
+                                            <div class="avatar">
+                                                <img src="assets/images/users/user-6.jpg" alt="Zoe Miles" class="avatar-xs rounded-circle">
+                                            </div>
+                                            <div class="avatar avatar-xs">
+                                                <span class="avatar-title bg-primary-subtle text-primary rounded-circle fw-bold">
+                                                    D
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-soft-secondary rounded-circle btn-icon">
+                                            <i class="ti ti-brand-figma fs-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="py-2 border-bottom border-light border-dashed">
+                                    <div class="mb-2">
+                                        <p class="mb-1 text-truncate fs-sm fw-medium">Sprint Planning Session</p>
+                                        <span class="text-success fs-xs">1 hour agile team meeting</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="avatar-group avatar-group-xs">
+                                            <div class="avatar">
+                                                <img src="assets/images/users/user-7.jpg" alt="Ava Lee" class="avatar-xs rounded-circle">
+                                            </div>
+                                            <div class="avatar">
+                                                <img src="assets/images/users/user-8.jpg" alt="Ethan King" class="avatar-xs rounded-circle">
+                                            </div>
+                                            <div class="avatar">
+                                                <img src="assets/images/users/user-9.jpg" alt="Lucas White" class="avatar-xs rounded-circle">
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-soft-secondary rounded-circle btn-icon">
+                                            <i class="ti ti-calendar-event fs-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>  
+                            </div><!-- end card-body-->
+                        </div> <!-- end card-->
+
+                    </div>
+                </div> <!-- end row-->
+
+
+                <div class="row row-cols-xxl-5 row-cols-md-3 row-cols-1 align-items-center">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i class="ti ti-external-link"></i></a>
+                                <h5 title="Number of Tasks">My Tasks</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title text-bg-light rounded-circle fs-22">
+                                            <i class="ti ti-checklist"></i>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0"><span data-target="124">0</span></h3>
+                                    <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+3 New</span>
+                                </div>
+                                <p class="mb-0">
+                                    <span class="text-primary"><i class="ti ti-point-filled"></i></span>
+                                    <span class="text-nowrap text-muted">Total Tasks</span>
+                                    <span class="float-end"><b>12,450</b></span>
+                                </p>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i class="ti ti-external-link"></i></a>
+                                <h5 title="Number of Messages">Messages</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title text-bg-purple rounded-circle fs-22">
+                                            <i class="ti ti-message-circle"></i>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0"><span data-target="69.5">0</span>k</h3>
+                                    <span class="badge badge-soft-secondary fw-medium ms-2 fs-xs ms-auto">+5 New</span>
+                                </div>
+                                <p class="mb-0">
+                                    <span class="text-secondary"><i class="ti ti-point-filled"></i></span>
+                                    <span class="text-nowrap text-muted">Total Messages</span>
+                                    <span class="float-end"><b>32.1M</b></span>
+                                </p>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col">
+                        <div class="card text-bg-primary">
+                            <div class="card-body">
+                                <a href="#!" class="text-white-50 float-end mt-n1 fs-xl"><i class="ti ti-external-link"></i></a>
+                                <h5 title="Pending Approvals">Approvals</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title bg-white bg-opacity-20 rounded-circle fs-22">
+                                            <i class="ti ti-file-check"></i>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0"><span data-target="32">0</span></h3>
+                                    <!-- <span class="badge text-bg-light fw-medium ms-2 fs-xs ms-auto">+2 New</span> -->
+                                </div>
+                                <p class="mb-0">
+                                    <span class="text-nowrap text-white text-opacity-75">Total Approvals:</span>
+                                    <span class="float-end"><b><span data-target="1,479">0</span></b></span>
+                                </p>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i class="ti ti-external-link"></i></a>
+                                <h5 title="Total Clients">Clients</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title text-bg-info rounded-circle fs-22">
+                                            <i class="ti ti-users"></i>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0"><span data-target="184">0</span></h3>
+                                    <span class="badge badge-soft-secondary fw-medium ms-2 fs-xs ms-auto">+4 New</span>
+                                </div>
+                                <p class="mb-0">
+                                    <span class="text-secondary"><i class="ti ti-point-filled"></i></span>
+                                    <span class="text-nowrap text-muted">Total Clients</span>
+                                    <span class="float-end"><b>9,835</b></span>
+                                </p>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col-lg col-md-auto">
+                        <div class="card bg-danger bg-opacity-10">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i class="ti ti-external-link"></i></a>
+                                <h5 title="Revenue Generated">Revenue</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title text-bg-danger bg-opacity-90 rounded-circle fs-22">
+                                            <i class="ti ti-credit-card"></i>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0">$<span data-target="125.5">0</span>k</h3>
+                                    <span class="badge badge-soft-danger fw-medium ms-2 fs-xs ms-auto">+1.5%</span>
+                                </div>
+                                <p class="mb-0">
+                                    <span class="text-primary"><i class="ti ti-point-filled"></i></span>
+                                    <span class="text-nowrap text-muted">Total Revenue</span>
+                                    <span class="float-end"><b>$12.5M</b></span>
+                                </p>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                </div><!-- end row -->
+
+                <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+
+                    <!-- Total Sales Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                                <h5 class="card-title">Total Sales</h5>
+                                <span class="badge badge-soft-success"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="avatar fs-60 avatar-img-size flex-shrink-0">
+                                        <span class="avatar-title text-bg-dark rounded-circle fs-32">
+                                            <i class="ti ti-credit-card"></i>
+                                        </span>
+                                    </div>
+                                    <div class="text-end">
+                                        <h3 class="mb-2 fw-normal">$<span data-target="320">320</span>K</h3>
+                                        <p class="mb-0 text-muted">Monthly Total Sales</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Total Orders Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                                <h5 class="card-title">Total Orders</h5>
+                                <span class="badge badge-soft-primary"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="avatar fs-60 avatar-img-size flex-shrink-0">
+                                        <span class="avatar-title text-bg-dark rounded-circle fs-32">
+                                            <i class="ti ti-package"></i>
+                                        </span>
+                                    </div>
+                                    <div class="text-end">
+                                        <h3 class="mb-2 fw-normal"><span data-target="245">245</span></h3>
+                                        <p class="mb-0 text-muted">Monthly Total Orders</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- New Customers Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                                <h5 class="card-title">New Customers</h5>
+                                <span class="badge badge-soft-info"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="avatar fs-60 avatar-img-size flex-shrink-0">
+                                        <span class="avatar-title text-bg-dark rounded-circle fs-32">
+                                            <i class="ti ti-users"></i>
+                                        </span>
+                                    </div>
+                                    <div class="text-end">
+                                        <h3 class="mb-2 fw-normal"><span data-target="4,382">4,382</span></h3>
+                                        <p class="mb-0 text-muted">Monthly New Customers</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Monthly Revenue Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                                <h5 class="card-title">Revenue</h5>
+                                <span class="badge badge-soft-warning"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="avatar fs-60 avatar-img-size flex-shrink-0">
+                                        <span class="avatar-title text-bg-dark rounded-circle fs-32">
+                                            <i class="ti ti-chart-bar"></i>
+                                        </span>
+                                    </div>
+                                    <div class="text-end">
+                                        <h3 class="mb-2 fw-normal">$<span data-target="89.45">89.45</span>K</h3>
+                                        <p class="mb-0 text-muted">Monthly Revenue</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div> <!-- end row-->
+                
+                <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+
+                    <!-- Widget 1: Property Value -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1">$<span data-target="150">150</span>M</h3>
+                                        <p class="mb-0 text-muted">Total Property Value</p>
+                                    </div>
+                                    <div class="avatar fs-60 avatar-img-size flex-shrink-0">
+                                        <span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-32">
+                                            <i class="ti ti-home-heart"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 2: Rental Income -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1">$<span data-target="80">80</span>M</h3>
+                                        <p class="mb-0 text-muted">Monthly Rental Income</p>
+                                    </div>
+                                    <div class="avatar fs-60 avatar-img-size flex-shrink-0">
+                                        <span class="avatar-title bg-secondary-subtle text-secondary rounded-circle fs-32">
+                                            <i class="ti ti-wallet"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 3: Average Property Price -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1">$<span data-target="500">500</span>K</h3>
+                                        <p class="mb-0 text-muted">Average Property Price</p>
+                                    </div>
+                                    <div class="avatar fs-60 avatar-img-size flex-shrink-0">
+                                        <span class="avatar-title bg-info-subtle text-info rounded-circle fs-32">
+                                            <i class="ti ti-tags"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 4: Latest Sale -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1">$<span data-target="1.2">1.2</span>M</h3>
+                                        <p class="mb-0 text-muted">Latest Property Sale</p>
+                                    </div>
+                                    <div class="avatar fs-60 avatar-img-size flex-shrink-0">
+                                        <span class="avatar-title bg-danger-subtle text-danger rounded-circle fs-32">
+                                            <i class="ti ti-building"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- end row -->
+
+                <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+
+                    <!-- Widget 1 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div>
+                                    <a href="#" class="link-reset text-uppercase fw-semibold">Backend API Integration</a>
+                                    <div class="py-2">
+                                        <span class="fs-xl fw-bold me-2"><span data-target="72.5">0</span>%</span>
+                                        <span class="fw-semibold text-muted fs-7">In Progress</span>
+                                    </div>
+                                </div>
+                                <div class="progress bg-success progress-md bg-opacity-25">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 72.5%" aria-valuenow="72.5" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="mt-2 text-muted">Estimated completion: 2 days.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 2 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div>
+                                    <a href="#" class="link-reset text-uppercase fw-semibold">UI Design</a>
+                                    <div class="py-2">
+                                        <span class="fs-xl fw-bold me-2"><span data-target="100">0</span>%</span>
+                                        <span class="fw-semibold text-muted fs-7">Completed</span>
+                                    </div>
+                                </div>
+                                <div class="progress bg-success progress-md bg-opacity-25">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="mt-2 text-muted">Delivered yesterday at 5:00 pm.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 3 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div>
+                                    <a href="#" class="link-reset text-uppercase fw-semibold">Database Optimization</a>
+                                    <div class="py-2">
+                                        <span class="fs-xl fw-bold me-2"><span data-target="45">0</span>%</span>
+                                        <span class="fw-semibold text-muted fs-7">Pending</span>
+                                    </div>
+                                </div>
+                                <div class="progress bg-success progress-md bg-opacity-25">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="mt-2 text-muted">Next review: Monday 10:00 am.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 4 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div>
+                                    <a href="#" class="link-reset text-uppercase fw-semibold">Server Uptime</a>
+                                    <div class="py-2">
+                                        <span class="fs-xl fw-bold me-2"><span data-target="99.9">0</span>%</span>
+                                        <span class="fw-semibold text-muted fs-7">Stable</span>
+                                    </div>
+                                </div>
+                                <div class="progress bg-success progress-md bg-opacity-25">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 99.9%" aria-valuenow="99.9" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="mt-2 text-muted">Last downtime: 7 days ago.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- end row -->
+
+                <div class="row row-cols-xxl-6 row-cols-md-3 row-cols-2">
+
+                    <!-- Widget 1 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="avatar-xl mb-3">
+                                    <span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-24">
+                                        <i class="ti ti-building-skyscraper"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-1">$<span data-target="150">0</span>M</h3>
+                                <p class="mb-0 text-muted">Total Property Value</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 2 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="avatar-xl mb-3">
+                                    <span class="avatar-title bg-success-subtle text-success rounded-circle fs-24">
+                                        <i class="ti ti-home-dollar"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-1"><span data-target="320">0</span></h3>
+                                <p class="mb-0 text-muted">Properties Sold</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 3 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="avatar-xl mb-3">
+                                    <span class="avatar-title bg-warning-subtle text-warning rounded-circle fs-24">
+                                        <i class="ti ti-building-store"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-1"><span data-target="180">0</span></h3>
+                                <p class="mb-0 text-muted">Active Listings</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 4 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="avatar-xl mb-3">
+                                    <span class="avatar-title bg-info-subtle text-info rounded-circle fs-24">
+                                        <i class="ti ti-users-group"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-1"><span data-target="85">0</span></h3>
+                                <p class="mb-0 text-muted">Agents Available</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 5 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="avatar-xl mb-3">
+                                    <span class="avatar-title bg-danger-subtle text-danger rounded-circle fs-24">
+                                        <i class="ti ti-calendar-time"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-1"><span data-target="42">0</span></h3>
+                                <p class="mb-0 text-muted">Upcoming Viewings</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget 6 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="avatar-xl mb-3">
+                                    <span class="avatar-title bg-secondary-subtle text-secondary rounded-circle fs-24">
+                                        <i class="ti ti-building-warehouse"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-1"><span data-target="27">0</span></h3>
+                                <p class="mb-0 text-muted">New Constructions</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- end row -->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.querySelector('#chat-container');
+            if (container && container.SimpleBar) {
+                container.SimpleBar.getScrollElement().scrollTop = container.SimpleBar.getScrollElement().scrollHeight;
+            } else {
+                // Fallback if not using custom SimpleBar instance
+                const scrollElement = container.querySelector('.simplebar-content-wrapper');
+                if (scrollElement) {
+                    scrollElement.scrollTop = scrollElement.scrollHeight;
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

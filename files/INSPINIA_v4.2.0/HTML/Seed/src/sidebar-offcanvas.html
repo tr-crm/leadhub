@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" data-sidenav-size="full">
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Offcanvas Menu"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"title":"Offcanvas Menu"})
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                            <i class="ti ti-info-circle fs-xxl"></i>
+                            <div>
+                                To enable the offcanvas menu, add
+                                <code>data-sidenav-size="full"</code> to the
+                                <code>&lt;html&gt;</code> tag.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/footer-scripts.html')
+
+</body>
+
+</html>

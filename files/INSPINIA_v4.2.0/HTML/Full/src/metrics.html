@@ -1,0 +1,486 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Metrics"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+                
+                @@include("./partials/page-title.html", {"title":"Metrics"})
+
+                <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+                    <!-- Total Sales Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                                <h5 class="card-title">Total Sales</h5>
+                                <span class="badge badge-soft-success"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="donut-chart" data-chart="donut" style="min-height: 60px; width: 60px;"></div>
+                                    <div class="text-end">
+                                        <h3 class="mb-2 fw-normal">$<span data-target="250">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Monthly Total Sales</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- Total Orders Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                                <h5 class="card-title">Total Orders</h5>
+                                <span class="badge badge-soft-primary"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="donut-chart" data-chart="donut" style="min-height: 60px; width: 60px;"></div>
+                                    <div class="text-end">
+                                        <h3 class="mb-2 fw-normal"><span data-target="180">0</span></h3>
+                                        <p class="mb-0 text-muted"><span>Monthly Total Orders</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- New Customers Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                                <h5 class="card-title">New Customers</h5>
+                                <span class="badge badge-soft-info"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="donut-chart" data-chart="donut" style="min-height: 60px; width: 60px;"></div>
+                                    <div class="text-end">
+                                        <h3 class="mb-2 fw-normal"><span data-target="50,895">0</span></h3>
+                                        <p class="mb-0 text-muted"><span>Monthly New Customers</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- Monthly Revenue Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                                <h5 class="card-title">Revenue</h5>
+                                <span class="badge badge-soft-warning"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="donut-chart" data-chart="donut" style="min-height: 60px; width: 60px;"></div>
+                                    <div class="text-end">
+                                        <h3 class="mb-2 fw-normal">$<span data-target="50.33">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Monthly Revenue</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+                </div><!-- end row -->
+
+                <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+                    <!-- Widget: Project A Sales -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title">Project A - Sales</h5>
+                                <span class="badge badge-soft-success"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1 fw-normal">$<span data-target="320">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Monthly Sales for Project A</span></p>
+                                    </div>
+                                    <div class="bar-chart" style="min-height: 40px; width: 80px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- Widget: Project B Revenue -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title">Project B - Revenue</h5>
+                                <span class="badge badge-soft-info"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="bar-chart" style="min-height: 40px; width: 80px;"></div>
+                                    <div class="text-end">
+                                        <h3 class="mb-1 fw-normal">$<span data-target="450">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Monthly Revenue for Project B</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- Widget: Project C Engagement -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title">Project C - Engagement</h5>
+                                <span class="badge badge-soft-warning"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1 fw-normal">$<span data-target="580">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Monthly Engagement for Project C</span></p>
+                                    </div>
+                                    <div class="bar-chart" style="min-height: 40px; width: 80px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- Widget: Project D Expenses -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title">Project D - Expenses</h5>
+                                <span class="badge badge-soft-danger"> Monthly</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="bar-chart" style="min-height: 40px; width: 80px;"></div>
+                                    <div class="text-end">
+                                        <h3 class="mb-1 fw-normal">$<span data-target="700">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Monthly Expenses for Project D</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+                </div><!-- end row -->
+
+                <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+                    <!-- Widget 1 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title">Greenfield Towers - Sales</h5>
+                                <span class="badge badge-soft-success"> +$40K</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="area-chart" style="min-height: 60px; width: 140px;"></div>
+                                    <div class="text-end">
+                                        <h3 class="mb-1 fw-normal">$<span data-target="550">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Sales Change (Prev.)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- Widget 2 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title">Oceanview Residences - Sales</h5>
+                                <span class="badge badge-soft-danger"> -$20K</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1 fw-normal">$<span data-target="230">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Sales Change (Prev.)</span></p>
+                                    </div>
+                                    <div class="area-chart" style="min-height: 60px; width: 140px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- Widget 3 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title">Sunset Bay Villas - Sales</h5>
+                                <span class="badge badge-soft-warning"> +$50K</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="area-chart" style="min-height: 60px; width: 140px;"></div>
+                                    <div class="text-end">
+                                        <h3 class="mb-1 fw-normal">$<span data-target="650">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Sales Change (Prev.)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+
+                    <!-- Widget 4 -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title">Maple Grove Homes - Sales</h5>
+                                <span class="badge badge-soft-success"> +$30K</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1 fw-normal">$<span data-target="480">0</span>K</h3>
+                                        <p class="mb-0 text-muted"><span>Sales Change (Prev.)</span></p>
+                                    </div>
+                                    <div class="area-chart" style="min-height: 60px; width: 140px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+                </div><!-- end row -->
+
+
+                <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+                    <!-- Revenue Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Total Revenue</h5>
+                                <span class="badge bg-success-subtle text-success">+8.2%</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1 fw-normal">$<span data-target="1240">0</span>K</h3>
+                                        <p class="mb-0 text-muted">This Quarter</p>
+                                    </div>
+                                    <div class="pie-chart" style="height: 70px; width: 70px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expenses Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Total Expenses</h5>
+                                <span class="badge bg-danger-subtle text-danger">-2.1%</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="pie-chart" style="height: 70px; width: 70px;"></div>
+                                    <div class="text-end ms-3">
+                                        <h3 class="mb-1 fw-normal">$<span data-target="840">0</span>K</h3>
+                                        <p class="mb-0 text-muted">This Quarter</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Profit Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Net Profit</h5>
+                                <span class="badge bg-info-subtle text-info">Stable</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="mb-1 fw-normal">$<span data-target="400">0</span>K</h3>
+                                        <p class="mb-0 text-muted">This Quarter</p>
+                                    </div>
+                                    <div class="pie-chart" style="height: 70px; width: 70px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cash Flow Widget -->
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex border-0 justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Cash Flow</h5>
+                                <span class="badge bg-warning-subtle text-warning">+5.6%</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="pie-chart" style="height: 70px; width: 70px;"></div>
+                                    <div class="text-end ms-3">
+                                        <h3 class="mb-1 fw-normal">$<span data-target="720">0</span>K</h3>
+                                        <p class="mb-0 text-muted">This Quarter</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- end col-->
+                </div> <!-- end row-->
+                
+                <div class="row">
+                    <div class="col-xxl-4">
+                        <div class="card">
+                            <div class="card-header justify-content-between align-items-center">
+                                <h5 class="card-title">Quarterly Reports <span class="badge text-bg-primary">IN+</span></h5>
+                                <div class="card-action">
+                                    <a href="#!" class="card-action-item" data-action="card-toggle"><i class="ti ti-chevron-up"></i></a>
+                                    <a href="#!" class="card-action-item" data-action="card-refresh"><i class="ti ti-refresh"></i></a>
+                                    <a href="#!" class="card-action-item" data-action="card-close"><i class="ti ti-x"></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-custom table-nowrap table-hover table-centered mb-0">
+                                        <thead class="bg-light bg-opacity-25 thead-sm">
+                                            <tr class="text-uppercase fs-xxs">
+                                                <th class="text-muted">Quarter</th>
+                                                <th class="text-muted">Revenue</th>
+                                                <th class="text-muted">Expense</th>
+                                                <th class="text-muted">Margin</th>
+                                                <th class="text-muted">•••</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <h5 class="mb-0">Quarter 1</h5>
+                                                    <span class="text-muted fs-xs">January - March 2024</span>
+                                                </td>
+                                                <td>$210k</td>
+                                                <td>$165k</td>
+                                                <td>$45k</td>
+                                                <td style="width: 60px;">
+                                                    <div dir="ltr">
+                                                        <div class="donut-chart" data-chart="donut" style="min-height: 30px;"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <h5 class="mb-0">Quarter 2</h5>
+                                                    <span class="text-muted fs-xs">April - June 2024</span>
+                                                </td>
+                                                <td>$225k</td>
+                                                <td>$175k</td>
+                                                <td>$50k</td>
+                                                <td style="width: 60px;">
+                                                    <div dir="ltr">
+                                                        <div class="donut-chart" data-chart="donut" style="min-height: 30px;"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <h5 class="mb-0">Quarter 3</h5>
+                                                    <span class="text-muted fs-xs">July - September 2024</span>
+                                                </td>
+                                                <td>$240k</td>
+                                                <td>$190k</td>
+                                                <td>$50k</td>
+                                                <td style="width: 60px;">
+                                                    <div dir="ltr">
+                                                        <div class="donut-chart" data-chart="donut" style="min-height: 30px;"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div> <!-- end table-responsive-->
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col-xxl-8">
+                        <div class="row">
+                            <div class="col-xl-4">
+                                <div class="card">
+                                    <div class="card-body p-0">
+                                        <div class="p-3">
+                                            <h3 class="mb-3 fw-bold"><span data-target="421">0</span><span class="text-muted ms-1 fs-sm">Orders</span></h3>
+                                            <p class="mb-0">
+                                                You have received 421 new orders, indicating a healthy sales trend over the past period.
+                                            </p>
+                                        </div>
+                                        <div id="orders-chart" style="min-height: 120px;" class="mb-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-4">
+                                <div class="card text-bg-secondary border-0">
+                                    <div class="card-body p-0">
+                                        <div class="p-3 mb-3">
+                                            <h3 class="mb-3 fw-bold"><span data-target="185">0</span><span class="text-white-50 ms-1 fs-sm">Products</span></h3>
+                                            <p class="mb-0 text-white-50">
+                                                You currently have 185 active products available across your store inventory.
+                                            </p>
+                                        </div>
+                                        <div id="product-chart" style="min-height: 120px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h3 class="mb-3 fw-bold">$<span data-target="12.5">0</span>k<span class="text-muted ms-1 fs-sm">Profit</span></h3>
+                                        <p class="mb-3">
+                                            Your total profit reached $12,500 this month, showing stable and positive business growth.
+                                        </p>
+                                        <div id="profit-chart" style="min-height: 120px;"></div>
+                                    </div>
+                                </div>
+                            </div> <!-- end col-->
+                        </div> <!-- end row-->
+
+                    </div> <!-- end col-->
+                </div> <!-- end row-->
+
+
+
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <!-- E Charts js -->
+    <script src="assets/plugins/echarts/echarts.min.js"></script>
+
+    <!-- Metrics Page js -->
+    <script src="assets/js/pages/metrics.js"></script>
+
+</body>
+
+</html>

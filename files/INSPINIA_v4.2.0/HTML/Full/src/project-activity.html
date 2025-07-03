@@ -1,0 +1,360 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Activity Stream"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+                
+                @@include("./partials/page-title.html", {"subtitle": "Projects", "title":"Activity Stream"})
+
+                <div class="row">
+                    <div class="col-xxl-6">
+                        <div class="card card-h-100">
+                            <div class="card-header">
+                                <h4 class="card-title">Basic Activity Stream</h4>
+                            </div> <!-- end card-header-->
+                
+                            <div class="card-body">
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-info"> Add</span>
+                                    <span class="text-muted"> Today at 08:05:33 am </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-1.jpg" alt="" class="rounded-circle avatar-xxs"> Olivia Lee
+                                    </a> Added a new design asset
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-success"> Update</span>
+                                    <span class="text-muted"> Today at 08:48:20 am </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-2.jpg" alt="" class="rounded-circle avatar-xxs"> Ethan Wong
+                                    </a> Updated project timeline
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-primary"> Upload</span>
+                                    <span class="text-muted"> Today at 09:12:45 am </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-3.jpg" alt="" class="rounded-circle avatar-xxs"> Grace Kim
+                                    </a> Uploaded design guidelines PDF
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-danger"> Remove</span>
+                                    <span class="text-muted"> Today at 09:55:02 am </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-4.jpg" alt="" class="rounded-circle avatar-xxs"> Noah Smith
+                                    </a> Removed outdated document
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-warning"> Comment</span>
+                                    <span class="text-muted"> Today at 10:34:10 am </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-5.jpg" alt="" class="rounded-circle avatar-xxs"> Mia Johnson
+                                    </a> Commented on new task board
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-success"> Approve</span>
+                                    <span class="text-muted"> Today at 11:03:22 am </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-6.jpg" alt="" class="rounded-circle avatar-xxs"> Liam Davis
+                                    </a> Approved budget request
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-primary"> Add</span>
+                                    <span class="text-muted"> Today at 11:40:07 am </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-7.jpg" alt="" class="rounded-circle avatar-xxs"> Sophia Martinez
+                                    </a> Added new member to team
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-warning"> Edit</span>
+                                    <span class="text-muted"> Today at 12:18:33 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-8.jpg" alt="" class="rounded-circle avatar-xxs"> Jack Wilson
+                                    </a> Edited task deadline
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-danger"> Reject</span>
+                                    <span class="text-muted"> Today at 01:05:11 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-9.jpg" alt="" class="rounded-circle avatar-xxs"> Ella Moore
+                                    </a> Rejected draft submission
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-info"> Share</span>
+                                    <span class="text-muted"> Today at 01:43:29 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-10.jpg" alt="" class="rounded-circle avatar-xxs"> Benjamin Taylor
+                                    </a> Shared roadmap document
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-success"> Upload</span>
+                                    <span class="text-muted"> Today at 02:15:50 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-1.jpg" alt="" class="rounded-circle avatar-xxs"> Olivia Lee
+                                    </a> Uploaded Q2 reports
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-warning"> Edit</span>
+                                    <span class="text-muted"> Today at 02:52:06 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-2.jpg" alt="" class="rounded-circle avatar-xxs"> Ethan Wong
+                                    </a> Edited team description
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-danger"> Delete</span>
+                                    <span class="text-muted"> Today at 03:20:44 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-3.jpg" alt="" class="rounded-circle avatar-xxs"> Grace Kim
+                                    </a> Deleted obsolete files
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-success"> Approve</span>
+                                    <span class="text-muted"> Today at 03:58:00 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-4.jpg" alt="" class="rounded-circle avatar-xxs"> Noah Smith
+                                    </a> Approved new sprint plan
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-primary"> Add</span>
+                                    <span class="text-muted"> Today at 04:36:18 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-5.jpg" alt="" class="rounded-circle avatar-xxs"> Mia Johnson
+                                    </a> Added new project brief
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-warning"> Comment</span>
+                                    <span class="text-muted"> Today at 05:14:03 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-6.jpg" alt="" class="rounded-circle avatar-xxs"> Liam Davis
+                                    </a> Left a note on timeline slide
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-info"> Share</span>
+                                    <span class="text-muted"> Today at 05:49:57 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-7.jpg" alt="" class="rounded-circle avatar-xxs"> Sophia Martinez
+                                    </a> Shared access to internal repo
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-danger"> Remove</span>
+                                    <span class="text-muted"> Today at 06:30:41 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-8.jpg" alt="" class="rounded-circle avatar-xxs"> Jack Wilson
+                                    </a> Removed archived ticket
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-primary"> Upload</span>
+                                    <span class="text-muted"> Today at 07:10:59 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-9.jpg" alt="" class="rounded-circle avatar-xxs"> Ella Moore
+                                    </a> Uploaded team performance chart
+                                </div>
+                                <div class="py-1 d-flex gap-3 align-items-center">
+                                    <span class="badge badge-label text-bg-success"> Create</span>
+                                    <span class="text-muted"> Today at 07:52:14 pm </span>
+                                    <a href="pages-profile.html" class="link-reset fw-semibold">
+                                        <img src="assets/images/users/user-10.jpg" alt="" class="rounded-circle avatar-xxs"> Benjamin Taylor
+                                    </a> Created a new OKR session
+                                </div>
+                            </div>
+                            
+                             <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col-xxl-6">
+                        <div class="card card-h-100">
+                            <div class="card-header">
+                                <h4 class="card-title">Expended Activity Stream</h4>
+                            </div> <!-- end card-header-->
+
+                            <div class="card-body">
+
+                                <div class="timeline timeline-icon-bordered">
+                                    <!-- Event 1 -->
+                                    <div class="timeline-item d-flex align-items-stretch">
+                                        <div class="timeline-dot">
+                                            <i class="ti ti-rocket fs-xl text-primary"></i>
+                                        </div>
+                                        <div class="timeline-content ps-3 pb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">New Feature Released <span class="badge badge-label badge-soft-info ms-2">Deploy</span></h5>
+                                                <span class="text-muted fs-xs">Today at 3:45 PM</span>
+                                            </div>
+                                            <p class="mb-1 text-muted">Launched the real-time chat feature across all user accounts.</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="assets/images/users/user-6.jpg" alt="Natalie Brooks" class="rounded-circle avatar-xxs">
+                                                <a href="pages-profile.html" class="fw-semibold link-reset">Natalie Brooks</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event 2 -->
+                                    <div class="timeline-item d-flex align-items-stretch">
+                                        <div class="timeline-dot">
+                                            <i class="ti ti-calendar-event fs-xl text-warning"></i>
+                                        </div>
+                                        <div class="timeline-content ps-3 pb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">Team Sync-Up <span class="badge badge-label badge-soft-secondary ms-2">Meeting</span></h5>
+                                                <span class="text-muted fs-xs">Today at 2:00 PM</span>
+                                            </div>
+                                            <p class="mb-1 text-muted">Reviewed sprint progress and discussed remaining tasks with the dev team.</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="assets/images/users/user-4.jpg" alt="Oliver Grant" class="rounded-circle avatar-xxs">
+                                                <a href="pages-profile.html" class="fw-semibold link-reset">Oliver Grant</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event 3 -->
+                                    <div class="timeline-item d-flex align-items-stretch">
+                                        <div class="timeline-dot">
+                                            <i class="ti ti-palette fs-xl text-success"></i>
+                                        </div>
+                                        <div class="timeline-content ps-3 pb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">UI Design Review <span class="badge badge-label badge-soft-success ms-2">Design</span></h5>
+                                                <span class="text-muted fs-xs">Today at 1:15 PM</span>
+                                            </div>
+                                            <p class="mb-1 text-muted">Updated component spacing and colors for improved accessibility.</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="assets/images/users/user-9.jpg" alt="Clara Jensen" class="rounded-circle avatar-xxs">
+                                                <a href="pages-profile.html" class="fw-semibold link-reset">Clara Jensen</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event 4 -->
+                                    <div class="timeline-item d-flex align-items-stretch">
+                                        <div class="timeline-dot">
+                                            <i class="ti ti-database fs-xl text-danger"></i>
+                                        </div>
+                                        <div class="timeline-content ps-3 pb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">Database Optimization <span class="badge badge-label badge-soft-danger ms-2">Backend</span></h5>
+                                                <span class="text-muted fs-xs">Today at 12:30 PM</span>
+                                            </div>
+                                            <p class="mb-1 text-muted">Improved DB query performance, reducing load time by 35%.</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="assets/images/users/user-10.jpg" alt="Leo Armstrong" class="rounded-circle avatar-xxs">
+                                                <a href="pages-profile.html" class="fw-semibold link-reset">Leo Armstrong</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event 5 -->
+                                    <div class="timeline-item d-flex align-items-stretch">
+                                        <div class="timeline-dot">
+                                            <i class="ti ti-shield-check fs-xl text-info"></i>
+                                        </div>
+                                        <div class="timeline-content ps-3 pb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">Security Audit Completed <span class="badge badge-label badge-soft-warning ms-2">Audit</span></h5>
+                                                <span class="text-muted fs-xs">Today at 11:00 AM</span>
+                                            </div>
+                                            <p class="mb-1 text-muted">Completed internal security audit with no critical issues found.</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="assets/images/users/user-8.jpg" alt="Liam Carter" class="rounded-circle avatar-xxs">
+                                                <a href="pages-profile.html" class="fw-semibold link-reset">Liam Carter</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event 6 -->
+                                    <div class="timeline-item d-flex align-items-stretch">
+                                        <div class="timeline-dot">
+                                            <i class="ti ti-user-plus fs-xl text-success"></i>
+                                        </div>
+                                        <div class="timeline-content ps-3 pb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">New Team Member Joined <span class="badge badge-label badge-soft-primary ms-2">Onboarding</span></h5>
+                                                <span class="text-muted fs-xs">Today at 10:15 AM</span>
+                                            </div>
+                                            <p class="mb-1 text-muted">Michael Lee has joined the development team as a Frontend Engineer.</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="assets/images/users/user-7.jpg" alt="Emma Davis" class="rounded-circle avatar-xxs">
+                                                <a href="pages-profile.html" class="fw-semibold link-reset">Emma Davis</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event 7 -->
+                                    <div class="timeline-item d-flex align-items-stretch">
+                                        <div class="timeline-dot">
+                                            <i class="ti ti-pencil fs-xl text-warning"></i>
+                                        </div>
+                                        <div class="timeline-content ps-3 pb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">Documentation Updated <span class="badge badge-label badge-soft-secondary ms-2">Docs</span></h5>
+                                                <span class="text-muted fs-xs">Yesterday at 5:20 PM</span>
+                                            </div>
+                                            <p class="mb-1 text-muted">Refreshed developer documentation with updated APIs and workflows.</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="assets/images/users/user-7.jpg" alt="Sophia Reed" class="rounded-circle avatar-xxs">
+                                                <a href="pages-profile.html" class="fw-semibold link-reset">Sophia Reed</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event 8 -->
+                                    <div class="timeline-item d-flex align-items-stretch">
+                                        <div class="timeline-dot">
+                                            <i class="ti ti-check fs-xl text-success"></i>
+                                        </div>
+                                        <div class="timeline-content ps-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h5 class="mb-1">Task Completed <span class="badge badge-label badge-soft-success ms-2">Done</span></h5>
+                                                <span class="text-muted fs-xs">Yesterday at 3:10 PM</span>
+                                            </div>
+                                            <p class="mb-1 text-muted">Finished implementation of the email notification system.</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img src="assets/images/users/user-5.jpg" alt="Daniel Chen" class="rounded-circle avatar-xxs">
+                                                <a href="pages-profile.html" class="fw-semibold link-reset">Daniel Chen</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div>
+
+                </div> <!-- end row-->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+</body>
+
+</html>

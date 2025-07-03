@@ -1,0 +1,37 @@
+
+@{
+    ViewBag.Title = "Scrollable";
+    ViewBag.HTMLAttributes = "data-layout-position=scrollable";
+}
+
+@section styles
+{
+
+}
+
+<div class="container-fluid">
+    @await Html.PartialAsync("~/Views/Shared/Partials/_PageTitle.cshtml")
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To enable full scrolling and view all content, please add
+                    <code>data-layout-position="scrollable"</code> to the
+                    <code>&lt;html&gt;</code> tag.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- For Demo Only -->
+    <div class="card" style="height: 1000px;"></div>
+</div>
+
+@section scripts
+{
+ 
+}
+

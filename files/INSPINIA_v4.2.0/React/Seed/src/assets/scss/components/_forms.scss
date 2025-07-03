@@ -1,0 +1,88 @@
+//
+// _forms.scss
+//
+
+// Form Control
+.form-control,
+.form-select {
+    &:hover {
+        border-color: $input-focus-border-color;
+    }
+}
+
+// Form Control Small
+.form-control-sm {
+    line-height: normal;
+}
+
+
+// Form elements (Color and Range)
+input.form-control[type="color"],
+input.form-control[type="range"] {
+    min-height: $input-height;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+@each $state in map-keys($theme-colors) {
+    .form-check-#{$state} {
+        .form-check-input {
+            &:checked {
+                background-color: var(--#{$prefix}#{$state});
+                border-color: var(--#{$prefix}#{$state});
+            }
+        }
+    }
+}
+
+
+// card radio
+.card-radio {
+    padding: 0;
+
+    .form-check-label {
+        background-color: $card-bg;
+        border: 1px solid var(--#{$prefix}border-color);
+        border-radius: $border-radius;
+        padding: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        position: relative;
+        padding-right: 32px;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    .form-check-input {
+        display: none;
+
+        &:checked+.form-check-label {
+            &:before {
+                content: "";
+                background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2224%22%20height=%2224%22%20viewBox=%220%200%2024%2024%22%20fill=%22%23f5315d%22%20class=%22icon%20icon-tabler%20icons-tabler-filled%20icon-tabler-rosette-discount-check%22%3E%3Cpath%20stroke=%22none%22%20d=%22M0%200h24v24H0z%22%20fill=%22none%22/%3E%3Cpath%20d=%22M12.01%202.011a3.2%203.2%200%200%201%202.113%20.797l.154%20.145l.698%20.698a1.2%201.2%200%200%200%20.71%20.341l.135%20.008h1a3.2%203.2%200%200%201%203.195%203.018l.005%20.182v1c0%20.27%20.092%20.533%20.258%20.743l.09%20.1l.697%20.698a3.2%203.2%200%200%201%20.147%204.382l-.145%20.154l-.698%20.698a1.2%201.2%200%200%200%20-.341%20.71l-.008%20.135v1a3.2%203.2%200%200%201%20-3.018%203.195l-.182%20.005h-1a1.2%201.2%200%200%200%20-.743%20.258l-.1%20.09l-.698%20.697a3.2%203.2%200%200%201%20-4.382%20.147l-.154%20-.145l-.698%20-.698a1.2%201.2%200%200%200%20-.71%20-.341l-.135%20-.008h-1a3.2%203.2%200%200%201%20-3.195%20-3.018l-.005%20-.182v-1a1.2%201.2%200%200%200%20-.258%20-.743l-.09%20-.1l-.697%20-.698a3.2%203.2%200%200%201%20-.147%20-4.382l.145%20-.154l.698%20-.698a1.2%201.2%200%200%200%20.341%20-.71l.008%20-.135v-1l.005%20-.182a3.2%203.2%200%200%201%203.013%20-3.013l.182%20-.005h1a1.2%201.2%200%200%200%20.743%20-.258l.1%20-.09l.698%20-.697a3.2%203.2%200%200%201%202.269%20-.944zm3.697%207.282a1%201%200%200%200%20-1.414%200l-3.293%203.292l-1.293%20-1.292l-.094%20-.083a1%201%200%200%200%20-1.32%201.497l2%202l.094%20.083a1%201%200%200%200%201.32%20-.083l4%20-4l.083%20-.094a1%201%200%200%200%20-.083%20-1.32z%22/%3E%3C/svg%3E ");
+                position: absolute;
+                bottom: 6px;
+                right: 6px;
+                background-size: 28px;
+                height: 28px;
+                width: 28px;
+                color: var(--#{$prefix}danger);
+            }
+        }
+    }
+}
+
+// Custom Form Check (Gray Styled)
+.form-check-input-light {
+    background-color: rgba(var(--#{$prefix}light-rgb), 0.9);
+    border-color: rgba(var(--#{$prefix}light-rgb), 0.9);
+    box-shadow: inset 0 1px 2px rgba(var(--#{$prefix}dark-rgb), 0.05);
+}

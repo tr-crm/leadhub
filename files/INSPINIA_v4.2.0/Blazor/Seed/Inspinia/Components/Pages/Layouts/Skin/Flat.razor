@@ -1,0 +1,36 @@
+@page "/skin-flat"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime;
+
+<div class="container-fluid">
+
+    <PageBreadcrumb Title="Flat Skin"/>
+
+    <div class="row">
+        <div class="col-12">
+            <div
+                class="alert alert-info alert-bordered border-start border-info d-flex align-items-center gap-2 mb-3">
+                <i class="ti ti-info-circle fs-20"></i>
+                <div>
+                    Set <code>data-skin="flat"</code> in the <code>&lt;html&gt;</code> tag to use the Flat
+                    theme.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("updateHtmlAttributes", "data-skin", "flat");
+            await JsRuntime.InvokeVoidAsync("loadConfig");
+            await JsRuntime.InvokeVoidAsync("loadApps");
+        }
+    }
+
+}

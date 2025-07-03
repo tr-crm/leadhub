@@ -1,0 +1,25 @@
+<div class="container-fluid">
+    <app-page-title title="Scrollable"/>
+
+    <div class="row">
+        <div class="col-12">
+            <ngb-alert type="info" class="alert-bordered border-start border-info d-flex align-items-start gap-2">
+                <ng-icon name="tablerInfoCircle" class="fs-xxl"/>
+                <div>
+                    To enable full scrolling and view all content, add
+                    <code>data-layout-position="scrollable"</code> to the
+                    <code>&lt;html&gt;</code> tag. You can apply this dynamically using the
+                    <code>LayoutStoreService</code>
+                    with
+                    <code>setLayoutPosition('scrollable')</code>.
+                </div>
+            </ngb-alert>
+
+
+            <!-- Demo Only -->
+            <div class="card">
+                <div class="card-body" style="height: 1200px"></div>
+            </div>
+        </div>
+    </div>
+</div>

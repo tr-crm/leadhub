@@ -1,0 +1,17 @@
+<div class="wrapper">
+
+    <app-topbar/>
+
+    <app-navbar *ngIf="!isMobileSidebarVisible"/>
+
+    <app-sidenav *ngIf="isMobileSidebarVisible"/>
+
+    <div class="content-page">
+
+        <router-outlet/>
+
+        <app-footer/>
+
+    </div>
+
+</div>

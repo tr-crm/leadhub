@@ -1,0 +1,454 @@
+@@include('./partials/html.html')
+
+<head>
+    @@include("./partials/title-meta.html", {"title": "Clients"})
+
+    @@include('./partials/head-css.html')
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        @@include('./partials/menu.html')
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            <div class="container-fluid">
+
+                @@include("./partials/page-title.html", {"subtitle": "Apps", "title":"Clients"})
+
+                <div class="row justify-content-center">
+                    <div class="col-xxl-10">
+                        <div data-table data-table-rows-per-page="8" class="card">
+                            <div class="card-header border-light justify-content-between">
+                                <div class="d-flex gap-2">
+                                    <div class="app-search">
+                                        <input data-table-search type="text" class="form-control" placeholder="Search clients...">
+                                        <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                    </div>
+
+                                    <button data-table-delete-selected class="btn btn-danger d-none">Delete</button>
+
+                                    <button type="submit" class="btn btn-purple rounded-circle btn-icon"><i class="ti ti-plus fs-lg"></i></button>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="me-2 fw-semibold">Filter By:</span>
+
+                                    <!-- Country Filter -->
+                                    <div class="app-search">
+                                        <select data-table-filter="country" class="form-select form-control my-1 my-md-0">
+                                            <option value="All">Country</option>
+                                            <option value="US">USA</option>
+                                            <option value="UK">UK</option>
+                                            <option value="AU">Australia</option>
+                                            <option value="DE">Germany</option>
+                                            <option value="IN">India</option>
+                                        </select>
+                                        <i data-lucide="globe" class="app-search-icon text-muted"></i>
+                                    </div>
+
+                                    <!-- Project Type Filter -->
+                                    <div class="app-search">
+                                        <select data-table-filter="type" class="form-select form-control my-1 my-md-0">
+                                            <option value="All">Project Type</option>
+                                            <option value="Project">Project</option>
+                                            <option value="Contract">Contract</option>
+                                            <option value="Retainer">Retainer</option>
+                                            <option value="Dashboard">Dashboard</option>
+                                        </select>
+                                        <i data-lucide="layout" class="app-search-icon text-muted"></i>
+                                    </div>
+
+                                    <!-- Records Per Page -->
+                                    <div>
+                                        <select data-table-set-rows-per-page class="form-select form-control my-1 my-md-0">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="15">15</option>
+                                            <option value="20">20</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                    <thead class="bg-light bg-opacity-25 thead-sm">
+                                        <tr class="text-uppercase fs-xxs">
+                                            <th scope="col" style="width: 1%;">
+                                                <input data-table-select-all class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" id="checkAll" value="option">
+                                            </th>
+                                            <th data-table-sort="name">Clients Name</th>
+                                            <th data-table-sort>Phone</th>
+                                            <th data-table-sort data-column="country">Country</th>
+                                            <th data-table-sort>Enrolled</th>
+                                            <th data-table-sort data-column="type">Type</th>
+                                            <th data-table-sort>Job Title</th>
+                                            <th data-table-sort>Status</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead><!-- end table-head -->
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-7.jpg" alt="avatar-7" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Emily
+                                                                Parker</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">emily@startupwave.io</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+1 (415) 992-3412</td>
+                                            <td>
+                                                <span class="badge p-1 text-bg-light fs-sm">
+                                                    <img src="assets/images/flags/us.svg" alt="" class="rounded-circle me-1" height="12"> US
+                                                </span>
+                                            </td>
+                                            <td>Feb 2, 2024</td>
+                                            <td>Project</td>
+                                            <td>Frontend Developer</td>
+                                            <td>
+                                                <span class="badge bg-success-subtle text-success badge-label">Active</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="javascript:void(0);" class=" btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-3.jpg" alt="avatar-3" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Liam
+                                                                Scott</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">liam@creativelogic.net</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+44 20 7946 0958</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/gb.svg" alt="" class="rounded-circle me-1" height="12"> UK</span></td>
+                                            <td>Jan 15, 2024</td>
+                                            <td>Contract</td>
+                                            <td>UI/UX Designer</td>
+                                            <td><span class="badge bg-warning-subtle text-warning badge-label">Pending</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-4.jpg" alt="avatar-4" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Sofia
+                                                                Müller</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">sofia@designhub.de</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+49 89 1234 5678</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/de.svg" alt="" class="rounded-circle me-1" height="12"> DE</span></td>
+                                            <td>Mar 12, 2024</td>
+                                            <td>Project</td>
+                                            <td>Visual Designer</td>
+                                            <td><span class="badge bg-success-subtle text-success badge-label">Active</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-5.jpg" alt="avatar-5" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Carlos
+                                                                Méndez</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">carlos@techlaunch.mx</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+52 55 1234 9876</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/mx.svg" alt="" class="rounded-circle me-1" height="12"> MX</span></td>
+                                            <td>Jan 8, 2024</td>
+                                            <td>Contract</td>
+                                            <td>Full Stack Developer</td>
+                                            <td><span class="badge bg-danger-subtle text-danger badge-label">Inactive</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-6.jpg" alt="avatar-6" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Nina
+                                                                Patel</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">nina@pixelhype.in</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+91 99876 54321</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/in.svg" alt="" class="rounded-circle me-1" height="12"> IN</span></td>
+                                            <td>Feb 19, 2024</td>
+                                            <td>Project</td>
+                                            <td>Brand Strategist</td>
+                                            <td><span class="badge bg-success-subtle text-success badge-label">Active</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-8.jpg" alt="avatar-8" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Oliver
+                                                                Chen</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">oliver@brandflow.sg</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+65 6789 1234</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/sg.svg" alt="" class="rounded-circle me-1" height="12"> SG</span></td>
+                                            <td>Jan 30, 2024</td>
+                                            <td>Retainer</td>
+                                            <td>Creative Director</td>
+                                            <td><span class="badge bg-warning-subtle text-warning badge-label">Pending</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-9.jpg" alt="avatar-9" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Maya
+                                                                Tanaka</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">maya@visiontokyo.jp</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+81 3 1234 5678</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/jp.svg" alt="" class="rounded-circle me-1" height="12"> JP</span></td>
+                                            <td>Mar 5, 2024</td>
+                                            <td>Project</td>
+                                            <td>Product Designer</td>
+                                            <td><span class="badge bg-success-subtle text-success badge-label">Active</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-10.jpg" alt="avatar-10" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Lucas
+                                                                Ferreira</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">lucas@devstudio.br</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+55 11 99876 5432</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/br.svg" alt="" class="rounded-circle me-1" height="12"> BR</span></td>
+                                            <td>Feb 24, 2024</td>
+                                            <td>Contract</td>
+                                            <td>Backend Engineer</td>
+                                            <td><span class="badge bg-success-subtle text-success badge-label">Active</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-1.jpg" alt="avatar-1" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Anna
+                                                                Schmidt</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">anna@uxhaus.de</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+49 30 4567 8910</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/de.svg" alt="" class="rounded-circle me-1" height="12"> DE</span></td>
+                                            <td>Mar 9, 2024</td>
+                                            <td>Retainer</td>
+                                            <td>UX Consultant</td>
+                                            <td><span class="badge bg-warning-subtle text-warning badge-label">Pending</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-2.jpg" alt="avatar-2" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Jason
+                                                                Lee</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">jason@webfoundry.au</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>+61 2 9876 1234</td>
+                                            <td><span class="badge p-1 text-bg-light fs-sm"><img src="assets/images/flags/au.svg" alt="" class="rounded-circle me-1" height="12"> AU</span></td>
+                                            <td>Mar 14, 2024</td>
+                                            <td>Contract</td>
+                                            <td>Web Developer</td>
+                                            <td><span class="badge bg-success-subtle text-success badge-label">Active</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    </tbody><!-- end table-body -->
+                                </table><!-- end table -->
+                            </div>
+                            <div class="card-footer border-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div data-table-pagination-info="clients"></div>
+
+                                    <div data-table-pagination></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end col -->
+                </div><!-- end row -->
+
+            </div>
+            <!-- container -->
+
+            @@include('./partials/footer.html')
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    @@include('./partials/customizer.html')
+
+    @@include('./partials/footer-scripts.html')
+
+    <!-- Custom table -->
+	<script src="assets/js/pages/custom-table.js"></script>
+
+</body>
+
+</html>
