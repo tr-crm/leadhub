@@ -1,13 +1,28 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useNavigate} from 'react-router-dom';
 import { Container, Form, Button, Alert, Row, Col } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
 import { getUserInfo } from '@/utils/auth';
+import RegionSelect from '@/components/regionselect';
+import {toast } from 'react-toastify';
+
 
 const Page = () => {
   const user = getUserInfo();
+  const type=user.type;
 const navigate = useNavigate();
+const getInitialRegionValue = (): string => {
+    if (type == '1' || type == '2') {
+      return '0';
+    } else if (user.region) {
+      return String(user.region);
+    }
+    return '0';
+  };
+  const [region, setRegion] = useState<string>(getInitialRegionValue());
   // console.log(user);
+ 
+  
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -17,9 +32,15 @@ const navigate = useNavigate();
     phone: '',
     userIdVal: user.id,
     tokenVal: user.access_token,
+    regionVal: region,
+    supervisionVal : user.id,
   });
 
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+ 
+
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -30,6 +51,22 @@ const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+      if(formData.regionVal=='0' || formData.regionVal==' '){
+      toast.error('Region Required' , {
+                 position: "top-right",
+                 autoClose: 4000,
+                 hideProgressBar: false,
+                 closeOnClick: true,
+                 pauseOnHover: true,
+                 draggable: false,
+                 progress: undefined,
+                 theme: "colored",
+               });
+
+      return;
+
+    }
 
     const payload = {
       roleVal: Number(formData.role),
@@ -38,9 +75,13 @@ const navigate = useNavigate();
       emailAddressVal: formData.email,
       phoneNumberVal: formData.phone,
       createdByVal: formData.userIdVal,
-      userIdVal:formData.userIdVal,
-      tokenVal: formData.tokenVal,
+      userIdVal: user.id,
+      tokenVal: user.access_token,
+      regionVal: formData.regionVal,
+      supervisionVal : user.id,
     };
+
+  
 
     try {
       const res = await fetch('https://dev.thetrcrm.com/leadhub/services/api/User/createUser', {
@@ -63,12 +104,40 @@ const navigate = useNavigate();
         phone: '',
         userIdVal: user.id,
         tokenVal: user.access_token,
+        regionVal: user.region,
+        supervisionVal : '',
       });
     } catch (err) {
       console.error(err);
       setStatus('error');
     }
   };
+
+  const allRoles = [
+    { value: 2, label: 'Head' },
+    { value: 3, label: 'Manager' },
+    { value: 4, label: 'Team Lead' },
+    { value: 5, label: 'Executive' }
+  ];
+  const userType = Number(user.type);
+
+  let filteredRoles;
+
+  if (userType === 1) {
+    filteredRoles = allRoles.filter(role => role.value === 2);
+  } else if (userType === 2) {
+    filteredRoles = allRoles.filter(role => role.value === 3);
+  }else if (userType === 3) {
+    filteredRoles = allRoles.filter(role => role.value === 5);
+  }else {
+    filteredRoles = allRoles; // all roles
+  }
+
+  useEffect(() => {
+    if (user?.type === '3' && user.region) {
+      setRegion(user.region);
+    }
+  }, [user]);
 
   return (
     <Container fluid>
@@ -119,7 +188,7 @@ const navigate = useNavigate();
 
         {/* Row 2: Role & Email */}
         <Row className="mb-3">
-          <Col xs={12} md={6}>
+           <Col xs={12} md={6}>
             <Form.Group controlId="role">
               <Form.Label>Role</Form.Label>
               <Form.Select
@@ -127,12 +196,15 @@ const navigate = useNavigate();
                 value={formData.role}
                 onChange={handleChange}
                 required
-              > 
-                {/* <option value="1">CEO</option> */}
-                <option value="2">Head</option>
-                <option value="3">Manager</option>
-                 <option value="4">Team Lead</option>
-                 <option value="5">Executive</option>
+              >
+                <option value="" disabled>
+                  Select role
+                </option>
+                {filteredRoles.map(role => (
+                  <option key={role.value} value={role.value}>
+                    {role.label}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
           </Col>
@@ -166,6 +238,33 @@ const navigate = useNavigate();
               />
             </Form.Group>
           </Col>
+          
+        {(formData.role == '3') && (
+          <Col xs={12} md={6}>
+            <Form.Group controlId="region">
+              <Form.Label>Region</Form.Label>
+              <RegionSelect
+                value={formData.regionVal}
+                onChange={(selected) => setRegion(selected?.value || '0')}
+                placeholder="Select region"
+              />
+            </Form.Group>
+          </Col>
+        )}
+        {user?.type === '3' && user.region && (
+          <Col xs={12} md={6}>
+            <Form.Group controlId="region">
+              <Form.Label>Region</Form.Label>
+              <RegionSelect
+                value={formData.regionVal}
+                onChange={(selected) => setRegion(selected?.value || '0')}
+                placeholder="Select region"
+              />
+            </Form.Group>
+          </Col>
+        )}
+       
+        
         </Row>
 
         {/* Button Row: Right Aligned */}

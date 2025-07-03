@@ -76,7 +76,7 @@ export const menuItems: MenuItemType[] = [
            
         ]
     },
-      {
+    {
         key: 'leads',
         label: 'Leads',
         icon: TbFiles,
@@ -84,6 +84,15 @@ export const menuItems: MenuItemType[] = [
             {key: 'leads-webhookfreshleadlist', label: 'Fresh Leads', url: '/leads/webhookleadlist'},
             {key: 'leads-list', label: 'Lead List', url: '/leads/list'},
             {key: 'leads-create', label: 'Lead Create', url: '/leads/create'},
+           
+        ]
+    },
+    {
+        key: 'Jobs',
+        label: 'Jobs',
+        icon: TbFiles,
+        children: [
+            {key: 'Job-list', label: 'Job List', url: '/jobs/list'}
            
         ]
     },

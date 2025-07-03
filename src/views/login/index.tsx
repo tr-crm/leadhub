@@ -20,7 +20,7 @@ import { TbLockPassword, TbMail } from 'react-icons/tb';
 
 const SignIn = () => {
   const {
-    register,
+    register,     
     handleSubmit,
     formState: { errors },
   } = useForm();
@@ -28,10 +28,16 @@ const SignIn = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [multiLogin, setMultiLogin] = useState(0);
+  const [formEmail, setFormEmail] = useState('');
+  const [formPassword, setFormPassword] = useState('');
 
   const onSubmit = async (data: any) => {
     setLoading(true);
     setApiError(null);
+
+    setFormEmail(data.email);
+    setFormPassword(data.password);
 
     try {
       const response = await axios.post('/api/User/userLogin', {
@@ -39,18 +45,19 @@ const SignIn = () => {
         password: data.password,
       });
       // console.log(response.data.data[0].access_token);
-     
-
+      if (response.data.multiLogin === 1000) {
+      
+        setMultiLogin(response.data.multiLogin);
+      } else if (Array.isArray(response.data.data) && response.data.data.length > 0) {
+      
       const token = response.data.data[0].access_token;
       const UserDetails = response.data.data[0];
 
-    // ✅ Store token in cookie (expires in 7 days)
       Cookies.set('accessToken', token, { expires: 7 });
       Cookies.set('LeadHubLoginAccess', JSON.stringify(UserDetails), { expires: 7 });
-    
-// const token1 = Cookies.get('LeadHubLoginAccess');
-//  console.log(token1);
       navigate('/dashboard');
+      }
+      
     } catch (error: any) {
       const message =
         error.response?.data?.message || 'Login failed. Please try again.';
@@ -60,6 +67,37 @@ const SignIn = () => {
     }
   };
 
+const handleForceLogout = async ({
+  emailVal,
+  password,
+}: {
+  emailVal: string;
+  password: string;
+}) => {
+  try {
+    const response = await axios.post('/api/User/userForceLogout', {
+      emailVal,
+      password,
+      forceLogout: '1',
+    });
+
+    if (response.data.response === 'success') {
+      setMultiLogin(response.data.multiLogin || 0);
+
+      alert('You have been successfully logged out from all other devices.');
+
+    } else {
+      alert(response.data.message || 'Force logout failed.');
+    }
+  } catch (error: any) {
+    console.error('Force logout failed:', error);
+    alert('An error occurred while trying to force logout.');
+  }
+};
+
+
+
+
   return (
     <div className="auth-box d-flex align-items-center">
       <div className="container-xxl">
@@ -67,6 +105,11 @@ const SignIn = () => {
           <Col xl={10} sm={12}>
             <Card className="rounded-4">
               <Row className="justify-content-between g-0">
+                 <Col lg={6} className="d-none d-lg-block">
+                  <div className="h-100 position-relative card-side-img rounded-end-4 overflow-hidden">
+                    <div className="p-4 card-img-overlay rounded-start-0 auth-overlay d-flex align-items-end justify-content-center"></div>
+                  </div>
+                </Col>
                 <Col lg={6} md={6} sm={12}>
                   <div className="card-body">
                     <div className="auth-brand text-center mb-4">
@@ -147,15 +190,39 @@ const SignIn = () => {
                       </div>
 
                       <div className="d-grid">
-                        <Button type="submit" className="btn btn-primary fw-semibold py-2" disabled={loading}>
-                          {loading ? (
-                            <>
-                              <Spinner animation="border" size="sm" /> Logging in...
-                            </>
-                          ) : (
-                            'Login'
-                          )}
-                        </Button>
+                        
+                        {multiLogin === 1000 ? (
+                          <>
+                          <div className="text-danger text-center mt-2 mb-2 fw-semibold">
+                            You're signed in on another device. Log out?
+                          </div>
+                        
+                          <Button
+                            variant="warning"
+                            size="sm"
+                            className="mt-2 fw-semibold"
+                            onClick={() =>
+                              handleForceLogout({ emailVal: formEmail, password: formPassword })
+                            }
+                          >
+                            Force Logout
+                          </Button>
+                          </>
+                        ) : (
+                          <Button
+                            type="submit"
+                            className="btn btn-primary fw-semibold py-2"
+                            disabled={loading}
+                          >
+                            {loading ? (
+                              <>
+                                <Spinner animation="border" size="sm" /> Logging in...
+                              </>
+                            ) : (
+                              'Login'
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </Form>
 
@@ -165,11 +232,7 @@ const SignIn = () => {
                   </div>
                 </Col>
 
-                <Col lg={6} className="d-none d-lg-block">
-                  <div className="h-100 position-relative card-side-img rounded-end-4 overflow-hidden">
-                    <div className="p-4 card-img-overlay rounded-start-0 auth-overlay d-flex align-items-end justify-content-center"></div>
-                  </div>
-                </Col>
+               
               </Row>
             </Card>
           </Col>

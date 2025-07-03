@@ -21,6 +21,9 @@ import type {
   AssignmentPayload,
 } from '@/services/settingsservice';
 import { getUserInfo } from '@/utils/auth';
+
+import type { removePayload } from '@/services/userservice';
+import { submitRemoveAssignUser } from '@/services/userservice';
 // import { json } from 'stream/consumers';
 
 const Page: React.FC = () => {
@@ -40,6 +43,31 @@ const Page: React.FC = () => {
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [successMsg, setSuccessMsg] = useState<string>('');
+  const [removeingUserId, setremoveingUserId] = useState<number | null>(null);
+
+  
+  const handlesubmitRemove = async (item: any) => {
+    const payload: removePayload = {
+      idVal: item.id,                          
+      userIdVal: user.id,
+      tokenVal: user.access_token,
+      autoAssignTelecallersVal: 0,        
+      assignmentOrderVal: 0,
+    };
+
+    setremoveingUserId(item.id);               
+
+    try {
+      await submitRemoveAssignUser(payload);
+      alert('User removed successfully!');
+     window.location.reload();
+    } catch (error) {
+      console.error('Failed to remove user:', error);
+      alert('Failed to remove user. Please try again.');
+    } finally {
+      setremoveingUserId(null);                 
+    }
+  };
 
   // Auto-clear success message
   useEffect(() => {
@@ -63,8 +91,6 @@ const Page: React.FC = () => {
       try {
         const data = await fetchTelecallers({ typeVal, userIdVal, tokenVal,regionVal});
         setTelecallers(data);
-// const autoassignstatus = data[0].autoAssignTelecallersVal
-    
         const active = data
           .filter((tc) => tc.is_available_for_assignment === '1')
           .sort((a, b) => Number(a.assignment_order) - Number(b.assignment_order))
@@ -214,9 +240,18 @@ const Page: React.FC = () => {
                     <span>{index + 1}</span>
                     <span>{item.name}</span>
                     <span className="badge bg-primary rounded-pill">Order: {item.order}</span>
+                    
+                    <button
+                      className="btn btn-danger btn-sm rounded-pill"
+                      disabled={removeingUserId === Number(item.id)}
+                      onClick={() => handlesubmitRemove(item)}
+                    >
+                      {removeingUserId === Number(item.id) ? 'Saving...' : 'Remove'}
+                    </button>
                   </ListGroup.Item>
                 ))}
               </ListGroup>
+
             </div>
           )}
         </Col>

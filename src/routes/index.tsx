@@ -14,6 +14,7 @@ const LeadsList = lazy(() => import('@/views/leads/list'));
 const DailyReport = lazy(() => import('@/views/reports/dailyreport'));
 const DailySoucreWiseLeadReport = lazy(() => import('@/views/reports/dailysoucrewisereport'));
 const Settings = lazy(() => import('@/views/settings'));
+const DailyJobList = lazy(() => import('@/views/jobs/list'));
 
 
 
@@ -103,6 +104,18 @@ export const settingsRoutes: RouteObject[] = [
         }
     }
 ]
+
+
+export const dailyJobsRoutes: RouteObject[] = [
+    {
+        path: '/jobs/list', 
+        element: <DailyJobList/>,
+        handle: {
+           title: 'Jobs List',
+        }
+    }
+]
+
 export const appRoutes: RouteObject[] = [
     {
         element: <MainLayout/>,
@@ -112,6 +125,7 @@ export const appRoutes: RouteObject[] = [
                 element: <Navigate to="/login" replace/>
             },
             ...dashboardRoutes,
+            ...dailyJobsRoutes,
             ...userRoutes,
             ...leadsRoutes,
             ...reportRoutes,
@@ -120,6 +134,6 @@ export const appRoutes: RouteObject[] = [
         ],
     },
 ];
-export const otherRoutes: RouteObject[] = [...loginRoutes, ...userRoutes, ...leadsRoutes,...reportRoutes,...settingsRoutes];
+export const otherRoutes: RouteObject[] = [...loginRoutes, ...dailyJobsRoutes ,...userRoutes, ...leadsRoutes,...reportRoutes,...settingsRoutes];
 
 export const routes: RouteObject[] = [...appRoutes, ...otherRoutes];

@@ -194,6 +194,7 @@ const LeadsDataTable: React.FC = () => {
   </Col>
 </Row>
 
+    <div className="table-responsive">
       <DataTable
         title="Fresh Leads List"
         columns={columns}
@@ -207,6 +208,7 @@ const LeadsDataTable: React.FC = () => {
         pointerOnHover
         responsive
       />
+    </div>
     </Container>
   );
 };

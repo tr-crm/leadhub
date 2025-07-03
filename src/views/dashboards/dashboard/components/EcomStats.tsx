@@ -2,7 +2,56 @@ import { Badge, Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bo
 
 import CountUpClient from '@/components/CountUpClient'
 import {DonutChart} from "@/views/dashboards/dashboard/charts.tsx";
-import { cardData } from '../data'
+// import { cardData } from '../data'
+
+type CardData = {
+  title: string;
+  badgeColor: string;
+  badgeText: string;
+  value: string;
+  metric: string;
+  targetValue: number;
+  prefix?: string
+  suffix?: string
+}
+
+
+export const cardData: CardData[] = [
+  {
+    title: 'Total Leads',
+    badgeColor: 'warning',
+    badgeText: '',
+    value: '0',
+    metric: 'Monthly Total Leads',
+    targetValue: 9
+  },
+  {
+    title: 'Total Walkins',
+    badgeColor: 'primary',
+    badgeText: 'Monthly',
+    value: '100',
+    metric: 'Monthly Total Orders',
+    targetValue: 100
+  },
+  {
+    title: 'Total Today Leads',
+    badgeColor: 'info',
+    badgeText: 'Monthly',
+    value: '1000',
+    metric: 'Monthly New Customers',
+    targetValue: 50895
+  },
+  {
+    title: 'Total Today Walkins',
+    badgeColor: 'warning',
+    badgeText: 'Monthly',
+    value: '$0K',
+    metric: 'Monthly Revenue',
+    targetValue: 50.33,
+    prefix: '$',
+    suffix: 'K'
+  }
+];
 
 const EcomStats = () => {
   return (
