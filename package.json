@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "@reactour/tour": "^3.8.0",
     "apexcharts": "^4.7.0",
     "axios": "^1.10.0",
     "bootstrap": "^5.3.7",

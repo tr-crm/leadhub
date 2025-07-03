@@ -244,7 +244,6 @@ const handleUpdateScore = async () => {
       </Form>
 
       <DataTable
-        title="Job List"
         columns={columns}
         data={data}
         progressPending={loading}

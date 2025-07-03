@@ -8,11 +8,20 @@ const Login = lazy(() => import('@/views/login'));
 const Dashboard = lazy(() => import('@/views/dashboards/dashboard'));
 const UserCreate = lazy(() => import('@/views/user/create'));
 const UserList = lazy(() => import('@/views/user/list'));
+const UserLognHistory = lazy(() => import('@/views/user/history'));
+const UserProfile = lazy(() => import('@/views/user/profile'))
 const WebHookLeadsList = lazy(() => import('@/views/leads/webhook'));
 const LeadsCreate = lazy(() => import('@/views/leads/create'));
 const LeadsList = lazy(() => import('@/views/leads/list'));
+const ImportCreate = lazy(() => import('@/views/leads/import/create'));
+const ImportList = lazy(() => import('@/views/leads/import/list'));
+const DmImportCreate = lazy(() => import('@/views/import/create'));
+const DmImportList = lazy(() => import('@/views/import/list'));
 const DailyReport = lazy(() => import('@/views/reports/dailyreport'));
 const DailySoucreWiseLeadReport = lazy(() => import('@/views/reports/dailysoucrewisereport'));
+const RegionWiseLeadReport = lazy(() => import('@/views/reports/region'));
+const DailyDMLeadReport = lazy(() => import('@/views/reports/dailyleaddmreport'));
+const ExecutivewiseLeadReport = lazy(() => import('@/views/reports/executivewiseleadreport'));
 const Settings = lazy(() => import('@/views/settings'));
 const DailyJobList = lazy(() => import('@/views/jobs/list'));
 
@@ -53,7 +62,22 @@ export const userRoutes: RouteObject[] = [
         handle: {
            title: 'User List',
         }
+    },
+    {
+        path: '/user/history', 
+        element: <UserLognHistory/>,
+        handle: {
+           title: 'Login History',
+        }
+    },
+     {
+        path: '/user/profile', 
+        element: <UserProfile/>,
+        handle: {
+           title: 'User Profile',
+        }
     }
+    
 ]
 export const leadsRoutes: RouteObject[] = [
     { 
@@ -76,7 +100,23 @@ export const leadsRoutes: RouteObject[] = [
         handle: {
            title: 'Leads List',
         }
+    },
+    { 
+        path: '/leads/import/create',
+        element: <ImportCreate/>,
+        handle: {
+           title: 'Excel Import Create',
+        }
+    },
+    { 
+        path: '/leads/import/list',
+        element: <ImportList/>,
+        handle: {
+           title: 'Excel Import List',
+        }
     }
+
+
 ]
 export const reportRoutes: RouteObject[] = [
     {
@@ -93,6 +133,25 @@ export const reportRoutes: RouteObject[] = [
            title: 'Daily Source Wise Lead Report',
         }
     },
+    {
+        path: '/report/region',
+        element: <RegionWiseLeadReport/>,
+         handle: {
+           title: 'Region Wise Lead Report',
+        }
+    },{
+        path: '/report/dailyleaddmreport',
+        element: <DailyDMLeadReport/>,
+         handle: {
+           title: 'Daily DM Lead Report',
+        }
+    },{
+        path: '/report/executivewiseleadreport',
+        element: <ExecutivewiseLeadReport/>,
+         handle: {
+           title: 'Executive Wise Lead Report',
+        }
+    },
    
 ]
 export const settingsRoutes: RouteObject[] = [
@@ -104,18 +163,32 @@ export const settingsRoutes: RouteObject[] = [
         }
     }
 ]
-
-
+export const importRoutes: RouteObject[] = [
+     {
+        path: '/import/list', 
+        element: <DmImportList/>,
+        handle: {
+           title: 'DM Excel Import List',
+        }
+    },
+    {
+        path: '/import/create',
+        element: <DmImportCreate/>,
+         handle: {
+           title: 'DM Excel Import Create',
+        }
+    }
+   
+]
 export const dailyJobsRoutes: RouteObject[] = [
     {
         path: '/jobs/list', 
         element: <DailyJobList/>,
         handle: {
-           title: 'Jobs List',
+           title: 'Daily Job List',
         }
     }
 ]
-
 export const appRoutes: RouteObject[] = [
     {
         element: <MainLayout/>,
@@ -125,15 +198,16 @@ export const appRoutes: RouteObject[] = [
                 element: <Navigate to="/login" replace/>
             },
             ...dashboardRoutes,
-            ...dailyJobsRoutes,
             ...userRoutes,
             ...leadsRoutes,
             ...reportRoutes,
-            ...settingsRoutes
+            ...settingsRoutes,
+            ...importRoutes,
+            ...dailyJobsRoutes
             
         ],
     },
 ];
-export const otherRoutes: RouteObject[] = [...loginRoutes, ...dailyJobsRoutes ,...userRoutes, ...leadsRoutes,...reportRoutes,...settingsRoutes];
+export const otherRoutes: RouteObject[] = [...loginRoutes, ...userRoutes, ...leadsRoutes,...reportRoutes,...settingsRoutes,...importRoutes,...dailyJobsRoutes];
 
 export const routes: RouteObject[] = [...appRoutes, ...otherRoutes];

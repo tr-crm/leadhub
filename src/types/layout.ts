@@ -57,19 +57,35 @@ export interface LayoutType extends LayoutState {
     hideBackdrop: () => void;
 }
 
+// export type MenuItemType = {
+//     key: string
+//     label: string
+//     minLevel:number
+//     isTitle?: boolean
+//     icon?: IconType
+//     url?: string
+//     badge?: {
+//         variant: string
+//         text: string
+//     }
+//     parentKey?: string
+//     target?: string
+//     isDisabled?: boolean
+//     isSpecial?: boolean
+//     children?: MenuItemType[]
+// }
 export type MenuItemType = {
-    key: string
-    label: string
-    isTitle?: boolean
-    icon?: IconType
-    url?: string
-    badge?: {
-        variant: string
-        text: string
-    }
-    parentKey?: string
-    target?: string
-    isDisabled?: boolean
-    isSpecial?: boolean
-    children?: MenuItemType[]
-}
+  key: string;
+  label: string;
+  url?: string;
+  icon?: IconType;
+  isTitle?: boolean;
+  isDisabled?: boolean;
+  badge?: { text: string; variant: string };
+  class?: string;
+ minLevel?: number[];
+  // New access control fields:
+  roles?: number[];  // allowed levels
+
+  children?: MenuItemType[];
+};

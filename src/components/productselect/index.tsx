@@ -9,6 +9,7 @@ interface OptionType {
 }
 
 interface ProductSelectProps {
+  categoryId: any | '';
   value: any | '';  // also string here
   onChange: (value: OptionType | null) => void;
   required?: boolean;
@@ -20,6 +21,7 @@ interface ProductSelectProps {
 }
 
 const ProductSelect: React.FC<ProductSelectProps> = ({
+  categoryId,
   value,
   onChange,
   required = false,
@@ -39,7 +41,7 @@ const ProductSelect: React.FC<ProductSelectProps> = ({
       setLoading(true);
       try {
         if (user?.id && user?.access_token) {
-          const data = await ProductList(user.id, user.access_token, start);
+          const data = await ProductList(user.id, user.access_token, start,categoryId);
           setProducts(data);
         } else {
           setProducts([]);

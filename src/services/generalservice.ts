@@ -121,18 +121,22 @@ export interface Product {
   id: string;
   name: string;
   display_name: string;
+  category_id:any
 }
 
 export const ProductList = async (
   userId: number,
   token: string,
-  start: string = '0'
+  start: string = '0',
+  categoryId: number
+
 ): Promise<Product[]> => {
   try {
-    const response = await axios.post('/api/Masters/getProductList', {
+    const response = await axios.post('/api/Masters/getProductListByCategoryId', {
       userIdVal: userId,
       tokenVal: token,
       start,
+      categoryIdVal: categoryId,
     });
 
     const data = response.data;
@@ -158,7 +162,7 @@ export const ProductList = async (
 
 
 export interface Country {
-  id: number;
+  id: any;
   name: string;
   display_name: string;
 }
@@ -203,6 +207,8 @@ export const CountryList = async (
 export interface Branch {
   id: string;
   display_name: string;
+  State:string;
+  data: Branch[];
   // Add other fields if needed
 }
 
@@ -281,7 +287,7 @@ export const ExecutiveList = async (
   type: string = ''    // Type 1 typically means "Executive"
 ): Promise<Executive[]> => {
   try {
-    const response = await axios.post('/api/User/getUserByRoleRegionUserId', {
+    const response = await axios.post('/api/User/getUserByRole', {
       userIdVal: userId,
       tokenVal: token,
       typeVal: type,

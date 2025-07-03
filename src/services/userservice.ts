@@ -88,8 +88,33 @@ export interface jobsScoresPayload {
   tokenVal: string;
 }
 
+export interface LoginHistoryPayload{
+  idVal: number;
+  userIdVal : number;
+  tokenVal: string;
+}
 
+export interface UserChangePayload{
+  idVal: number;
+  userIdVal: number;
+  tokenVal: string;
+  oldPwdVal: string;
+  newPwdVal: string;
+  rePwdVal: string;
+}
 
+export interface UserCreatePayload{
+  userIdVal: number;
+  tokenVal: string;
+  firstNameVal: string;
+  lastNameVal: string;
+  emailAddressVal: string;
+  phoneNumberVal: string;
+  roleVal: number;
+  regionVal: number;
+  createdByVal: number;
+  supervisionVal: number;
+}
 
 export const getUserList = async (payload: UserListRequestPayload) => {
   const response = await axios.post('/api/User/getUserList', payload);
@@ -145,5 +170,24 @@ export const submitJobExecution = async (payload: jobsExecutionPayload) => {
 
 export const submitJobScore = async (payload: jobsScoresPayload) => {
   const response = await axios.post('/api/User/createJobPlanScore', payload);
+  return response.data;
+};
+
+
+
+export const getLoginHistoryList = async (payload: LoginHistoryPayload) => {
+  const response = await axios.post('/api/User/getUserLoginHistory', payload);
+  return response.data;
+};
+
+
+export const submitUserChangePassword = async (payload: UserChangePayload) => {
+  const response = await axios.post('/api/User/changeUserPassword', payload);
+  return response.data;
+};
+
+
+export const submitUserCreate = async (payload: UserCreatePayload) => {
+  const response = await axios.post('/api/User/createUser', payload);
   return response.data;
 };

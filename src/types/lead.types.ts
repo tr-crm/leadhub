@@ -4,11 +4,12 @@ export interface Lead {
   id: number;
    lead_date: string | null;
   full_name: string | null;
+  first_name:string  | null;
+  last_name:string  | null;
   email?: string;
   source_name: string | null;
-   source_id: number;
+   source_id: any;
   phone_number: string | null;
-  campaign_name: string;
   created_at: string;
   category_name:string;
   category_id: number;
@@ -22,7 +23,14 @@ export interface Lead {
   lead_status:number;
   lead_status_name:string;
   executive_name:string
+  executive_id:any;
   region_name:string
+  year:any;
+  month:any;
+  campaign_id:any;
+  campaign_name:any;
+  comments:any;
+  comment:any;
   json_response_data: {
     full_name?: string;
     email?: string;

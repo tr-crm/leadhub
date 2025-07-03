@@ -72,27 +72,39 @@ const UserProfile = () => {
                     }
                 </DropdownMenu> */}
                 <DropdownMenu className="dropdown-menu-end">
-                  {userDropdownItems.map((item, idx) => (
-                    <Fragment key={idx}>
-                      {item.isHeader ? (
-                        <div className="dropdown-header noti-title">
-                          <h6 className="text-overflow m-0">{capitalizeWords(item.label || '')}</h6>
-                        </div>
-                      ) : item.isDivider ? (
-                        <DropdownDivider />
-                      ) : (
-                        <DropdownItem
-                          as={item.isLogout ? 'button' : Link}
-                          // to={item.url ?? '#'}
-                          className={item.class}
-                          onClick={item.isLogout ? handleLogout : undefined}
-                        >
-                          {item.icon && <item.icon className="me-2 fs-17 align-middle" />}
-                          <span className="align-middle">{capitalizeWords(item.label || '')}</span>
-                        </DropdownItem>
-                      )}
-                    </Fragment>
-                  ))}
+                 
+                  {userDropdownItems.map((item, idx) => {
+                    const label = capitalizeWords(item.label || '');
+                    const isLogout = item.isLogout;
+                    const isProfile = label == 'Profile';
+
+                    return (
+                      <Fragment key={idx}>
+                        {item.isHeader ? (
+                          <div className="dropdown-header noti-title">
+                          </div>
+                        ) : item.isDivider ? (
+                          <DropdownDivider />
+                        ) : (
+                          <DropdownItem
+                                as={isLogout ? 'button' : Link}
+                                {...(isProfile ? { to: '/user/profile' } : {})}
+                                className={item.class}
+                                onClick={
+                                  isLogout
+                                    ? handleLogout
+                                    : isProfile
+                                    ? () => console.log('Redirecting to Login')
+                                    : undefined
+                                }
+                              >
+                            {item.icon && <item.icon className="me-2 fs-17 align-middle" />}
+                            <span className="align-middle">{label}</span>
+                          </DropdownItem>
+                        )}
+                      </Fragment>
+                    );
+                  })}
                 </DropdownMenu>
 
 

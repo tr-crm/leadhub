@@ -24,6 +24,7 @@ import { getUserInfo } from '@/utils/auth';
 
 import type { removePayload } from '@/services/userservice';
 import { submitRemoveAssignUser } from '@/services/userservice';
+import { toast } from 'react-toastify';
 // import { json } from 'stream/consumers';
 
 const Page: React.FC = () => {
@@ -59,11 +60,10 @@ const Page: React.FC = () => {
 
     try {
       await submitRemoveAssignUser(payload);
-      alert('User removed successfully!');
-     window.location.reload();
+
+        window.location.reload();
     } catch (error) {
-      console.error('Failed to remove user:', error);
-      alert('Failed to remove user. Please try again.');
+      toast.error('Failed to remove user. Please try again.');
     } finally {
       setremoveingUserId(null);                 
     }
@@ -193,7 +193,8 @@ const Page: React.FC = () => {
 
   const assignedWithNames = assign
     .map((item) => {
-      const user = telecallers.find((tc) => tc.id === item.id);
+      const user = telecallers.find((tc) => tc.id == item.id);
+      console.log(telecallers,item);
       return user ? { ...item, name: user.full_name } : null;
     })
     .filter((item): item is { id: string; order: number; name: string } => item !== null)
@@ -264,30 +265,41 @@ const Page: React.FC = () => {
         </Modal.Header>
         <Modal.Body>
           <ListGroup>
-            {telecallers  .filter((tc) => tc.id !== String(userIdVal)).map((tc,index) => {
-              const isAssigned = assign.some((a) => a.id === tc.id);
-              return (
-                <ListGroup.Item
-                  key={tc.id}
-                  action
-                  active={isAssigned}
-                  onClick={() => handleAssign(tc.id)}
-                  style={{
-                    cursor: 'pointer',
-                    textTransform: 'capitalize',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    borderLeft: isAssigned ? '5px solid #0d6efd' : '5px solid transparent',
-                    backgroundColor: isAssigned ? '#e7f1ff' : undefined,
-                  }}
-                >
-                   <span>{index+1}</span>
-                  <span>{tc.full_name}</span>
-                  {isAssigned && <span className="badge bg-success">Selected</span>}
-                </ListGroup.Item>
-              );
-            })}
+           {telecallers
+  .filter((tc) => {
+    const excludedTypes = [1, 2, 8, 9];
+    return (
+      tc.id !== String(userIdVal) &&
+      !excludedTypes.includes(Number(tc.type)) // convert type to number
+    );
+  })
+  .map((tc, index) => {
+    const isAssigned = assign.some((a) => a.id === tc.id);
+
+    return (
+      <ListGroup.Item
+        key={tc.id}
+        action
+        active={isAssigned}
+        onClick={() => handleAssign(tc.id)}
+        style={{
+          cursor: 'pointer',
+          textTransform: 'capitalize',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderLeft: isAssigned ? '5px solid #0d6efd' : '5px solid transparent',
+          backgroundColor: isAssigned ? '#e7f1ff' : undefined,
+        }}
+      >
+        <span>{index + 1}</span>
+        <span>{tc.full_name}</span>
+        {isAssigned && <span className="badge bg-success">Selected</span>}
+      </ListGroup.Item>
+    );
+  })}
+
+
           </ListGroup>
         </Modal.Body>
         <Modal.Footer>

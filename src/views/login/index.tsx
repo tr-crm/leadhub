@@ -17,7 +17,7 @@ import {
 import { currentYear } from '@/helpers';
 import AppLogo from '@/components/AppLogo';
 import { TbLockPassword, TbMail } from 'react-icons/tb';
-
+import {toast } from 'react-toastify';
 const SignIn = () => {
   const {
     register,     
@@ -44,8 +44,10 @@ const SignIn = () => {
         email: data.email,
         password: data.password,
       });
-      // console.log(response.data.data[0].access_token);
-      if (response.data.multiLogin === 1000) {
+      console.log(response.data);
+
+      if(response.data.response=='success'){
+        if (response.data.multiLogin === 1000) {
       
         setMultiLogin(response.data.multiLogin);
       } else if (Array.isArray(response.data.data) && response.data.data.length > 0) {
@@ -55,12 +57,52 @@ const SignIn = () => {
 
       Cookies.set('accessToken', token, { expires: 7 });
       Cookies.set('LeadHubLoginAccess', JSON.stringify(UserDetails), { expires: 7 });
+         const name=UserDetails.full_name;
+         
+      toast.success( <>Hi, {name} <br />Welcome to TRCRM Lead Hub  </>, {
+                      position: "top-right",
+                      autoClose: 4000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "colored",
+            
+                    });
       navigate('/dashboard');
       }
+
+      }else{
+          toast.error(response.data.message , {
+                      position: "top-right",
+                      autoClose: 4000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "colored",
+            
+                    });
+      }
+      
       
     } catch (error: any) {
+      console.log('error');
       const message =
         error.response?.data?.message || 'Login failed. Please try again.';
+         toast.error(message , {
+                      position: "top-right",
+                      autoClose: 4000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "colored",
+            
+                    });
       setApiError(message);
     } finally {
       setLoading(false);
@@ -84,14 +126,48 @@ const handleForceLogout = async ({
     if (response.data.response === 'success') {
       setMultiLogin(response.data.multiLogin || 0);
 
-      alert('You have been successfully logged out from all other devices.');
+      // alert('You have been successfully logged out from all other devices.');
+       toast.error('You have been successfully logged out from all other devices.' , {
+                      position: "top-right",
+                      autoClose: 4000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "colored",
+            
+                    });
 
     } else {
-      alert(response.data.message || 'Force logout failed.');
+      // alert(response.data.message || 'Force logout failed.');
+        toast.error(response.data.message || 'Force logout failed.' , {
+                      position: "top-right",
+                      autoClose: 4000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "colored",
+            
+                    });
+
     }
   } catch (error: any) {
     console.error('Force logout failed:', error);
-    alert('An error occurred while trying to force logout.');
+    // alert('An error occurred while trying to force logout.');
+       toast.error('An error occurred while trying to force logout.' , {
+                      position: "top-right",
+                      autoClose: 4000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "colored",
+            
+                    });
   }
 };
 
@@ -105,7 +181,7 @@ const handleForceLogout = async ({
           <Col xl={10} sm={12}>
             <Card className="rounded-4">
               <Row className="justify-content-between g-0">
-                 <Col lg={6} className="d-none d-lg-block">
+                <Col lg={6} className="d-none d-lg-block">
                   <div className="h-100 position-relative card-side-img rounded-end-4 overflow-hidden">
                     <div className="p-4 card-img-overlay rounded-start-0 auth-overlay d-flex align-items-end justify-content-center"></div>
                   </div>
@@ -115,9 +191,9 @@ const handleForceLogout = async ({
                     <div className="auth-brand text-center mb-4">
                       <AppLogo />
                       <h4 className="fw-bold mt-4">Welcome to Lead Hub</h4>
-                      <p className="text-muted w-lg-75 mx-auto">
-                        Let’s get you signed in. Enter your email and password to continue.
-                      </p>
+                      {/* <p className="text-muted w-lg-75 mx-auto">
+                        Let's get you signed in. Enter your email and password to continue.
+                      </p> */}
                     </div>
 
                     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -194,8 +270,8 @@ const handleForceLogout = async ({
                         {multiLogin === 1000 ? (
                           <>
                           <div className="text-danger text-center mt-2 mb-2 fw-semibold">
-                            You're signed in on another device. Log out?
-                          </div>
+                           You're signed in on another device. Log out?
+                             </div>
                         
                           <Button
                             variant="warning"
@@ -232,7 +308,7 @@ const handleForceLogout = async ({
                   </div>
                 </Col>
 
-               
+                
               </Row>
             </Card>
           </Col>

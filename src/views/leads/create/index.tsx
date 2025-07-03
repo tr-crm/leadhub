@@ -9,11 +9,11 @@ import SourceSelect from '@/components/soucrelist';
 import CategorySelect from '@/components/categoryselect';
 import SubCategorySelect from '@/components/subcategoryselect';
 import ProductSelect from '@/components/productselect';
-import CountrySelect from '@/components/countryselect';
+// import CountrySelect from '@/components/countryselect';
 import BranchSelect from '@/components/branchselect';
 // import StatusSelect from '@/components/statusselect';
-// import ExecutiveSelect from '@/components/executiveselect';
-
+import ExecutiveSelect from '@/components/executiveselect';
+import {toast } from 'react-toastify';
 interface OptionType {
   value: number | '';
   label: string;
@@ -33,7 +33,8 @@ const InlineField = ({
   value,
   onChange,
   type = 'text',
-  required = false,
+  required = true,
+  placeholder = '',
   children,
 }: {
   label: string;
@@ -42,6 +43,7 @@ const InlineField = ({
   onChange: (e: any) => void;
   type?: string;
   required?: boolean;
+  placeholder?: string;
   children?: React.ReactNode;
 }) => (
   <Row className="mb-3 align-items-center">
@@ -58,11 +60,13 @@ const InlineField = ({
           value={value}
           onChange={onChange}
           required={required}
+          placeholder={placeholder}
         />
       )}
     </Col>
   </Row>
 );
+
 
 const LeadCreatePage: React.FC = () => {
   const user = getUserInfo();
@@ -93,6 +97,8 @@ const LeadCreatePage: React.FC = () => {
     createdByVal: user.id,
     userIdVal: user.id,
     tokenVal: user.access_token,
+    regionVal: user.region,
+     executiveIdVal: 0,
   };
 
   const numberFields = [
@@ -110,6 +116,7 @@ const LeadCreatePage: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  console.log(status,errorMessage);
 
   // Type-safe category name
   const selectedCategoryName =
@@ -156,11 +163,17 @@ const LeadCreatePage: React.FC = () => {
   const handleSubCategoryChange = (option: OptionType | null) =>
     setFormData(prev => ({ ...prev, subCategoryVal: option?.value ?? '' }));
 
-  const handleCountryChange = (option: OptionType | null) =>
-    setFormData(prev => ({ ...prev, countryVal: option?.value ?? '' }));
 
-  const handleBranchChange = (option: OptionType | null) =>
-    setFormData(prev => ({ ...prev, branchVal: option?.value ?? '' }));
+  // const handleBranchChange = (option: OptionType | null) =>
+  //   setFormData(prev => ({ ...prev, branchVal: option?.value ?? '' }));
+ const handleBranchChange = (selected: OptionType | null): void => {
+  setFormData((prev) => ({
+    ...prev,
+    branchVal: selected?.value || '',
+  }));
+};
+
+
   
 
   const normalizeNumber = (val: string | number): number => (val === '' ? 0 : Number(val));
@@ -170,23 +183,113 @@ const LeadCreatePage: React.FC = () => {
     setStatus('idle');
     setErrorMessage('');
     setIsLoading(true);
-
-    // Validation
+    // console.log(formData.sourceVal==='');return;
+     if (formData.sourceVal==='' || formData.sourceVal===0) {
+       toast.error('Source Required.', {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+                theme: "colored",
+      
+              });
+      
+      setStatus('error');
+      setErrorMessage('Source Required.');
+      setIsLoading(false);
+      return;
+    }
+     if (formData.categoryVal==='' || formData.categoryVal===0) {
+       toast.error('Category Required.', {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+                theme: "colored",
+      
+              });
+      
+      setStatus('error');
+      setErrorMessage('Category Required.');
+      setIsLoading(false);
+      return;
+    }
+    if (formData.executiveIdVal==='' || formData.executiveIdVal===0) {
+       toast.error('Category Required.', {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+                theme: "colored",
+      
+              });
+      
+      setStatus('error');
+      setErrorMessage('Executive Required.');
+      setIsLoading(false);
+      return;
+    }
+        // Validation
     if (isTestprep && formData.productVal === '') {
+       toast.error('Product Required.', {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+                theme: "colored",
+      
+              });
+      
       setStatus('error');
-      setErrorMessage('Product is required for Testprep.');
+      setErrorMessage('Product Required.');
       setIsLoading(false);
       return;
     }
-    if (isACS && formData.countryVal === '') {
+    
+    if (isImmigration && (formData.subCategoryVal === '' )) {
+      toast.error('SubCategory Required.', {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+                theme: "colored",
+      
+              });
       setStatus('error');
-      setErrorMessage('Country is required for ACS.');
+      setErrorMessage('SubCategory Required.');
       setIsLoading(false);
       return;
     }
-    if (isImmigration && (formData.subCategoryVal === '' || formData.countryVal === '')) {
+    if (isImmigration && (formData.productVal === '' )) {
+         toast.error('Product Required.', {
+                position: "top-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+                theme: "colored",
+      
+              });
+      
       setStatus('error');
-      setErrorMessage('SubCategory and Country are required for Immigration.');
+      setErrorMessage('Product Required.');
       setIsLoading(false);
       return;
     }
@@ -198,22 +301,73 @@ const LeadCreatePage: React.FC = () => {
       categoryVal: normalizeNumber(formData.categoryVal),
       subCategoryVal: normalizeNumber(formData.subCategoryVal),
       productVal: normalizeNumber(formData.productVal),
-      countryVal: normalizeNumber(formData.countryVal),
       branchVal: normalizeNumber(formData.branchVal),
-      leadTypeVal: normalizeNumber(formData.leadTypeVal),
-      leadStatusVal: normalizeNumber(formData.leadStatusVal),
       createdByVal: user.id,
       userIdVal: user.id,
       tokenVal: user.access_token,
+      regionVal:user.region,
+      executiveIdVal:normalizeNumber(formData.executiveIdVal)
     };
 
     try {
-      await CreateLead(payload);
-      setStatus('success');
+      
+        const response = await CreateLead(payload);
+
+        console.log(response.response);
+            
+               if (response.response === 'login_error') {
+               
+                       toast.error(response.message , {
+                         position: "top-right",
+                         autoClose: 4000,
+                         hideProgressBar: false,
+                         closeOnClick: true,
+                         pauseOnHover: true,
+                         draggable: false,
+                         progress: undefined,
+                         theme: "colored",
+               
+                       });
+        
+                        navigate('/login');
+               
+                       // Optionally redirect to login page here
+                     } else if (response.response === 'error') {
+                         
+                       toast.error(response.message, {
+                         position: "top-right",
+                         autoClose: 5000,
+                         hideProgressBar: false,
+                         closeOnClick: true,
+                         pauseOnHover: true,
+                         draggable: false,
+                         progress: undefined,
+                         theme: "colored",
+               
+                       });
+                       // setError(response.message || 'Failed to import data.');
+                     } else if (response.response === 'success') {
+                       
+                       toast.success(response.message, {
+                         position: "top-right",
+                         autoClose: 5000,
+                         hideProgressBar: false,
+                         closeOnClick: true,
+                         pauseOnHover: true,
+                         draggable: false,
+                         progress: undefined,
+                         theme: "colored",
+               
+                       });
+                        setStatus('success');
       setFormData(initialState);
       navigate('/leads/list');
+                     }
+     
+
+      
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       setStatus('error');
       setErrorMessage('Failed to create lead. Please try again.');
     } finally {
@@ -230,17 +384,63 @@ const LeadCreatePage: React.FC = () => {
       <Card style={{ maxWidth: 600, width: '100%', padding: '2rem' }} className="shadow-sm">
       
         
-        {status === 'success' && <Alert variant="success">Lead created successfully!</Alert>}
-        {status === 'error' && <Alert variant="danger">{errorMessage}</Alert>}
+        
 
         <Form onSubmit={handleSubmit} className="mt-3">
-          <InlineField label="Lead Date" name="leadDateVal" value={formData.leadDateVal} onChange={handleChange} type="date" required />
+          <InlineField
+  label="Lead Date"
+  name="leadDateVal"
+  value={formData.leadDateVal}
+  onChange={handleChange}
+  type="date"
+  required
+/>
+
+<InlineField
+  label="First Name"
+  name="firstNameVal"
+  value={formData.firstNameVal}
+  onChange={handleChange}
+  required
+  placeholder="Enter first name"
+/>
+
+<InlineField
+  label="Last Name"
+  name="lastNameVal"
+  value={formData.lastNameVal}
+  onChange={handleChange}
+  required
+  placeholder="Enter last name"
+/>
+
+<InlineField
+  label="Email Address"
+  name="emailAddressVal"
+  value={formData.emailAddressVal}
+  onChange={handleChange}
+  type="email"
+  required
+  placeholder="example@email.com"
+/>
+
+<InlineField
+  label="Phone Number"
+  name="phoneNumberVal"
+  value={formData.phoneNumberVal}
+  onChange={handleChange}
+  type="tel"
+  required
+  placeholder="e.g., +91-9876543210"
+/>
+
+          {/* <InlineField label="Lead Date" name="leadDateVal" value={formData.leadDateVal} onChange={handleChange} type="date" required   />
           <InlineField label="First Name" name="firstNameVal" value={formData.firstNameVal} onChange={handleChange} required />
           <InlineField label="Last Name" name="lastNameVal" value={formData.lastNameVal} onChange={handleChange} required />
           <InlineField label="Email Address" name="emailAddressVal" value={formData.emailAddressVal} onChange={handleChange} type="email" required />
           <InlineField label="Phone Number" name="phoneNumberVal" value={formData.phoneNumberVal} onChange={handleChange} type="tel" required />
-
-            <InlineField  label="Source" name="sourceVal" value={formData.sourceVal} onChange={handleSourceChange} required>
+*/}
+            <InlineField  label="Source" name="sourceVal" value={formData.sourceVal} onChange={handleSourceChange} required> 
     <SourceSelect
       value={formData.sourceVal}
       onChange={handleSourceChange}
@@ -250,7 +450,7 @@ const LeadCreatePage: React.FC = () => {
        
 
           <InlineField label="Category" name="categoryVal" value={formData.categoryVal} onChange={handleCategoryChange} required>
-            <CategorySelect value={formData.categoryVal} onChange={handleCategoryChange} required name="categoryVal" label="Category" />
+            <CategorySelect value={formData.categoryVal} onChange={handleCategoryChange} required name="categoryVal" label="Category"  />
           </InlineField>
 
           {isImmigration && (
@@ -266,17 +466,30 @@ const LeadCreatePage: React.FC = () => {
             </InlineField>
           )}
 
-          {isTestprep && (
+          {(isTestprep || isACS || isImmigration) && (
+            
             <InlineField label="Product" name="productVal" value={formData.productVal} onChange={handleProductChange} required>
-              <ProductSelect value={formData.productVal} onChange={handleProductChange} required label="Product" />
+              <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required label="Product" />
             </InlineField>
           )}
 
-          {(isACS || isImmigration) && (
+          {/* {(isACS || isImmigration) && (
             <InlineField label="Country" name="countryVal" value={formData.countryVal} onChange={handleCountryChange} required>
               <CountrySelect value={formData.countryVal} onChange={handleCountryChange} required label="Country" />
             </InlineField>
-          )}
+          )} */}
+ <InlineField label="Executive" name="executiveIdVal" value={formData.executiveIdVal} onChange={handleBranchChange}>
+            <ExecutiveSelect
+              value={formData.executiveIdVal === '' ? '' : String(formData.executiveIdVal)}
+              onChange={handleBranchChange}
+              name="executiveIdVal"
+              label="Executive"
+              required
+            />
+
+            
+          </InlineField>
+
 
           <InlineField label="Branch" name="branchVal" value={formData.branchVal} onChange={handleBranchChange}>
             <BranchSelect
@@ -284,20 +497,12 @@ const LeadCreatePage: React.FC = () => {
               onChange={handleBranchChange}
               name="branchVal"
               label="Branch"
+              required
             />
 
             
           </InlineField>
-             {/* <InlineField label="Branch" name="stVal" value={formData.branchVal} onChange={handleBranchChange}>
-            <StatusSelect
-              value={formData.branchVal === '' ? '' : String(formData.branchVal)}
-              onChange={handleBranchChange}
-              name="branchVal"
-              label="Branch"
-               placeholder="Select Status"
-            />
-       
-          </InlineField> */}
+             
 
           <Row>
             <Col md={{ span: 6, offset: 3 }} className="text-end">
@@ -307,6 +512,8 @@ const LeadCreatePage: React.FC = () => {
             </Col>
           </Row>
         </Form>
+        {/* {status === 'success' && <Alert variant="success">Lead created successfully!</Alert>}
+        {status === 'error' && <Alert variant="danger">{errorMessage}</Alert>} */}
       </Card>
     </div>
     </Container>

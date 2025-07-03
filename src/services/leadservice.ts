@@ -1,4 +1,7 @@
-import axios from '../api/axiosInstance'; // or plain axios
+import axios from '../api/axiosInstance.tsx'; // or plain axios
+
+// import axio from '../api/axiosInstance.tsx'; // your custom axios instance
+import axio from 'axios'; // main axios package for isAxiosError
 
 export interface WebhookLeadayload {
   start: string;
@@ -39,6 +42,8 @@ export interface LeadCreateRequestPayload {
   createdByVal: number;
   userIdVal: number;
   tokenVal: string;
+  regionVal:number;
+  executiveIdVal:number | '';
 }
 export interface  LeadUpdateRequestPayload {
   id: number;
@@ -53,6 +58,8 @@ export interface  LeadUpdateRequestPayload {
   productVal?: any;
   countryVal?: any;
   branchVal?: any;
+  userIdVal: number;
+  tokenVal: string;
   // ...other fields
 }
 
@@ -76,6 +83,11 @@ export const updateLead = async (payload: LeadUpdateRequestPayload) => {
   const response = await axios.post('/api/Leads/createLead', payload);
   return response.data;
 };
+export const FreshLeadTransferToLeadList = async (payload:any) => {
+  const response = await axios.post('/api/Leads/leadTransfer', payload);
+  return response.data;
+};
+
 // export const CreateLead = async (payload: LeadCreateRequestPayload): Promise<void> => {
 //   const res = await fetch('/api/Leads/createLead', {
 //     method: 'POST',
@@ -130,6 +142,165 @@ export const transferLead = async (payload: TransferLeadPayload) => {
     throw new Error(error?.response?.data?.message || 'Transfer failed');
   }
 };
+
+
+// leadservice.ts
+
+
+export interface ImportCreateApiResponse<T> {
+  type: 'success' | 'error' | 'login_error';
+  data?: T;
+  message?: string;
+  response?:string;
+}
+
+export interface LeadPayload {
+  lead_date: string | null;
+  source_id: string | null;
+  category_id: string | null;
+  sub_category_id: string | null;
+  product_id: string | null;
+  branch_id: string;
+  lead_type: string;
+  created_by: string | null;
+  data: any;
+  userIdVal:number;
+  tokenVal:string;
+  dm:number
+}
+
+export async function ImportLeadCreate(
+  payload: LeadPayload
+): Promise<ImportCreateApiResponse<any>> {
+  try {
+    // Use your custom axios instance for the POST request
+    const res = await axios.post('/api/Leads/importLeads', payload);
+   
+    // Check if backend indicates login error inside the response data
+    if (res.data?.response === 'login_error') {
+      return {
+        type: 'login_error',
+        message: res.data.message || 'Unauthorized. Please login again.',
+      };
+    }
+
+    // Successful response
+    return { type: 'success', data: res.data };
+  } catch (error: any) {
+    // Use the main axios package's helper to check if this is an axios error
+    if (axio.isAxiosError(error)) {
+      // Check for 401 unauthorized HTTP status
+      if (error.response?.status === 401) {
+        return {
+          type: 'login_error',
+          message: 'Unauthorized. Please login again.',
+        };
+      }
+      // Other axios errors
+      return {
+        type: 'error',
+        message: error.response?.data?.message || error.message || 'Unknown error',
+      };
+    }
+
+    // Non-axios errors fallback
+    return { type: 'error', message: error.message || 'Network error' };
+  }
+}
+
+
+// getImportLeadsList
+export interface ImportLeadPayload {
+  start: string;
+  sourceVal: any;
+  typeVal?: number;
+  userIdVal: number;
+  tokenVal: number;
+  regionVal:any;
+ 
+}
+// getImportLeadsList
+export async function getImportLeadsList(
+  payload:ImportLeadPayload
+): Promise<ImportCreateApiResponse<any>> {
+  try {
+    // Use your custom axios instance for the POST request
+    const res = await axios.post('/api/Leads/getImportLeadsList', payload);
+   
+    // Check if backend indicates login error inside the response data
+    if (res.data?.response === 'login_error') {
+      return {
+        type: 'login_error',
+        message: res.data.message || 'Unauthorized. Please login again.',
+      };
+    }
+
+    // Successful response
+    return { type: 'success', data: res.data };
+  } catch (error: any) {
+    // Use the main axios package's helper to check if this is an axios error
+    if (axio.isAxiosError(error)) {
+      // Check for 401 unauthorized HTTP status
+      if (error.response?.status === 401) {
+        return {
+          type: 'login_error',
+          message: 'Unauthorized. Please login again.',
+        };
+      }
+      // Other axios errors
+      return {
+        type: 'error',
+        message: error.response?.data?.message || error.message || 'Unknown error',
+      };
+    }
+
+    // Non-axios errors fallback
+    return { type: 'error', message: error.message || 'Network error' };
+  }
+}
+
+//getDmImportLeadsList
+
+
+export async function getDmImportLeadsList(
+  payload:ImportLeadPayload
+): Promise<ImportCreateApiResponse<any>> {
+  try {
+    // Use your custom axios instance for the POST request
+    const res = await axios.post('/api/Leads/getDmImportLeadsList', payload);
+   
+    // Check if backend indicates login error inside the response data
+    if (res.data?.response === 'login_error') {
+      return {
+        type: 'login_error',
+        message: res.data.message || 'Unauthorized. Please login again.',
+      };
+    }
+
+    // Successful response
+    return { type: 'success', data: res.data };
+  } catch (error: any) {
+    // Use the main axios package's helper to check if this is an axios error
+    if (axio.isAxiosError(error)) {
+      // Check for 401 unauthorized HTTP status
+      if (error.response?.status === 401) {
+        return {
+          type: 'login_error',
+          message: 'Unauthorized. Please login again.',
+        };
+      }
+      // Other axios errors
+      return {
+        type: 'error',
+        message: error.response?.data?.message || error.message || 'Unknown error',
+      };
+    }
+
+    // Non-axios errors fallback
+    return { type: 'error', message: error.message || 'Network error' };
+  }
+}
+
 
 
 

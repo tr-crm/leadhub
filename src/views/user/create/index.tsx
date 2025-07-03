@@ -7,7 +7,7 @@ import RegionSelect from '@/components/regionselect';
 import {toast } from 'react-toastify';
 
 
-const Page = () => {
+const User = () => {
   const user = getUserInfo();
   const type=user.type;
 const navigate = useNavigate();
@@ -165,7 +165,20 @@ const getInitialRegionValue = (): string => {
                 type="text"
                 name="firstName"
                 value={formData.firstName}
-                onChange={handleChange}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                let input = e.target.value;
+
+                input = input.replace(/[^a-zA-Z]/g, '');
+
+                if (input.length > 0) {
+                  input = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
+                }
+
+                setFormData((prevData) => ({
+                  ...prevData,
+                  firstName: input,
+                }));
+              }}
                 placeholder="Enter first name"
                 required
               />
@@ -281,4 +294,4 @@ const getInitialRegionValue = (): string => {
   );
 };
 
-export default Page;
+export default User

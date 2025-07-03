@@ -2,11 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { getUserInfo } from '@/utils/auth';
 import { getBranchList } from '@/services/generalservice';
-import type {Branch } from '@/services/generalservice';
+import type { Branch } from '@/services/generalservice';
 
 interface OptionType {
   value: any;
   label: string;
+}
+
+interface GroupedOption {
+  label: string;
+  options: OptionType[];
 }
 
 interface BranchSelectProps {
@@ -30,47 +35,62 @@ const BranchSelect: React.FC<BranchSelectProps> = ({
   name = 'branchVal',
   className = '',
 }) => {
-  const [branches, setBranches] = useState<OptionType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [branches, setBranches] = useState<GroupedOption[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const user = getUserInfo();
 
-  useEffect(() => {
-    const fetchBranches = async () => {
-      setLoading(true);
-      try {
-        if (user?.id && user?.access_token) {
-          const data = await getBranchList(user.id, user.access_token, start);
-          // const options: OptionType[] = data.map((branch: Branch) => ({
-          //   value: branch.id,
-          //   label: branch.display_name,
-          // }));
-          //   const defaultOption = { value: 0, label: 'Select Source' };
-          // const defaultOption = { value: '', label: `Select ${label}` };
-          // setBranches([defaultOption, ...options]);
+  // Group flat branches by state
+  const groupBranchesByState = (branchList: Branch[]): GroupedOption[] => {
+    const stateMap: Record<string, OptionType[]> = {};
 
-           const formatted = data.map((branch: Branch) => ({
-                        value: branch.id,
-            label: branch.display_name,
-                    }));
-          
-                    // Add default option at the top
-                    const defaultOption = { value: 0, label: 'Select Branch' };
-                    setBranches([defaultOption, ...formatted]);
-        } else {
-          setBranches([]);
-        }
-      } catch (error) {
-        console.error('Error loading branches:', error);
-        setBranches([]);
-      } finally {
-        setLoading(false);
+    branchList.forEach((branch) => {
+      const option: OptionType = {
+        value: branch.id,
+        label: branch.display_name,
+      };
+
+      const stateName = branch.State?.trim() || 'Unknown State';
+
+      if (!stateMap[stateName]) {
+        stateMap[stateName] = [];
       }
-    };
 
-    fetchBranches();
-  }, [start, user?.id, user?.access_token, label]);
+      stateMap[stateName].push(option);
+    });
 
-  const selectedOption = branches.find((o) => o.value === value) || null;
+    return Object.entries(stateMap).map(([state, options]) => ({
+      label: state,
+      options,
+    }));
+  };
+useEffect(() => {
+  const fetchBranches = async () => {
+    setLoading(true);
+    try {
+      if (user?.id && user?.access_token) {
+        const result = await getBranchList(user.id, user.access_token, start);
+        // console.log(result);
+        const rawBranches: Branch[] = result ? result : [];
+        const grouped = groupBranchesByState(rawBranches);
+        setBranches(grouped);
+      } else {
+        setBranches([]);
+      }
+    } catch (error) {
+      console.error('Error loading branches:', error);
+      setBranches([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchBranches();
+}, [start, user?.id, user?.access_token]);
+
+
+  // Flatten grouped options to find selected value
+  const selectedOption =
+    branches.flatMap((group) => group.options).find((o) => o.value === value) || null;
 
   return (
     <div className={className}>

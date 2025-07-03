@@ -5,10 +5,11 @@ import Select from 'react-select';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
 // import { getUserList, User, UserListRequestPayload } from '@/services/userservice';
 
-import type { UserListRequestPayload , LeaveRequestPayload, UserEditPayload, UserResetPayload, AssignPayload} from '@/services/userservice';
-import { getUserList, submitLeaveRequest, submitUserEdit , submitUserResetPassword, submitAssignUser } from '@/services/userservice';
+import type { UserListRequestPayload , LeaveRequestPayload, UserEditPayload, UserResetPayload, AssignPayload, UserCreatePayload } from '@/services/userservice';
+import { getUserList, submitLeaveRequest, submitUserEdit , submitUserResetPassword, submitAssignUser, submitUserCreate } from '@/services/userservice';
 import type { User } from '@/types/user.types';
 import { getUserInfo } from '@/utils/auth';
+import { toast } from 'react-toastify';
 
   const UsersDataTable: React.FC = () => {
   const [data, setData] = useState<User[]>([]);
@@ -106,12 +107,31 @@ const handleSubmitLeave = async () => {
 
   setSubmittingLeave(true);
   try {
-    await submitLeaveRequest(payload);
-    alert('Leave submitted successfully!');
+    await submitLeaveRequest(payload);   
+    toast.success( 'Leave submitted successfully!', {
+                      position: "top-right",
+                      autoClose: 3000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "colored",
+            
+                    });
     setShowLeaveModal(false);
   } catch (error) {
-    console.error('Failed to submit leave:', error);
-    alert('Failed to submit leave. Please try again.');
+     toast.error('Failed to submit leave. Please try again', {
+                      position: "top-right",
+                      autoClose: 3000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: false,
+                      progress: undefined,
+                      theme: "colored",
+            
+                    });
   } finally {
     setSubmittingLeave(false);
   }
@@ -212,6 +232,62 @@ const handlesubmitAssign = async (row: User) => {
 };
 
 
+// Create User
+const [showCreateModal, setShowCreateModal] = useState(false);
+const [newUser, setNewUser] = useState<Partial<User>>({
+  first_name: '',
+  last_name: '',
+  email_address: '',
+  phone_number: '',
+  type: 5,
+  region: user.region,
+});
+const [submittingCreate, setSubmittingCreate] = useState(false);
+const handleOpenUserCreateModal = () => {
+  setNewUser({
+    first_name: '',
+    last_name: '',
+    email_address: '',
+    phone_number: '',
+    type: 5,
+    region: user.region,
+  });
+  setShowCreateModal(true);
+};
+
+const handleSubmitCreate = async () => {
+  if (!newUser.first_name || !newUser.email_address || !newUser.region) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+
+  const payload: UserCreatePayload = {
+    userIdVal: user.id,
+    tokenVal: user.access_token,
+    firstNameVal: newUser.first_name || '',
+    lastNameVal: newUser.last_name || '',
+    emailAddressVal: newUser.email_address || '',
+    phoneNumberVal: newUser.phone_number || '',
+    roleVal: Number(newUser.type),
+    regionVal: newUser.region,
+    createdByVal: user.id,
+    supervisionVal: user.id,
+  };
+
+  setSubmittingCreate(true);
+  try {
+    const res = await submitUserCreate(payload); 
+    toast.success(res.message);
+    setShowCreateModal(false);
+    refreshData();
+  } catch (error) {
+    toast.error('Failed to create user');
+  } finally {
+    setSubmittingCreate(false);
+  }
+};
+
+
 const baseColumns = [
   { name: 'ID', selector: (row: User) => row.id, sortable: true, width: '70px' },
   { name: 'Name', selector: (row: User) => row.full_name, sortable: true },
@@ -234,6 +310,7 @@ const baseColumns = [
   {
     name: 'Action',
     cell: (row: User) => (
+
       <button className="btn btn-danger btn-sm" onClick={() => handleOpenResetModal(row)}>
         Reset
       </button>
@@ -290,7 +367,31 @@ const leaveColumn = {
   width: '120px',
 };
 
-const columns = (user.type == 1 || user.type == 2) ? [...baseColumns, assignColumn, leaveColumn] : [...baseColumns];
+  const userCreateColumn = {
+  name: 'User Create',
+  cell: (row: User) => 
+    row.type == 3 ? (
+      <Button variant="success" className="me-2" onClick={handleOpenUserCreateModal}>
+        Create User
+      </Button>
+    ) : (
+     '-'
+    ),
+  button: true,
+  ignoreRowClick: true,
+  allowOverflow: true,
+  width: '120px',
+};
+
+let columns;
+
+if (user.type == 1 || user.type == 2) {
+  columns = [...baseColumns, assignColumn, leaveColumn];
+} else if (user.type == 3) {
+  columns = [...baseColumns, assignColumn, leaveColumn, userCreateColumn];
+} else {
+  columns = [...baseColumns,assignColumn,leaveColumn];
+}
 
 
   return (
@@ -306,7 +407,6 @@ const columns = (user.type == 1 || user.type == 2) ? [...baseColumns, assignColu
           </Row>
       </Form>
       <DataTable
-        title="Users List"
         columns={columns}
         data={data}
         progressPending={loading}
@@ -493,9 +593,90 @@ const columns = (user.type == 1 || user.type == 2) ? [...baseColumns, assignColu
       </Modal.Body>
     </Modal>
 
+    <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)} size="lg" centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Create User</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group className="mb-3">
+            <Form.Label>First Name</Form.Label>
+            <Form.Control
+              type="text"
+              value={newUser.first_name || ''}
+              onChange={(e) => setNewUser({ ...newUser, first_name: e.target.value })}
+            />
+          </Form.Group>
 
+          <Form.Group className="mb-3">
+            <Form.Label>Last Name</Form.Label>
+            <Form.Control
+              type="text"
+              value={newUser.last_name || ''}
+              onChange={(e) => setNewUser({ ...newUser, last_name: e.target.value })}
+            />
+          </Form.Group>
 
+          <Form.Group className="mb-3">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              value={newUser.email_address || ''}
+              onChange={(e) => setNewUser({ ...newUser, email_address: e.target.value })}
+            />
+          </Form.Group>
 
+          <Form.Group className="mb-3">
+            <Form.Label>Phone Number</Form.Label>
+            <Form.Control
+              type="tel"
+              value={newUser.phone_number || ''}
+              onChange={(e) => setNewUser({ ...newUser, phone_number: e.target.value })}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Role</Form.Label>
+            <Select
+              options={roleOptions}
+              value={roleOptions.find(opt => opt.value === Number(newUser.type))}
+              onChange={(selected) =>
+                setNewUser({
+                  ...newUser,
+                  type: selected?.value ?? 0
+                })
+              }
+              placeholder="Select Role"
+              isDisabled={true}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Region</Form.Label>
+            <Select
+              options={regionOptions}
+              value={regionOptions.find(opt => opt.value === Number(newUser.region))}
+              onChange={(selected) =>
+                setNewUser({
+                  ...newUser,
+                  region: selected?.value ?? 0,
+                })
+              }
+              placeholder="Select Region"
+              isDisabled={true}
+            />
+          </Form.Group>
+
+          <Button
+            variant="success"
+            disabled={submittingCreate}
+            onClick={handleSubmitCreate}
+          >
+            {submittingCreate ? 'Creating...' : 'Create User'}
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
 
     </Container>
   );

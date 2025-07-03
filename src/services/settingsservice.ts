@@ -1,10 +1,12 @@
-import api from '../api/axiosInstance';
+import api from '../api/axiosInstance.tsx';
 
 export interface Telecaller {
   id: string;
   full_name: string;
   assignment_order?: string;
   is_available_for_assignment?: string;
+  order:any;
+  type:number;
 }
 
 export interface AssignmentPayload {

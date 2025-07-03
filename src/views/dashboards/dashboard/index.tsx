@@ -44,7 +44,6 @@ const Page = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [error, setError] = useState('');
   const user = getUserInfo();
-  
 
   const fetchDashboard = async () => {
     const payload: leadDashBord = {
@@ -99,24 +98,24 @@ const Page = () => {
           badgeColor: 'dark',
           badgeText: '',
           value: res.direct_lead_count,
-          metric: 'Walk-in / Direct',
+          metric: 'Direct',
           targetValue: Number(res.direct_lead_count) || 0,
         },
         {
-          title: 'Total Followups',
+          title: 'Webhook Lead Count',
           badgeColor: 'primary',
           badgeText: '',
-          value: res.total_followups,
-          metric: 'This Month',
-          targetValue: Number(res.total_followups) || 0,
+          value: res.webhook_lead_count,
+          metric: 'Webhook Leads',
+          targetValue: Number(res.webhook_lead_count) || 0,
         },
         {
-          title: 'Today\'s Followups',
+          title: 'Website Lead Count',
           badgeColor: 'info',
           badgeText: '',
-          value: res.today_followups,
-          metric: 'Scheduled Today',
-          targetValue: Number(res.today_followups) || 0,
+          value: res.website_lead_count,
+          metric: 'Website Leads',
+          targetValue: Number(res.website_lead_count) || 0,
         },
       ];
 
@@ -149,9 +148,9 @@ const Page = () => {
       <PageBreadcrumb title="Dashboard" />
 
       <Form className="mb-4">
-        <Row className="align-items-end">
+        <Row className="align-items-end justify-content-end">
           <Col md={2}>
-            <Form.Label>Year</Form.Label>
+            {/* <Form.Label>Year</Form.Label> */}
             <Form.Select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
@@ -165,7 +164,7 @@ const Page = () => {
           </Col>
 
           <Col md={2}>
-            <Form.Label>Month</Form.Label>
+            {/* <Form.Label>Month</Form.Label> */}
             <Form.Select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number(e.target.value))}

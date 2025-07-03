@@ -3,9 +3,11 @@ import { FaEye, FaEdit } from 'react-icons/fa';
 
 import Select from 'react-select';
 import DataTable from 'react-data-table-component';
-import type { TableColumn } from 'react-data-table-component';
+import { format } from 'date-fns';
 import {
   Container,
+  Card,
+  Table,
   Modal,
   Button,
   Form,
@@ -21,7 +23,7 @@ import type {
   LeadRequestPayload,
   LeadUpdateRequestPayload,
 } from '@/services/leadservice';
-import { getLeadsList, updateLead,addLeadFollowUp } from '@/services/leadservice';
+import { getLeadsList, updateLead, addLeadFollowUp } from '@/services/leadservice';
 import { SourceList, getCategoryList, getSubCategoryList } from '@/services/generalservice';
 import type { Lead } from '@/types/lead.types';
 import { getUserInfo } from '@/utils/auth';
@@ -44,7 +46,7 @@ interface LeadFormData {
   sourceVal?: any;
   categoryVal?: any;
   subCategoryVal?: any;
-  productVal?:any;
+  productVal?: any;
 }
 
 const LeadsDataTable: React.FC = () => {
@@ -62,9 +64,9 @@ const LeadsDataTable: React.FC = () => {
     return d;
   });
   const [toDate, setToDate] = useState<Date | null>(new Date());
-  const [sourceFilter, setSourceFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [execFilter, setExecFilter] = useState('all');
+  const [sourceFilter, setSourceFilter] = useState('0');
+  const [statusFilter, setStatusFilter] = useState('0');
+  const [execFilter, setExecFilter] = useState('0');
 
   const [sourceOptions, setSourceOptions] = useState<OptionType[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<OptionType[]>([]);
@@ -72,14 +74,15 @@ const LeadsDataTable: React.FC = () => {
 
   const user = getUserInfo();
 
-  const handleExecChange = (opt: OptionType | null) => setExecFilter(opt?.value ?? 'all');
-  const handleStatusChange = (opt: OptionType | null) => setStatusFilter(opt?.value ?? 'all');
-  const handleFilterSourceChange = (opt: OptionType | null) => setSourceFilter(opt?.value ?? 'all');
-const [showViewModal, setShowViewModal] = useState(false);
-const [viewLead, setViewLead] = useState<Lead | null>(null);
-const [followupDate, setFollowupDate] = useState<Date | null>(new Date());
-const [followupStatus, setFollowupStatus] = useState<OptionType | null>(null);
-const [followupComment, setFollowupComment] = useState('');
+  const handleExecChange = (opt: OptionType | null) => setExecFilter(opt?.value ?? '0');
+  const handleStatusChange = (opt: OptionType | null) => setStatusFilter(opt?.value ?? '0');
+  const handleFilterSourceChange = (opt: OptionType | null) => setSourceFilter(opt?.value ?? '0');
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewLead, setViewLead] = useState<Lead | null>(null);
+  const [followupDate, setFollowupDate] = useState<Date | null>();
+   const [walkinDate, setWalkinDate] = useState<Date | null>();
+  const [followupStatus, setFollowupStatus] = useState<OptionType | null>(null);
+  const [followupComment, setFollowupComment] = useState('');
 
 
   const fetchLeads = async () => {
@@ -167,9 +170,9 @@ const [followupComment, setFollowupComment] = useState('');
     const [firstName = '', lastName = ''] = (lead.full_name || '').split(' ');
     const matchedSource = sourceOptions.find((opt) => opt.value == lead.source_id) ?? null;
     const matchedCategory = categoryOptions.find((opt) => opt.value == lead.category_id) ?? null;
-// const matchedSubCategory = subCategoryOptions.find(
-//       (opt) => opt.value == lead.sub_category_id
-//     ) ?? null;
+    // const matchedSubCategory = subCategoryOptions.find(
+    //       (opt) => opt.value == lead.sub_category_id
+    //     ) ?? null;
 
     setFormData({
       leadDateVal: lead.lead_date || '',
@@ -179,18 +182,18 @@ const [followupComment, setFollowupComment] = useState('');
       phoneNumberVal: lead.phone_number || '',
       sourceVal: matchedSource,
       categoryVal: matchedCategory,
-       subCategoryVal: "",
+      subCategoryVal: "",
     });
 
     await fetchSubCategories(lead.category_id);
-//  console.log(subCategoryOptions);
- const matchedSubCategory = subCategoryOptions.find((opt) => {
- 
-  return Number(opt.value) == Number(lead.sub_category_id);
-}) ?? null;
+    //  console.log(subCategoryOptions);
+    const matchedSubCategory = subCategoryOptions.find((opt) => {
+
+      return Number(opt.value) == Number(lead.sub_category_id);
+    }) ?? null;
 
 
-   
+
     setFormData((prev) => ({
       ...prev,
       subCategoryVal: matchedSubCategory
@@ -206,19 +209,20 @@ const [followupComment, setFollowupComment] = useState('');
     setFormData({});
   };
   const handleViewClick = (lead: Lead) => {
-    console.log(lead.lead_status);
+    // console.log(lead.lead_status);
     // const leadstatus=lead.lead_status;
-  setViewLead(lead);
-  setFollowupDate(new Date());
-  setFollowupStatus(null);
-  setFollowupComment('');
-  setShowViewModal(true);
-};
+    setViewLead(lead);
+    setFollowupDate(null);
+    setWalkinDate(null);
+    setFollowupStatus(null);
+    setFollowupComment('');
+    setShowViewModal(true);
+  };
 
-const handleCloseViewModal = () => {
-  setShowViewModal(false);
-  setViewLead(null);
-};
+  const handleCloseViewModal = () => {
+    setShowViewModal(false);
+    setViewLead(null);
+  };
 
 
   const handleFormChange = (key: keyof LeadFormData, value: any) =>
@@ -244,6 +248,8 @@ const handleCloseViewModal = () => {
         sourceVal: formData.sourceVal?.value ?? '',
         categoryVal: formData.categoryVal?.value ?? '',
         subCategoryVal: formData.subCategoryVal?.value ?? '',
+         userIdVal: user.id,
+      tokenVal: user.access_token,
       };
 
       await updateLead(payload);
@@ -256,58 +262,169 @@ const handleCloseViewModal = () => {
     }
   };
   const submitFollowUp = async () => {
-  if (!viewLead || !followupDate || !followupStatus) {
-    alert('Please fill all required fields');
-    return;
-  }
+    if (!viewLead || !followupDate || !followupStatus) {
+      alert('Please fill all required fields');
+      return;
+    }
 
-  const payload = {
-    leadIdVal: viewLead.id,
-    followupDateVal: followupDate.toISOString().slice(0, 10),
-    commentVal: followupComment,
-    createdByVal: user.id,
-    leadStatusVal:followupStatus.value
+    const payload = {
+      leadIdVal: viewLead.id,
+      followupDateVal: followupDate.toISOString().slice(0, 10),
+      commentVal: followupComment,
+      createdByVal: user.id,
+      leadStatusVal: followupStatus.value,
+       userIdVal: user.id,
+      tokenVal: user.access_token,
+    };
+
+    try {
+      await addLeadFollowUp(payload);
+      alert('Follow-up saved!');
+      handleCloseViewModal();
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || 'Failed to save follow-up');
+    }
   };
 
-  try {
-    await addLeadFollowUp(payload);
-    alert('Follow-up saved!');
-    handleCloseViewModal();
-  } catch (err: any) {
-    console.error(err);
-    alert(err.message || 'Failed to save follow-up');
+
+  const columns = [
+    {
+      name: 'ID',
+      cell: (_row: Lead, index: number) => index + 1,
+      width: '70px',
+    },
+    {
+      name: 'Action',
+      cell: (row: Lead) => (
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button size="sm" variant="info" onClick={() => handleViewClick(row)}>
+            <FaEye />
+          </Button>
+
+          <Button size="sm" variant="primary" onClick={() => handleOpenModal(row)}>
+            <FaEdit />
+          </Button>
+        </div>
+      ),
+      button: true,
+      width: '120px',
+    },
+    { name: 'Date', selector: (row: Lead) => row.lead_date || '-', sortable: true, width: '110px' },
+    { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true },
+    { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px' },
+    { name: 'Source', selector: (row: Lead) => row.source_name || '-', sortable: true },
+    { name: 'Category', selector: (row: Lead) => row.category_name || '-', sortable: true },
+    { name: 'Product', selector: (row: Lead) => row.product_name || '-', sortable: true, width: '90px' },
+    { name: 'Country', selector: (row: Lead) => row.country_name || '-', sortable: true, width: '90px' },
+    { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '110px' },
+    { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true },
+
+  ];
+
+
+
+
+const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
+  if (!data || typeof data !== 'object') {
+    return <div className="text-muted mt-2">No additional data available.</div>;
   }
+
+  const { comments, ...rest } = data;
+  console.log(comments);
+
+  return (
+    <Card className="mt-3">
+      <Card.Body>
+        <Card.Title>Full Details</Card.Title>
+        <Row>
+          {/* Left Column: Details with scroll */}
+          <Col md={6}>
+            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+              <Table striped bordered size="sm">
+                <tbody>
+                  {Object.entries(rest).map(([key, value]) => (
+                    <tr key={key}>
+                      <th style={{ textTransform: 'capitalize' }}>
+                        {key.replace(/_/g, ' ')}
+                      </th>
+                      <td>
+                        {typeof value === 'object' && value !== null
+                          ? JSON.stringify(value)
+                          : String(value)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </Col>
+
+          {/* Right Column: Comments with scroll */}
+          <Col md={6}>
+            <h6>Comments</h6>
+            <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+              {Array.isArray(comments) && comments.length > 0 ? (
+                comments.map((cmt, idx) => (
+                  <Card key={idx} className="mb-2">
+                    <Card.Body>
+                      
+                      <Card.Text>{cmt.comment}</Card.Text>
+                      {cmt.created_at && (
+                        <small className="text-muted pull-right">
+                       {cmt.created_by_name}  {new Date(cmt.created_at).toLocaleString()}
+                        </small>
+                      )}
+                      
+                    </Card.Body>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-muted">No comments available.</div>
+              )}
+            </div>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
+  );
 };
 
 
-  const columns: TableColumn<Lead>[] = [
-  { name: 'ID', cell: (_, i) => i + 1, width: '70px' },
-  { name: 'Date', selector: (r) => r.lead_date || '-', sortable: true, width: '110px' },
-  { name: 'Name', selector: (r) => r.full_name || '-', sortable: true },
-  { name: 'Phone', selector: (r) => r.phone_number || '-', sortable: true, width: '110px' },
-  { name: 'Source', selector: (r) => r.source_name || '-', sortable: true },
-  { name: 'Category', selector: (r) => r.category_name || '-', sortable: true },
-  { name: 'Product', selector: (r) => r.product_name || '-', sortable: true, width: '90px' },
-  { name: 'Country', selector: (r) => r.country_name || '-', sortable: true, width: '90px' },
-    { name: 'Status', selector: (r) => r.lead_status_name || '-', sortable: true, width: '110px' },
-  { name: 'Executive', selector: (r) => r.executive_name || '-', sortable: true },
-  {
-    name: 'Action',
-    cell: (r) => (
-      <div style={{ display: 'flex', gap: '8px' }}>
-        <Button size="sm" variant="info" onClick={() => handleViewClick(r)}>
-  <FaEye />
-</Button>
 
-        <Button size="sm" variant="primary" onClick={() => handleOpenModal(r)}>
-          <FaEdit />
-        </Button>
-      </div>
-    ),
-    button: true,
-    width: '120px',
-  },
-];
+
+
+
+  // const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
+  //   const details = data;
+  //   return (
+  //     <div
+  //       style={{
+  //         backgroundColor: '#F9F9F9',
+  //         padding: '15px',
+  //         borderRadius: '5px',
+  //         border: '1px solid #ddd',
+  //         marginTop: '10px',
+  //       }}
+  //     >
+  //       <strong>Full Details:</strong>
+  //       {details && typeof details === 'object' ? (
+  //         <table className="table table-sm mt-2">
+  //           <tbody>
+  //             {Object.entries(details).map(([key, value], index) => (
+  //               <tr key={`${key}-${index}`}>
+  //                 <th style={{ width: '150px', textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</th>
+  //                 <td>{String(value)}</td>
+  //               </tr>
+  //             ))}
+  //           </tbody>
+  //         </table>
+  //       ) : (
+  //         <div className="text-muted mt-2">No additional data available.</div>
+  //       )}
+  //     </div>
+  //   );
+  // };
 
   return (
     <Container fluid>
@@ -342,12 +459,25 @@ const handleCloseViewModal = () => {
 
       {error && <Alert variant="danger">{error}</Alert>}
 
-      <DataTable
+      {/* <DataTable
         columns={columns}
         data={data}
         progressPending={loading}
         pagination
         highlightOnHover
+        responsive
+      /> */}
+      <DataTable
+       
+        columns={columns}
+        data={data}
+        progressPending={loading}
+        expandableRows
+        expandableRowsComponent={ExpandedComponent}
+        pagination
+        selectableRows
+        highlightOnHover
+        pointerOnHover
         responsive
       />
 
@@ -454,56 +584,89 @@ const handleCloseViewModal = () => {
         </Modal.Body>
       </Modal>
       <Modal show={showViewModal} onHide={handleCloseViewModal} centered>
-  <Modal.Header closeButton>
-    <Modal.Title>Lead Follow-Up</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    {viewLead ? (
-      <Form onSubmit={(e) => {
-        e.preventDefault();
-        submitFollowUp();
-      }}>
-        <Form.Group className="mb-3">
-          <Form.Label>Status</Form.Label>
-          <StatusSelect
-            value={followupStatus?.value || ''}
-            onChange={(opt: OptionType | null) => setFollowupStatus(opt)}
-            placeholder="Select Status"
-          />
-         
-        </Form.Group>
-          <Form.Group className="mb-3">
-          <Form.Label>Follow-Up Date</Form.Label>
-          <DatePicker
-            selected={followupDate}
-            onChange={setFollowupDate}
-            className="form-control"
-            dateFormat="yyyy-MM-dd hh:mm"
-          />
-         
-        </Form.Group>
-        
+        <Modal.Header closeButton>
+          <Modal.Title>Lead Follow-Up</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {viewLead ? (
+            <Form onSubmit={(e) => {
+              e.preventDefault();
+              submitFollowUp();
+            }}>
+              <Form.Group className="mb-3">
+                <Form.Label>Status</Form.Label>
+                <Form.Select
+                  value={followupStatus?.value || ''} 
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFollowupStatus(val ? { value: val, label: val } : null);
+                  }}
+                  required
+                >
+                  <option value="" disabled>
+                    Select Status
+                  </option>
+                  <option value="2">Follow Up</option>
+                  <option value="3">Partial Walk-In</option>
+                  <option value="5">Not Interested</option>
+                  <option value="6">Joined Some Where Else</option>
+                </Form.Select>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Comment</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            value={followupComment}
-            onChange={(e) => setFollowupComment(e.target.value)}
-            required
-          />
-        </Form.Group>
+              </Form.Group>
+               {followupStatus?.value === '2' && (
+              <Form.Group className="mb-3">
+                <Form.Label>Follow-Up Date</Form.Label>
+                
 
-        <Button type="submit" variant="primary">
-          Save Follow-Up
-        </Button>
-      </Form>
-    ) : (
-      <Spinner />
-    )}
-  </Modal.Body>
-</Modal>
+                <Form.Control
+                  type="date" required
+                  value={followupDate ? format(followupDate, 'yyyy-MM-dd') : ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const value = e.target.value;
+                    setFollowupDate(value ? new Date(value) : null);
+                  }}
+                />
+
+              </Form.Group>
+              )}
+
+              {followupStatus?.value === '3' && (
+              <Form.Group className="mb-3">
+                <Form.Label>WalkIn Date</Form.Label>
+                <Form.Control
+                  type="date" required
+                  value={walkinDate ? format(walkinDate, 'yyyy-MM-dd') : ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const value = e.target.value;
+                    setWalkinDate(value ? new Date(value) : null);
+                  }}
+                />
+
+              </Form.Group>
+               )}
+
+
+
+              <Form.Group className="mb-3">
+                <Form.Label>Comment</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={4}
+                  value={followupComment}
+                  onChange={(e) => setFollowupComment(e.target.value)}
+                  required
+                />
+              </Form.Group>
+
+              <Button type="submit" variant="primary">
+                Save Follow-Up
+              </Button>
+            </Form>
+          ) : (
+            <Spinner />
+          )}
+        </Modal.Body>
+      </Modal>
 
     </Container>
   );
