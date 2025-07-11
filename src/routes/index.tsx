@@ -8,20 +8,25 @@ const Login = lazy(() => import('@/views/login'));
 const Dashboard = lazy(() => import('@/views/dashboards/dashboard'));
 const UserCreate = lazy(() => import('@/views/user/create'));
 const UserList = lazy(() => import('@/views/user/list'));
-const UserLognHistory = lazy(() => import('@/views/user/history'));
-const UserProfile = lazy(() => import('@/views/user/profile'))
+ const UserProfile = lazy(() => import('@/views/user/profile'));
+ const UserLognHistory = lazy(() => import('@/views/user/history'));
 const WebHookLeadsList = lazy(() => import('@/views/leads/webhook'));
 const LeadsCreate = lazy(() => import('@/views/leads/create'));
 const LeadsList = lazy(() => import('@/views/leads/list'));
+const LeadsFollowupList = lazy(() => import('@/views/leads/followup'));
+  const PartialWalkin = lazy(() => import('@/views/leads/partialwalkin'));
 const ImportCreate = lazy(() => import('@/views/leads/import/create'));
 const ImportList = lazy(() => import('@/views/leads/import/list'));
 const DmImportCreate = lazy(() => import('@/views/import/create'));
+const DmLeadCreate = lazy(() => import('@/views/import/singlecreate'));
 const DmImportList = lazy(() => import('@/views/import/list'));
 const DailyReport = lazy(() => import('@/views/reports/dailyreport'));
 const DailySoucreWiseLeadReport = lazy(() => import('@/views/reports/dailysoucrewisereport'));
 const RegionWiseLeadReport = lazy(() => import('@/views/reports/region'));
 const DailyDMLeadReport = lazy(() => import('@/views/reports/dailyleaddmreport'));
 const ExecutivewiseLeadReport = lazy(() => import('@/views/reports/executivewiseleadreport'));
+const MonthlyWiseReport = lazy(() => import('@/views/reports/monthlywisereport'));
+const MonthlySourceWiseReport = lazy(() => import('@/views/reports/monthlysourcewisereport'));
 const Settings = lazy(() => import('@/views/settings'));
 const DailyJobList = lazy(() => import('@/views/jobs/list'));
 
@@ -63,21 +68,21 @@ export const userRoutes: RouteObject[] = [
            title: 'User List',
         }
     },
-    {
+   
+ {
+        path: '/user/profile', 
+        element: <UserProfile/>,
+        handle: {
+           title: 'User Profile',
+        }
+    },
+     {
         path: '/user/history', 
         element: <UserLognHistory/>,
         handle: {
            title: 'Login History',
         }
     },
-     {
-        path: '/user/profile', 
-        element: <UserProfile/>,
-        handle: {
-           title: 'User Profile',
-        }
-    }
-    
 ]
 export const leadsRoutes: RouteObject[] = [
     { 
@@ -99,6 +104,19 @@ export const leadsRoutes: RouteObject[] = [
         element: <LeadsList/>,
         handle: {
            title: 'Leads List',
+        }
+    },
+    { 
+        path: '/leads/followup',
+        element: <LeadsFollowupList/>,
+        handle: {
+           title: 'Lead FollowUp List',
+        }
+    },{ 
+        path: '/leads/partialwalkin',
+        element: <PartialWalkin/>,
+        handle: {
+           title: 'Partial Walkin List',
         }
     },
     { 
@@ -152,6 +170,20 @@ export const reportRoutes: RouteObject[] = [
            title: 'Executive Wise Lead Report',
         }
     },
+    {
+        path: '/reports/monthlyWisereport',
+        element: <MonthlyWiseReport/>,
+         handle: {
+           title: 'Monthly Wise Report',
+        }
+    }, 
+    {
+        path: '/reports/monthlysourcewisereport',
+        element: <MonthlySourceWiseReport/>,
+         handle: {
+           title: 'Monthly Wise Report',
+        }
+    }, 
    
 ]
 export const settingsRoutes: RouteObject[] = [
@@ -176,6 +208,13 @@ export const importRoutes: RouteObject[] = [
         element: <DmImportCreate/>,
          handle: {
            title: 'DM Excel Import Create',
+        }
+    },
+    {
+        path: '/import/singlecreate',
+        element: <DmLeadCreate/>,
+         handle: {
+           title: 'DM Lead Create',
         }
     }
    

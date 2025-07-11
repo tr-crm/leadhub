@@ -16,7 +16,15 @@ import "@/assets/scss/app.scss"
 
 createRoot(document.getElementById('root')!).render(
     <TourProvider steps={tourSteps}>
-          <ToastContainer />
+           <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable={false}
+        theme="colored"
+      />
     <StrictMode>
         <BrowserRouter>
             <AppWrapper>

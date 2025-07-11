@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import DataTable from 'react-data-table-component';
 import { Container,Form, Button,Modal } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
@@ -7,13 +7,26 @@ import PageBreadcrumb from '@/components/PageBreadcrumb';
 import type { jobsListPayload , jobsCreatePayload, jobsExecutionPayload, jobsScoresPayload} from '@/services/userservice';
 import { getJobsList, submitJobCreate , submitJobExecution, submitJobScore } from '@/services/userservice';
 import type { User } from '@/types/user.types';
-import { getUserInfo } from '@/utils/auth';
+  import { toast } from 'react-toastify';
+import LogoutOverlay from '@/components/LogoutOverlay';
+import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 
     const UsersDataTable: React.FC = () => {
+       const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
     const [data, setData] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
-    const user = getUserInfo();
-
+    
+// Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+        const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+      
+        // Ref to prevent double fetch in Strict Mode or repeated effect calls
+       
+      
+        useEffect(() => {
+          if (!user) {
+            setShowLogoutLoader(true);
+          }
+        }, [user]);
     const [jobPlanVal, setJobPlanVal] = useState('');
     const [jobDateVal, setJobDateVal] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -40,8 +53,10 @@ import { getUserInfo } from '@/utils/auth';
     }, [fromDate, toDate]);
 
    const handleGoClick = async () => {
+        if (!user) return;
     if (!fromDate || !toDate) {
-        alert('Please select both From and To dates.');
+       
+        toast.error('Please select both From and To dates.');
         return;
     }
 
@@ -54,10 +69,24 @@ import { getUserInfo } from '@/utils/auth';
 
     setLoading(true);
     try {
-        const res = await getJobsList(payload);
-        setData(res.data);
+        const response = await getJobsList(payload);
+      
+         if (response.response === 'login_error') {
+          toast.dismiss();
+                toast.error(response.message);
+                setShowLogoutLoader(true);
+                return;
+              } else if (response.response === 'error') {
+                toast.dismiss();
+                toast.error(response.message);
+              } else if (response.response === 'success') {
+                toast.dismiss();
+              setData(response.data);
+              }
     } catch (err) {
         console.error('Failed to fetch jobs:', err);
+          toast.dismiss();
+        toast.error('Failed to fetch jobs:');
     } finally {
         setLoading(false);
     }
@@ -67,7 +96,8 @@ import { getUserInfo } from '@/utils/auth';
 
 const handleSubmitCreate = async () => {
   if (!jobPlanVal || !jobDateVal) {
-    alert('Please enter both Job Plan and Job Date');
+     toast.dismiss();
+      toast.error('Please enter both Job Plan and Job Date');
     return;
   }
 
@@ -82,15 +112,28 @@ const handleSubmitCreate = async () => {
 
   setSubmittingCreate(true);
   try {
-    await submitJobCreate(payload);
-    alert('Job submitted successfully!');
-    setShowCreateModal(false);  // optionally close modal
+   const response= await submitJobCreate(payload);
+   
+
+     if (response.response === 'login_error') {
+        toast.dismiss();
+                toast.error(response.message);
+                setShowLogoutLoader(true);
+                return;
+              } else if (response.response === 'error') {
+                  toast.dismiss();
+                toast.error(response.message);
+              } else if (response.response === 'success') {
+              setShowCreateModal(false);  // optionally close modal
     setJobPlanVal('');
     setJobDateVal('');
     handleGoClick();
+              }
   } catch (error) {
     console.error('Job creation failed:', error);
-    alert('Failed to create job. Please try again.');
+      toast.dismiss();
+     toast.error('Failed to create job. Please try again.');
+   
   } finally {
     setSubmittingCreate(false);
   }
@@ -110,13 +153,25 @@ const handleUpdateSubmit = async () => {
   };
 
   try {
-    await submitJobExecution(payload);
-    alert('Job updated successfully!');
-    setShowExecutionModal(false);
+    const response= await submitJobExecution(payload);
+    
+      if (response.response === 'login_error') {
+          toast.dismiss();
+                toast.error(response.message);
+                setShowLogoutLoader(true);
+                return;
+              } else if (response.response === 'error') {
+                  toast.dismiss();
+                toast.error(response.message);
+              } else if (response.response === 'success') {
+                setShowExecutionModal(false);
     handleGoClick();
+              }
   } catch (err) {
     console.error('Failed to update job:', err);
-    alert('Failed to update. Please try again.');
+    // alert('Failed to update. Please try again.');
+      toast.dismiss();
+    toast.error('Failed to update. Please try again.');
   }
 };
 
@@ -132,13 +187,26 @@ const handleUpdateScore = async () => {
   };
 
   try {
-    await submitJobScore(payload); // Call your API
-    alert('Job updated successfully!');
-    setShowScoreModal(false);
-    handleGoClick(); 
+    const response=await submitJobScore(payload); // Call your API
+   
+   
+      if (response.response === 'login_error') {
+          toast.dismiss();
+                toast.error(response.message);
+                setShowLogoutLoader(true);
+                return;
+              } else if (response.response === 'error') {
+                  toast.dismiss();
+                toast.error(response.message);
+              } else if (response.response === 'success') {
+                
+                 setShowScoreModal(false);
+             handleGoClick(); 
+              }
   } catch (err) {
     console.error('Failed to update job:', err);
-    alert('Update failed. Please try again.');
+      toast.dismiss();
+     toast.error('Update failed. Please try again.');
   }
 };
 
@@ -207,6 +275,12 @@ const handleUpdateScore = async () => {
   return (
     <Container fluid>
       <PageBreadcrumb title="Job List" />
+       {showLogoutLoader && <LogoutOverlay
+  onComplete={async () => {
+    await logout(); // your logout function
+  }}
+/>
+}
       <Form className="mb-4">
         <div className="d-flex flex-wrap align-items-end gap-2">
             <Form.Group>

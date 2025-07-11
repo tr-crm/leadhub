@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import DataTable from 'react-data-table-component';
 import { Container,Form, Row,Col, Button,Modal } from 'react-bootstrap';
 import Select from 'react-select';
@@ -8,13 +8,24 @@ import PageBreadcrumb from '@/components/PageBreadcrumb';
 import type { UserListRequestPayload , LeaveRequestPayload, UserEditPayload, UserResetPayload, AssignPayload, UserCreatePayload } from '@/services/userservice';
 import { getUserList, submitLeaveRequest, submitUserEdit , submitUserResetPassword, submitAssignUser, submitUserCreate } from '@/services/userservice';
 import type { User } from '@/types/user.types';
-import { getUserInfo } from '@/utils/auth';
 import { toast } from 'react-toastify';
-
+import LogoutOverlay from '@/components/LogoutOverlay';
+import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
   const UsersDataTable: React.FC = () => {
   const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const user = getUserInfo();
+  const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
+  // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+    const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+  
+    // Ref to prevent double fetch in Strict Mode or repeated effect calls
+    const didFetchRef = useRef(false);
+  
+    useEffect(() => {
+      if (!user) {
+        setShowLogoutLoader(true);
+      }
+    }, [user]);
 
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [leaveUser, setLeaveUser] = useState<User | null>(null);
@@ -39,19 +50,45 @@ import { toast } from 'react-toastify';
   };
 
   const refreshData = async () => {
+     if (!user) return;
     setLoading(true);
     try {
       const res = await getUserList(payload);
-      setData(res.data);
-    } catch (err) {
-      console.error('Failed to fetch users:', err);
+     
+        if (res.response === 'login_error') {
+        toast.error(res.message);
+        setShowLogoutLoader(true);
+        return;
+      } else if (res.response === 'error') {
+        toast.error(res.message);
+      } else if (res.response === 'success') {
+       setData(res.data);
+     
+      }
+    } catch (error: any) {
+      if (error?.response?.data?.response === 'login_error') {
+        toast.error(error?.response?.data?.message || 'Login failed. Redirecting...');
+        setShowLogoutLoader(true);
+        return;
+      } else {
+      
+        toast.error('Failed to fetch leads. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
    useEffect(() => {
-    refreshData();
+    if (!user) return;
+
+    // Only fetch if we haven't already fetched for current params
+    if (!didFetchRef.current) {
+      refreshData();
+      didFetchRef.current = true;
+    }
+   
+   
   }, []);
 
 
@@ -107,31 +144,23 @@ const handleSubmitLeave = async () => {
 
   setSubmittingLeave(true);
   try {
-    await submitLeaveRequest(payload);   
-    toast.success( 'Leave submitted successfully!', {
-                      position: "top-right",
-                      autoClose: 3000,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: false,
-                      progress: undefined,
-                      theme: "colored",
-            
-                    });
-    setShowLeaveModal(false);
+   const res= await submitLeaveRequest(payload);   
+
+    
+        if (res.response === 'login_error') {
+        toast.error(res.message);
+        setShowLogoutLoader(true);
+        return;
+      } else if (res.response === 'error') {
+        toast.error(res.message);
+      } else if (res.response === 'success') {
+        setShowLeaveModal(false)
+     
+      }
+    
+   
   } catch (error) {
-     toast.error('Failed to submit leave. Please try again', {
-                      position: "top-right",
-                      autoClose: 3000,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: false,
-                      progress: undefined,
-                      theme: "colored",
-            
-                    });
+     toast.error('Failed to submit leave. Please try again');
   } finally {
     setSubmittingLeave(false);
   }
@@ -140,7 +169,7 @@ const handleSubmitLeave = async () => {
 
 const handleSubmitEdit = async () => {
   if (!selectedUser) {
-    alert('No user selected for editing.');
+      toast.error('No user selected for editing.');
     return;
   }
 
@@ -155,18 +184,28 @@ const handleSubmitEdit = async () => {
     roleVal: selectedUser.type,
     updatedByVal: user.id,
     regionVal: selectedUser.region || '',
-    supervisionVal : '',
+    supervisionVal : selectedUser.supervision,
   };
 
   setSubmittingEdit(true);
   try {
-    await submitUserEdit(payload); 
-    alert('User updated successfully!');
-    setShowModal(false);
+    const res=await submitUserEdit(payload); 
+    if (res.response === 'login_error') {
+        toast.error(res.message);
+        setShowLogoutLoader(true);
+        return;
+      } else if (res.response === 'error') {
+        toast.error(res.message);
+      } else if (res.response === 'success') {
+        toast.success(res.message);
+         setShowModal(false);
     refreshData(); 
+     
+      }
+    
+   
   } catch (error) {
-    console.error('Failed to update user:', error);
-    alert('Failed to update user. Please try again.');
+     toast.error('Failed to update user. Please try again!');
   } finally {
     setSubmittingEdit(false);
   }
@@ -181,7 +220,7 @@ const handleSubmitEdit = async () => {
 
   const handleSubmitReset = async () => {
   if (!resetUser) {
-    alert('No user selected for editing.');
+      toast.error('No user selected for editing.');
     return;
   }
 
@@ -195,13 +234,24 @@ const handleSubmitEdit = async () => {
 
   setSubmittingReset(true);
   try {
-    await submitUserResetPassword(payload); 
-    alert('User Password updated successfully!');
-    setShowResetModal(false);
-    refreshData(); 
+    const res=await submitUserResetPassword(payload); 
+   
+    if (res.response === 'login_error') {
+        toast.error(res.message);
+        setShowLogoutLoader(true);
+        return;
+      } else if (res.response === 'error') {
+        toast.error(res.message);
+      } else if (res.response === 'success') {
+        toast.success(res.message);
+         setShowResetModal(false);
+         refreshData(); 
+     
+      }
   } catch (error) {
     console.error('Failed to update user:', error);
-    alert('Failed to update user. Please try again.');
+    toast.error('Failed to update user. Please try again.');
+        setShowLogoutLoader(true);
   } finally {
     setSubmittingEdit(false);
   }
@@ -220,12 +270,22 @@ const handlesubmitAssign = async (row: User) => {
   setAssigningUserId(row.id);
 
   try {
-    await submitAssignUser(payload);
-    alert('User assigned successfully!');
-    refreshData(); 
+   const res= await submitAssignUser(payload);
+ 
+    if (res.response === 'login_error') {
+        toast.error(res.message);
+        setShowLogoutLoader(true);
+        return;
+      } else if (res.response === 'error') {
+        toast.error(res.message);
+      } else if (res.response === 'success') {
+        toast.success(res.message);
+              refreshData();
+     
+      }
   } catch (error) {
     console.error('Failed to assign user:', error);
-    alert('Failed to assign user. Please try again.');
+    toast.error('Failed to assign user:');
   } finally {
     setAssigningUserId(null); 
   }
@@ -257,7 +317,6 @@ const handleOpenUserCreateModal = () => {
 
 const handleSubmitCreate = async () => {
   if (!newUser.first_name || !newUser.email_address || !newUser.region) {
-    alert('Please fill in all required fields.');
     return;
   }
 
@@ -277,9 +336,20 @@ const handleSubmitCreate = async () => {
   setSubmittingCreate(true);
   try {
     const res = await submitUserCreate(payload); 
-    toast.success(res.message);
+
+     if (res.response === 'login_error') {
+        toast.error(res.message);
+        setShowLogoutLoader(true);
+        return;
+      } else if (res.response === 'error') {
+        toast.error(res.message);
+      } else if (res.response === 'success') {
+        toast.success(res.message);
     setShowCreateModal(false);
     refreshData();
+     
+      }
+   
   } catch (error) {
     toast.error('Failed to create user');
   } finally {
@@ -397,6 +467,12 @@ if (user.type == 1 || user.type == 2) {
   return (
     <Container fluid>
       <PageBreadcrumb title="User List" />
+       {showLogoutLoader && <LogoutOverlay
+  onComplete={async () => {
+    await logout(); // your logout function
+  }}
+/>
+}
         <Form className="mb-4 d-flex justify-content-end">
           <Row className="align-items-end">
             <Col md={2} className="">
@@ -425,29 +501,66 @@ if (user.type == 1 || user.type == 2) {
         {selectedUser ? (
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>First Name</Form.Label>
+              <Form.Label>
+                First Name <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 value={selectedUser.first_name}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, first_name: e.target.value })
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                let input = e.currentTarget.value;
+
+                // Remove non-alphabet characters
+                input = input.replace(/[^a-zA-Z]/g, '');
+
+                // Capitalize first letter and lowercase the rest
+                if (input.length > 0) {
+                  input = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
                 }
-              />
+
+                setSelectedUser({ ...selectedUser, first_name: input });
+              }}
+              placeholder="Enter first name"
+              required
+            />
+              {!selectedUser.first_name && (
+                <small className="text-danger">First Name is required.</small>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Last Name</Form.Label>
+              <Form.Label>
+                Last Name <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 value={selectedUser.last_name}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, last_name: e.target.value })
+                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                let input = e.currentTarget.value;
+
+                // Remove non-alphabet characters
+                input = input.replace(/[^a-zA-Z]/g, '');
+
+                // Capitalize first letter and lowercase the rest
+                if (input.length > 0) {
+                  input = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
                 }
+
+                setSelectedUser({ ...selectedUser, last_name: input });
+              }}
+              placeholder="Enter last name"
+              required
+            
               />
+               {!selectedUser.last_name && (
+                <small className="text-danger">Last Name is required.</small>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
+              <Form.Label>
+                Email<span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <Form.Control
                 type="email"
                 value={selectedUser.email_address}
@@ -455,21 +568,36 @@ if (user.type == 1 || user.type == 2) {
                   setSelectedUser({ ...selectedUser, email_address: e.target.value })
                 }
               />
+                {!selectedUser.email_address && (
+                <small className="text-danger">Email is required.</small>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Phone Number</Form.Label>
+               <Form.Label>
+                Phone Number <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="tel"
                 value={selectedUser.phone_number || ''}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, phone_number: e.target.value })
-                }
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  let input = e.currentTarget.value;
+
+                  // Remove all non-digits and limit to 10 digits
+                  input = input.replace(/\D/g, '').slice(0, 10);
+
+                  setSelectedUser({ ...selectedUser, phone_number: input });
+                }}
+                placeholder="Enter 10-digit phone number"
+                required
               />
+              {(selectedUser.phone_number?.length ?? 0) !== 10 && (
+                <small className="text-danger">Phone number must be exactly 10 digits.</small>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Role</Form.Label>
+              <Form.Label>Role<span style={{ color: 'red' }}>*</span></Form.Label>
               <Select
                 options={roleOptions}
                 value={roleOptions.find(opt => opt.value === Number(selectedUser.type))}
@@ -600,43 +728,100 @@ if (user.type == 1 || user.type == 2) {
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label>First Name</Form.Label>
+            <Form.Label>
+                First Name <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
             <Form.Control
               type="text"
               value={newUser.first_name || ''}
-              onChange={(e) => setNewUser({ ...newUser, first_name: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                let input = e.target.value;
+
+                input = input.replace(/[^a-zA-Z]/g, '');
+
+                if (input.length > 0) {
+                  input = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
+                }
+
+                setNewUser((prevData) => ({
+                  ...prevData,
+                  first_name: input,
+                }));
+              }}
+            required
             />
+             {!newUser.first_name && (
+                <small className="text-danger">First Name is required.</small>
+              )}
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Last Name</Form.Label>
+            <Form.Label>
+              Last Name <span style={{ color: 'red' }}>*</span>
+            </Form.Label>
             <Form.Control
               type="text"
               value={newUser.last_name || ''}
-              onChange={(e) => setNewUser({ ...newUser, last_name: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                let input = e.target.value;
+
+                input = input.replace(/[^a-zA-Z]/g, '');
+
+                if (input.length > 0) {
+                  input = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
+                }
+
+                setNewUser((prevData) => ({
+                  ...prevData,
+                  last_name: input,
+                }));
+              }}
+              required
             />
+             {!newUser.last_name && (
+                <small className="text-danger">Last Name is required.</small>
+              )}
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Email</Form.Label>
+             <Form.Label>
+                Email <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
             <Form.Control
               type="email"
               value={newUser.email_address || ''}
               onChange={(e) => setNewUser({ ...newUser, email_address: e.target.value })}
+              required
             />
+             {!newUser.email_address && (
+                <small className="text-danger">Email Address is required.</small>
+              )}
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Phone Number</Form.Label>
+             <Form.Label>
+                Phone Number <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
             <Form.Control
               type="tel"
               value={newUser.phone_number || ''}
-              onChange={(e) => setNewUser({ ...newUser, phone_number: e.target.value })}
+              onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  const input = e.currentTarget;
+                  input.value = input.value.replace(/\D/g, '').slice(0, 10);
+                  setNewUser({ ...newUser, phone_number: input.value });
+                }}
+                required
             />
+            {(newUser.phone_number?.length ?? 0) !== 10 && (
+                <small className="text-danger">Phone number must be exactly 10 digits.</small>
+            )}
+            
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Role</Form.Label>
+            <Form.Label>
+                Region <span style={{ color: 'red' }}>*</span>
+            </Form.Label>
             <Select
               options={roleOptions}
               value={roleOptions.find(opt => opt.value === Number(newUser.type))}
@@ -652,7 +837,9 @@ if (user.type == 1 || user.type == 2) {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Region</Form.Label>
+           <Form.Label>
+                Region <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
             <Select
               options={regionOptions}
               value={regionOptions.find(opt => opt.value === Number(newUser.region))}

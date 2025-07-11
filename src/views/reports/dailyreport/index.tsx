@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo,useRef } from "react";
 import {
   Table,
   Spinner,
@@ -13,11 +13,12 @@ import "./LeadReportTable.css";
 import { getDailyReportLeadsList } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
 import type { DailyLeadReportRequest } from "@/services/reportsservice";
-import { getUserInfo } from "@/utils/auth";
 import { useSortableData } from "@/hooks/useSortableData";
 import YearSelect from '@/components/yearselect';
 import MonthSelect from '@/components/monthselect';
-
+  import { toast } from 'react-toastify';
+import LogoutOverlay from '@/components/LogoutOverlay';
+import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 const padMonth = (month: number) => String(month).padStart(2, "0");
 
 const DailyLeadReportTable: React.FC = () => {
@@ -28,14 +29,27 @@ const DailyLeadReportTable: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>(
     padMonth(now.getMonth() + 1)
   );
+  const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
 
   const [data, setData] = useState<DailyLead[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  const user = getUserInfo();
+  // const user = getUserInfo();
+  // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+             const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+           
+             // Ref to prevent double fetch in Strict Mode or repeated effect calls
+              const didFetchRef = useRef(false);
+           
+             useEffect(() => {
+               if (!user) {
+                 setShowLogoutLoader(true);
+               }
+             }, [user]);
 
   const fetchData = async () => {
+      if (!user) return;
     setLoading(true);
     setError("");
 
@@ -48,21 +62,41 @@ const DailyLeadReportTable: React.FC = () => {
     };
 
     try {
-      const res = await getDailyReportLeadsList(requestBody);
-      if (res.response === "success") {
-        setData(res.data);
-      } else {
-        setError(res.message || "Failed to fetch data");
-      }
+      const response = await getDailyReportLeadsList(requestBody);
+      if (response.response === 'login_error') {
+         setData([]);
+          toast.dismiss();
+               toast.error(response.message);
+                  setShowLogoutLoader(true);
+
+               
+             } else if (response.response === 'error') {
+                 setData([]);
+                toast.dismiss();
+               toast.error(response.message);
+             } else if (response.response === 'success') {
+              setData([]);
+                setData(response.data);
+              
+             }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
+          toast.dismiss();
+       toast.error('Something went wrong.');
+            //  navigate('/login');
+        setData([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+  
+     if (!user) return;
+     if (!didFetchRef.current) {
+    fetchData()
+      didFetchRef.current = true;
+    }
   }, [selectedYear, selectedMonth]);
 
   const allStatuses = useMemo(() => {
@@ -98,6 +132,14 @@ const DailyLeadReportTable: React.FC = () => {
   return (
     <Container fluid>
       <PageBreadcrumb title="Daily Lead Report" />
+      {showLogoutLoader && (
+  <LogoutOverlay
+    duration={5} 
+    onComplete={async () => {
+      await logout(); // your logout function
+    }}
+  />
+)}
       <div className="mt-4 bg-white p-4 shadow-sm rounded">
         <Form className="mb-3">
           <Row>

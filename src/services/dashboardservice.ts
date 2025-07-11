@@ -14,5 +14,6 @@ export interface leadDashBord {
 
 export const dashboardLeadReport = async (payload: leadDashBord) => {
   const response = await axios.post('/api/Reports/dashboardLeadReport', payload);
+  // console.log(response);
   return response.data;
 };

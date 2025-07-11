@@ -34,7 +34,8 @@
     "react-select": "^5.10.1",
     "react-toastify": "^11.0.5",
     "simplebar-react": "3.3.0",
-    "usehooks-ts": "^3.1.1"
+    "usehooks-ts": "^3.1.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Form, Button, Alert, Row, Col, Card } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col, Card } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
-import { getUserInfo } from '@/utils/auth';
 import { CreateLead } from '@/services/leadservice';
 import type { LeadCreateRequestPayload } from '@/services/leadservice';
 import SourceSelect from '@/components/soucrelist';
 import CategorySelect from '@/components/categoryselect';
 import SubCategorySelect from '@/components/subcategoryselect';
 import ProductSelect from '@/components/productselect';
-// import CountrySelect from '@/components/countryselect';
 import BranchSelect from '@/components/branchselect';
-// import StatusSelect from '@/components/statusselect';
 import ExecutiveSelect from '@/components/executiveselect';
-import {toast } from 'react-toastify';
+import QualityScoreSelect from '@/components/qualityscore';
+
+import { toast } from 'react-toastify';
+import LogoutOverlay from '@/components/LogoutOverlay';
+import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 interface OptionType {
-  value: number | '';
+  value: any;
   label: string;
 }
 
@@ -67,18 +68,21 @@ const InlineField = ({
   </Row>
 );
 
-
 const LeadCreatePage: React.FC = () => {
-  const user = getUserInfo();
+  const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
   const navigate = useNavigate();
+  // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+      const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+    
+      
+    
+      useEffect(() => {
+        if (!user) {
+          setShowLogoutLoader(true);
+        }
+      }, [user]);
 
-  if (!user?.id || !user?.access_token) {
-    return (
-      <Container className="py-5">
-        <Alert variant="danger">User not authenticated. Please log in.</Alert>
-      </Container>
-    );
-  }
+ 
 
   const initialState: LeadCreateRequestPayload = {
     leadDateVal: new Date().toISOString().split('T')[0],
@@ -94,11 +98,12 @@ const LeadCreatePage: React.FC = () => {
     branchVal: '',
     leadTypeVal: '',
     leadStatusVal: '',
+    qualityscoreVal:'',
     createdByVal: user.id,
     userIdVal: user.id,
     tokenVal: user.access_token,
     regionVal: user.region,
-     executiveIdVal: 0,
+    executiveIdVal: 0,
   };
 
   const numberFields = [
@@ -110,15 +115,16 @@ const LeadCreatePage: React.FC = () => {
     'productVal',
     'countryVal',
     'branchVal',
+    'executiveIdVal',
+    'qualityscoreVal',
   ];
 
   const [formData, setFormData] = useState(initialState);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  console.log(status,errorMessage);
+  console.log(status,errorMessage)
 
-  // Type-safe category name
   const selectedCategoryName =
     typeof formData.categoryVal === 'number' ? CATEGORY_NAMES[formData.categoryVal] : '';
 
@@ -127,25 +133,21 @@ const LeadCreatePage: React.FC = () => {
   const isImmigration = selectedCategoryName === 'Immigration';
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | { name: string; value: string | number }
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+      | { name: string; value: string | number }
   ) => {
-    if ('target' in e) {
-      const { name, value } = e.target;
-      setFormData(prev => ({
-        ...prev,
-        [name]: numberFields.includes(name) ? (value === '' ? '' : Number(value)) : value,
-      }));
-    } else {
-      const { name, value } = e;
-      setFormData(prev => ({
-        ...prev,
-        [name]: numberFields.includes(name) ? (value === '' ? '' : Number(value)) : value,
-      }));
-    }
+    const name = 'target' in e ? e.target.name : e.name;
+    const value = 'target' in e ? e.target.value : e.value;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: numberFields.includes(name) ? (value === '' ? '' : Number(value)) : value,
+    }));
   };
 
   const handleCategoryChange = (option: OptionType | null) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       categoryVal: option?.value ?? '',
       subCategoryVal: '',
@@ -155,220 +157,138 @@ const LeadCreatePage: React.FC = () => {
   };
 
   const handleSourceChange = (option: OptionType | null) =>
-    setFormData(prev => ({ ...prev, sourceVal: option?.value ?? '' }));
-
+    setFormData((prev) => ({ ...prev, sourceVal: option?.value ?? '' }));
+ const handleQualityScoreChange = (option: OptionType | null) =>
+    setFormData((prev) => ({ ...prev, qualityscoreVal: option?.value ?? '' }));
   const handleProductChange = (option: OptionType | null) =>
-    setFormData(prev => ({ ...prev, productVal: option?.value ?? '' }));
+    setFormData((prev) => ({ ...prev, productVal: option?.value ?? '' }));
 
   const handleSubCategoryChange = (option: OptionType | null) =>
-    setFormData(prev => ({ ...prev, subCategoryVal: option?.value ?? '' }));
+    setFormData((prev) => ({ ...prev, subCategoryVal: option?.value ?? '' }));
 
+  const handleBranchChange = (selected: OptionType | null): void => {
+    setFormData((prev) => ({
+      ...prev,
+      branchVal: selected?.value ?? '',
+    }));
+  };
 
-  // const handleBranchChange = (option: OptionType | null) =>
-  //   setFormData(prev => ({ ...prev, branchVal: option?.value ?? '' }));
- const handleBranchChange = (selected: OptionType | null): void => {
-  setFormData((prev) => ({
-    ...prev,
-    branchVal: selected?.value || '',
-  }));
-};
-
-
-  
-
-  const normalizeNumber = (val: string | number): number => (val === '' ? 0 : Number(val));
+  const handleExecutiveChange = (selected: OptionType | null): void => {
+    setFormData((prev) => ({
+      ...prev,
+      executiveIdVal: selected?.value ?? 0,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('idle');
     setErrorMessage('');
     setIsLoading(true);
-    // console.log(formData.sourceVal==='');return;
-     if (formData.sourceVal==='' || formData.sourceVal===0) {
-       toast.error('Source Required.', {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-      
-              });
-      
-      setStatus('error');
-      setErrorMessage('Source Required.');
-      setIsLoading(false);
-      return;
-    }
-     if (formData.categoryVal==='' || formData.categoryVal===0) {
-       toast.error('Category Required.', {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-      
-              });
-      
-      setStatus('error');
-      setErrorMessage('Category Required.');
-      setIsLoading(false);
-      return;
-    }
-    if (formData.executiveIdVal==='' || formData.executiveIdVal===0) {
-       toast.error('Category Required.', {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-      
-              });
-      
-      setStatus('error');
-      setErrorMessage('Executive Required.');
-      setIsLoading(false);
-      return;
-    }
-        // Validation
-    if (isTestprep && formData.productVal === '') {
-       toast.error('Product Required.', {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-      
-              });
-      
+
+    // Validations
+    if (isTestprep && !formData.productVal) {
+       toast.dismiss();
+      toast.error('Product Required.');
       setStatus('error');
       setErrorMessage('Product Required.');
       setIsLoading(false);
       return;
     }
-    
-    if (isImmigration && (formData.subCategoryVal === '' )) {
-      toast.error('SubCategory Required.', {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-      
-              });
+
+    if (isImmigration && !formData.subCategoryVal) {
+       toast.dismiss();
+      toast.error('SubCategory Required.');
       setStatus('error');
       setErrorMessage('SubCategory Required.');
       setIsLoading(false);
       return;
     }
-    if (isImmigration && (formData.productVal === '' )) {
-         toast.error('Product Required.', {
-                position: "top-right",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-      
-              });
-      
+
+    if (isImmigration && !formData.productVal) {
+       toast.dismiss();
+      toast.error('Product Required.');
       setStatus('error');
       setErrorMessage('Product Required.');
       setIsLoading(false);
       return;
     }
 
+    if (!formData.sourceVal) {
+       toast.dismiss();
+      toast.error('Source Required.');
+      setStatus('error');
+      setErrorMessage('Source Required.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.categoryVal) {
+       toast.dismiss();
+      toast.error('Category Required.');
+      setStatus('error');
+      setErrorMessage('Category Required.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.executiveIdVal) {
+       toast.dismiss();
+      toast.error('Executive Required.');
+      setStatus('error');
+      setErrorMessage('Executive Required.');
+      setIsLoading(false);
+      return;
+    }
+    
+      if (!formData.qualityscoreVal) {
+       toast.dismiss();
+      toast.error('QUality Score Required.');
+      setStatus('error');
+      setErrorMessage('QUality Score Required.');
+      setIsLoading(false);
+      return;
+    }
+      if (!user) return;
     const payload: LeadCreateRequestPayload = {
       ...formData,
-        sourceVal: formData.sourceVal,
-      // sourceVal: normalizeNumber(formData.sourceVal),
-      categoryVal: normalizeNumber(formData.categoryVal),
-      subCategoryVal: normalizeNumber(formData.subCategoryVal),
-      productVal: normalizeNumber(formData.productVal),
-      branchVal: normalizeNumber(formData.branchVal),
+      sourceVal: Number(formData.sourceVal),
+      categoryVal: Number(formData.categoryVal),
+      subCategoryVal: Number(formData.subCategoryVal),
+      productVal: Number(formData.productVal),
+      branchVal: Number(formData.branchVal),
+      executiveIdVal: Number(formData.executiveIdVal),
+      qualityscoreVal: Number(formData.qualityscoreVal),
       createdByVal: user.id,
       userIdVal: user.id,
       tokenVal: user.access_token,
-      regionVal:user.region,
-      executiveIdVal:normalizeNumber(formData.executiveIdVal)
+      regionVal: user.region,
     };
 
     try {
-      
-        const response = await CreateLead(payload);
+      const response = await CreateLead(payload);
 
-        console.log(response.response);
-            
-               if (response.response === 'login_error') {
-               
-                       toast.error(response.message , {
-                         position: "top-right",
-                         autoClose: 4000,
-                         hideProgressBar: false,
-                         closeOnClick: true,
-                         pauseOnHover: true,
-                         draggable: false,
-                         progress: undefined,
-                         theme: "colored",
-               
-                       });
-        
-                        navigate('/login');
-               
-                       // Optionally redirect to login page here
-                     } else if (response.response === 'error') {
-                         
-                       toast.error(response.message, {
-                         position: "top-right",
-                         autoClose: 5000,
-                         hideProgressBar: false,
-                         closeOnClick: true,
-                         pauseOnHover: true,
-                         draggable: false,
-                         progress: undefined,
-                         theme: "colored",
-               
-                       });
-                       // setError(response.message || 'Failed to import data.');
-                     } else if (response.response === 'success') {
-                       
-                       toast.success(response.message, {
-                         position: "top-right",
-                         autoClose: 5000,
-                         hideProgressBar: false,
-                         closeOnClick: true,
-                         pauseOnHover: true,
-                         draggable: false,
-                         progress: undefined,
-                         theme: "colored",
-               
-                       });
-                        setStatus('success');
-      setFormData(initialState);
-      navigate('/leads/list');
-                     }
-     
-
-      
+      if (response.response === 'login_error') {
+         toast.dismiss();
+        toast.error(response.message);
+        // navigate('/login');
+         setShowLogoutLoader(true);
+      } else if (response.response === 'error') {
+         toast.dismiss();
+        toast.error(response.message);
+      } else if (response.response === 'success') {
+         toast.dismiss();
+        toast.success(response.message);
+        setStatus('success');
+        setFormData(initialState);
+        navigate('/leads/list');
+      }else{
+          toast.dismiss();
+        toast.error('Failed to create lead. Please try again.');
+      }
     } catch (err) {
-      // console.error(err);
       setStatus('error');
+       toast.dismiss();
       setErrorMessage('Failed to create lead. Please try again.');
     } finally {
       setIsLoading(false);
@@ -377,145 +297,62 @@ const LeadCreatePage: React.FC = () => {
 
   return (
     <Container fluid>
-        <PageBreadcrumb title="Leads Create" />
-    <div className="d-flex justify-content-center align-items-start"
-    >
-      
-      <Card style={{ maxWidth: 600, width: '100%', padding: '2rem' }} className="shadow-sm">
-      
-        
-        
-
-        <Form onSubmit={handleSubmit} className="mt-3">
-          <InlineField
-  label="Lead Date"
-  name="leadDateVal"
-  value={formData.leadDateVal}
-  onChange={handleChange}
-  type="date"
-  required
+       {showLogoutLoader && <LogoutOverlay
+  onComplete={async () => {
+    await logout(); // your logout function
+  }}
 />
-
-<InlineField
-  label="First Name"
-  name="firstNameVal"
-  value={formData.firstNameVal}
-  onChange={handleChange}
-  required
-  placeholder="Enter first name"
-/>
-
-<InlineField
-  label="Last Name"
-  name="lastNameVal"
-  value={formData.lastNameVal}
-  onChange={handleChange}
-  required
-  placeholder="Enter last name"
-/>
-
-<InlineField
-  label="Email Address"
-  name="emailAddressVal"
-  value={formData.emailAddressVal}
-  onChange={handleChange}
-  type="email"
-  required
-  placeholder="example@email.com"
-/>
-
-<InlineField
-  label="Phone Number"
-  name="phoneNumberVal"
-  value={formData.phoneNumberVal}
-  onChange={handleChange}
-  type="tel"
-  required
-  placeholder="e.g., +91-9876543210"
-/>
-
-          {/* <InlineField label="Lead Date" name="leadDateVal" value={formData.leadDateVal} onChange={handleChange} type="date" required   />
-          <InlineField label="First Name" name="firstNameVal" value={formData.firstNameVal} onChange={handleChange} required />
-          <InlineField label="Last Name" name="lastNameVal" value={formData.lastNameVal} onChange={handleChange} required />
-          <InlineField label="Email Address" name="emailAddressVal" value={formData.emailAddressVal} onChange={handleChange} type="email" required />
-          <InlineField label="Phone Number" name="phoneNumberVal" value={formData.phoneNumberVal} onChange={handleChange} type="tel" required />
-*/}
-            <InlineField  label="Source" name="sourceVal" value={formData.sourceVal} onChange={handleSourceChange} required> 
-    <SourceSelect
-      value={formData.sourceVal}
-      onChange={handleSourceChange}
-      required
-    />
-  </InlineField>
-       
-
-          <InlineField label="Category" name="categoryVal" value={formData.categoryVal} onChange={handleCategoryChange} required>
-            <CategorySelect value={formData.categoryVal} onChange={handleCategoryChange} required name="categoryVal" label="Category"  />
-          </InlineField>
-
-          {isImmigration && (
-            <InlineField label="SubCategory" name="subCategoryVal" value={formData.subCategoryVal} onChange={handleSubCategoryChange} required>
-              <SubCategorySelect
-                categoryId={formData.categoryVal}
-                value={formData.subCategoryVal}
-                onChange={handleSubCategoryChange}
+}
+      <PageBreadcrumb title="Leads Create" />
+      <div className="d-flex justify-content-center align-items-start">
+        <Card style={{ maxWidth: 600, width: '100%', padding: '2rem' }} className="shadow-sm">
+          <Form onSubmit={handleSubmit} className="mt-3">
+            <InlineField label="Lead Date" name="leadDateVal" value={formData.leadDateVal} onChange={handleChange} type="date" required />
+            <InlineField label="First Name" name="firstNameVal" value={formData.firstNameVal} onChange={handleChange} required placeholder="Enter first name" />
+            <InlineField label="Last Name" name="lastNameVal" value={formData.lastNameVal} onChange={handleChange} required placeholder="Enter last name" />
+            <InlineField label="Email Address" name="emailAddressVal" value={formData.emailAddressVal} onChange={handleChange} type="email" required placeholder="example@email.com" />
+            <InlineField label="Phone Number" name="phoneNumberVal" value={formData.phoneNumberVal} onChange={handleChange} type="tel" required placeholder="e.g., +91-9876543210" />
+            <InlineField label="Source" name="sourceVal" value={formData.sourceVal} onChange={handleSourceChange} required>
+              <SourceSelect value={formData.sourceVal} onChange={handleSourceChange} required />
+            </InlineField>
+              <InlineField label="Quality Score" name="qualityscoreVal" value={formData.qualityscoreVal} onChange={handleQualityScoreChange} required>
+              <QualityScoreSelect value={formData.qualityscoreVal} onChange={handleQualityScoreChange} required />
+            </InlineField>
+            <InlineField label="Category" name="categoryVal" value={formData.categoryVal} onChange={handleCategoryChange} required>
+              <CategorySelect value={formData.categoryVal} onChange={handleCategoryChange} required name="categoryVal" label="Category" />
+            </InlineField>
+            {isImmigration && (
+              <InlineField label="SubCategory" name="subCategoryVal" value={formData.subCategoryVal} onChange={handleSubCategoryChange} required>
+                <SubCategorySelect categoryId={formData.categoryVal} value={formData.subCategoryVal} onChange={handleSubCategoryChange} required />
+              </InlineField>
+            )}
+            {(isTestprep || isACS || isImmigration) && (
+              <InlineField label="Product" name="productVal" value={formData.productVal} onChange={handleProductChange} required>
+                <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required />
+              </InlineField>
+            )}
+            <InlineField label="Tele Executive" name="executiveIdVal" value={formData.executiveIdVal} onChange={handleExecutiveChange}>
+              <ExecutiveSelect
+                value={formData.executiveIdVal}
+                onChange={handleExecutiveChange}
+                name="executiveIdVal"
+                label="Tele Executive"
                 required
-                name="subCategoryVal"
-                label="SubCategory"
               />
             </InlineField>
-          )}
-
-          {(isTestprep || isACS || isImmigration) && (
-            
-            <InlineField label="Product" name="productVal" value={formData.productVal} onChange={handleProductChange} required>
-              <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required label="Product" />
+            <InlineField label="Branch" name="branchVal" value={formData.branchVal} onChange={handleBranchChange}>
+              <BranchSelect value={formData.branchVal} onChange={handleBranchChange} name="branchVal" label="Branch" required />
             </InlineField>
-          )}
-
-          {/* {(isACS || isImmigration) && (
-            <InlineField label="Country" name="countryVal" value={formData.countryVal} onChange={handleCountryChange} required>
-              <CountrySelect value={formData.countryVal} onChange={handleCountryChange} required label="Country" />
-            </InlineField>
-          )} */}
- <InlineField label="Executive" name="executiveIdVal" value={formData.executiveIdVal} onChange={handleBranchChange}>
-            <ExecutiveSelect
-              value={formData.executiveIdVal === '' ? '' : String(formData.executiveIdVal)}
-              onChange={handleBranchChange}
-              name="executiveIdVal"
-              label="Executive"
-              required
-            />
-
-            
-          </InlineField>
-
-
-          <InlineField label="Branch" name="branchVal" value={formData.branchVal} onChange={handleBranchChange}>
-            <BranchSelect
-              value={formData.branchVal === '' ? '' : String(formData.branchVal)}
-              onChange={handleBranchChange}
-              name="branchVal"
-              label="Branch"
-              required
-            />
-
-            
-          </InlineField>
-             
-
-          <Row>
-            <Col md={{ span: 6, offset: 3 }} className="text-end">
-              <Button type="submit" variant="primary" disabled={isLoading}>
-                {isLoading ? 'Saving...' : 'Save'}
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-        {/* {status === 'success' && <Alert variant="success">Lead created successfully!</Alert>}
-        {status === 'error' && <Alert variant="danger">{errorMessage}</Alert>} */}
-      </Card>
-    </div>
+            <Row>
+              <Col md={{ span: 6, offset: 3 }} className="text-end">
+                <Button type="submit" variant="primary" disabled={isLoading}>
+                  {isLoading ? 'Saving...' : 'Save'}
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+      </div>
     </Container>
   );
 };

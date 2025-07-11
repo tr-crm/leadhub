@@ -1,36 +1,44 @@
-import React, { useEffect, useState } from 'react';
+// import React, { useEffect, useState } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import DataTable from 'react-data-table-component';
 import { Container, Button, Row, Col, Modal, Form } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
-import { getWebhookLeadsList,FreshLeadTransferToLeadList } from '@/services/leadservice';
+import { getWebhookLeadsList,FreshLeadTransferToLeadList,BulkFreshLeadTransferToLeadList } from '@/services/leadservice';
 import { SourceList, getCategoryList, getSubCategoryList, ProductList, getBranchList } from '@/services/generalservice';
 import type { WebhookLeadayload } from '@/services/leadservice';
 import type { Lead } from '@/types/lead.types';
-import { getUserInfo } from '@/utils/auth';
 import RegionSelect from '@/components/regionselect';
+import ExecutiveSelect from '@/components/executiveselect';
 import Select from 'react-select';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LogoutOverlay from '@/components/LogoutOverlay';
+import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+
+
+// import { s } from 'node_modules/react-router/dist/development/lib-C1JSsICm.d.mts';
 
 
 
 interface OptionType {
-  value: string;
+  value: any;
   label: string;
 }
 
 const LeadsDataTable: React.FC = () => {
+     const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
   const [data, setData] = useState<Lead[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-
+  const [selectedRows, setSelectedRows] = useState<Lead[]>([]);
+  const [toggleCleared, setToggleCleared] = useState(false);
   const [leadDate, setLeadDate] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
-
+   const [execFilter, setExecFilter] = useState('0');
   const [sourceOptions, setSourceOptions] = useState<OptionType[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<OptionType[]>([]);
   const [subCategoryOptions, setSubCategoryOptions] = useState<OptionType[]>([]);
@@ -51,7 +59,8 @@ const LeadsDataTable: React.FC = () => {
        const [excecutive, setExcecutive] = useState<OptionType | null>(null);
 
 
-   
+       
+
 
 
   const [showSubCategory, setShowSubCategory] = useState(true);
@@ -61,7 +70,19 @@ const LeadsDataTable: React.FC = () => {
 
   const [submitting, setSubmitting] = useState(false);
 
-  const user = getUserInfo();
+
+// Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+    const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+  
+    // Ref to prevent double fetch in Strict Mode or repeated effect calls
+    const didFetchRef = useRef(false);
+  
+    useEffect(() => {
+      if (!user) {
+        setShowLogoutLoader(true);
+      }
+    }, [user]);
+
   const type = user.type;
 
   useEffect(() => {
@@ -175,20 +196,33 @@ const LeadsDataTable: React.FC = () => {
     }
     return '0';
   };
+   const getInitialLeadTypeStatusValue = (): string => {
+    if (type === '1' || type === '2' || type === '3') {
+      return '1';
+    } else  {
+      return '2';
+    }
+   
+  };
 
   const [regionVal, setRegionVal] = useState<string>(getInitialRegionValue());
+
+   const [leadtype, setLeadTypeStatus] = useState(getInitialLeadTypeStatusValue());
+   const [actexecutive, setActExecutive] = useState(0);
 
   const handleRegionChange = (option: OptionType | null) => {
     setRegionVal(option?.value ?? '0');
   };
+ const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLeadTypeStatus(e.target.value);
+  };
+ 
 
   const handleSourceChange = (option: OptionType | null): void => {
     setSource(option);
   };
 
-  // const handleCategory = (option: OptionType | null): void => {
-  //   setCategory(option);
-  // };
+   const handleExecChange = (opt: OptionType | null) => setActExecutive(opt?.value ?? '0');
   const handleCategory = (option: OptionType | null): void => {
     setCategory(option);
     setProduct(null);
@@ -241,41 +275,104 @@ const LeadsDataTable: React.FC = () => {
   };
 
   const fetchLeads = async () => {
+       if (!user) return;
     setLoading(true);
+          let actexecutive1: number;
+
+      if (type == '5') {
+        actexecutive1 = user.id;
+      } else {
+        actexecutive1 = actexecutive;
+      }
     const payload: WebhookLeadayload = {
       start: '',
       sourceVal: 'All',
       userIdVal: user.id,
       tokenVal: user.access_token,
       regionVal: regionVal,
+      typeVal:user.type,
+      executiveIdVal:actexecutive1,
+      leadtypeVal:leadtype
     };
 
     try {
       const response = await getWebhookLeadsList(payload);
-      setData(response.data);
+     
+                   if (response.response === 'login_error') {
+                   setData([]);  
+                    toast.dismiss();
+                  toast.error(response.message);
+                    setShowLogoutLoader(true);
+                    return;
+                 // Optionally redirect to login page here
+               } else if (response.response === 'error') {
+                 toast.dismiss();
+                   setData([]);
+                    toast.dismiss();
+                     toast.error(response.message);
+                
+               } else if (response.response === 'success') {
+                  setData([]);
+                   toast.dismiss();
+                  setData(response.data);
+               
+               }
     } catch (error) {
-      console.error('Failed to fetch leads:', error);
-      alert('Failed to fetch leads. Please try again.');
+       setData([]);
+        toast.dismiss();
+        toast.error('Failed to fetch leads. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchLeads();
-    }, 100);
-    return () => clearTimeout(timer);
+    if (!user) return;
+
+    // Only fetch if we haven't already fetched for current params
+    if (!didFetchRef.current) {
+    fetchLeads();
+      didFetchRef.current = true;
+    }
+    // const timer = setTimeout(() => {
+    //   fetchLeads();
+    // }, 100);
+    // return () => clearTimeout(timer);
   }, [regionVal]);
+
 
   const handleButtonClick = async (row: Lead) => {
     const sourceId = String(row.source_id);
     const foundSource = sourceOptions.find(option => option.value == sourceId) || null;
     const foundCategory = categoryOptions.find(option => option.value == String(row.category_id)) || null;
 
+    //    if (!foundCategory) {
+    //   // Handle cleared selection
+    //   setShowSubCategory(false);
+    //   setShowProduct(false);
+    //   return;
+    // }
+    // console.log(foundCategory.label);
+ const categoryLabel = foundCategory?.label.toLowerCase() || '';
+    // console.log(categoryLabel);
+    if (categoryLabel === 'test prep') {
+      setShowSubCategory(false);
+      setShowProduct(true);
+      
+    } else if (categoryLabel === 'acs') {
+      setShowSubCategory(false);
+      setShowProduct(true);
+    } else if (categoryLabel === 'immigration') {
+      setShowSubCategory(true);
+      setShowProduct(true);
+    } else {
+      // Default case
+      setShowSubCategory(true);
+      setShowProduct(true);
+    }
     setSource(foundSource);
     setCategory(foundCategory);
-
+    setShowModal(true);
     if (row.category_id) {
       await fetchSubCategories(row.category_id);
       await fetchProductList(row.category_id);
@@ -350,52 +447,149 @@ const LeadsDataTable: React.FC = () => {
         executiveIdVal: excecutive,
         userIdVal: user.id,
         tokenVal: user.access_token,
-        idVal:selectedLead?.id
+        idVal:selectedLead?.id,
+        regionVal:user.region
       };
 
       // console.log(transferPayload.monthVal);
 
       // Simulate API call
       // await new Promise((res) => setTimeout(res, 1000));
-      await FreshLeadTransferToLeadList(transferPayload);
+      const response=await FreshLeadTransferToLeadList(transferPayload);
         //  toast.success('Lead transferred successfully!');
-         toast.success('Lead transferred!', {
-  position: "top-right",
-  autoClose: 5000,
-  hideProgressBar: false,
-  closeOnClick: true,
-  pauseOnHover: true,
-  draggable: false,
-  progress: undefined,
-  theme: "colored",
- 
-});
+         toast.dismiss();
+         toast.success('Lead transferred!');
+
+          if (response.response === 'login_error') {
+             toast.dismiss();
+                           toast.error(response.message);
+                           setShowLogoutLoader(true);
+                         return;
+                         } else if (response.response === 'error') {
+                           toast.dismiss();
+                           toast.error(response.message);
+                         } else if (response.response === 'success') {
+                           toast.dismiss();
+                           toast.success(response.message);
+                          //  navigate('/leads/webhookleadlist');
+                          fetchLeads();
+            }
 
 
       handleCloseModal();
     } catch (error) {
       
-
-     toast.error('Error submitting transfer. Please try again.', {
-  position: "top-right",
-  autoClose: 4000,
-  hideProgressBar: false,
-  closeOnClick: true,
-  pauseOnHover: true,
-  draggable: false,
-  progress: undefined,
-  theme: "colored",
- 
-});
+ toast.dismiss();
+     toast.error('Error submitting transfer. Please try again.');
       setSubmitting(false);
     }
   };
+       const handleSelectedRowsChange = (state: {
+    allSelected: boolean;
+    selectedCount: number;
+    selectedRows: Lead[];
+  }) => {
+    setSelectedRows(state.selectedRows);
+  };
+  //  const handleExecChange1 = (option: { value: string }) => {
+  //   setExecFilter(option?.value ?? '0');
+  // };
+  //  const handleExecChange1 = (selected: OptionType | null) => {
+  //   setExecFilter(selected);
+  //   console.log('Selected Executive:', selected);
+  // };
+
+
+const handleExecChange1 = (selected: OptionType | null) => {
+  setExecFilter(selected?.value ?? ''); // ✅ fallback to empty if null
+};
+
+
+  const handleTransfer = async () => {
+    if (execFilter === '0') {
+       toast.dismiss();
+      toast.warn('Please select an executive to transfer the leads.');
+      return;
+    }
+
+    // const leads = selectedRows.map(row => row.id);
+    const leads = selectedRows.map(row => ({ idVal: row.id }));
+
+    try {
+      const payload = {
+        leads,
+        executiveIdVal: execFilter,
+        userIdVal: user.id,
+        tokenVal: user.access_token,
+        createdByVal:user.id,
+        transferTypeVal:'1'
+      };
+
+      const response=await BulkFreshLeadTransferToLeadList(payload);
+        if (response.response === 'login_error') {
+         toast.dismiss();
+              toast.error(response.message);
+                           setShowLogoutLoader(true);
+                         return;
+          } else if (response.response === 'error') {
+             toast.dismiss();
+            toast.error(response.message);
+          } else if (response.response === 'success') {
+             toast.dismiss();
+            toast.success(response.message);
+      setToggleCleared(!toggleCleared);
+      setSelectedRows([]);
+      setExecFilter('0');
+      fetchLeads();
+          }
+
+      
+    } catch (error) {
+       toast.dismiss();
+      toast.error('Failed to transfer leads.');
+    }
+  };
+ 
+ const isTransferDisabled = (row: any) =>
+  (Number(row.lead_status) === 2 && leadtype === '2') || row.executive_id == 0;
+ console.log(isTransferDisabled);
+
+
+
+
 
   const columns = [
     {
       name: 'ID',
       cell: (_row: Lead, index: number) => index + 1,
       width: '70px',
+    },
+     {
+      name: 'Action',
+      cell: (row: Lead) => (
+
+
+<button
+  title={
+    isTransferDisabled(row)
+      ? 'Cannot transfer due to lead status or missing executive'
+      : ''
+  }
+  onClick={() => handleButtonClick(row)}
+  className={
+    Number(row.lead_status) === 2 ? 'btn btn-primary btn-sm' : 'btn btn-danger btn-sm'
+  }
+  disabled={isTransferDisabled(row)}
+>
+  {Number(row.lead_status) === 2 ? 'Transferred' : 'Transfer'}
+</button>
+
+
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: '100px',
     },
     {
       name: 'Date',
@@ -428,24 +622,19 @@ const LeadsDataTable: React.FC = () => {
       width: '100px',
     },
     {
+      name: 'Executive',
+      selector: (row: Lead) => String(row.executive_name || ''),
+      sortable: true,
+      width: '150px',
+    },
+    {
       name: 'Created At',
       selector: (row: Lead) => new Date(row.created_at).getTime() || 0,
       format: (row: Lead) => new Date(row.created_at).toLocaleString(),
       sortable: true,
       width: '170px',
     },
-    {
-      name: 'Action',
-      cell: (row: Lead) => (
-        <button onClick={() => handleButtonClick(row)} className="btn btn-primary btn-sm">
-          Transfer
-        </button>
-      ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
-      width: '100px',
-    },
+   
   ];
 
   const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
@@ -481,31 +670,88 @@ const LeadsDataTable: React.FC = () => {
 
   return (
     <Container fluid>
-      <PageBreadcrumb title="Fresh Leads List" />
-    <ToastContainer position="top-right" autoClose={3000} />
-
+      <PageBreadcrumb title="Webhook Fresh Leads List" />
+    <ToastContainer/>
+{showLogoutLoader && (
+  <LogoutOverlay
+    duration={5} 
+    onComplete={async () => {
+      await logout(); // your logout function
+    }}
+  />
+)}
       <Row className="mb-2">
-        {(user.type === '1' || user.type === '2' || user.type === '3') && (
+        {(user.type === '1' || user.type === '2') && (
           <Col md={3}>
             <RegionSelect value={regionVal} onChange={handleRegionChange} label="Region" placeholder="All Regions" />
           </Col>
         )}
+        {(user.type === '3') && (
+          <Col md={3}>
+            <RegionSelect value={regionVal} disabled onChange={handleRegionChange} label="Region" placeholder="All Regions" />
+          </Col>
+        )}
+         {(user.type === '1' || user.type === '2' || user.type === '3') && (
+          <Col md={3}>
+                
+              <select
+        id="status"
+        className="form-control"
+        value={leadtype}
+        onChange={handleChange}
+      >
+        {/* <option value="0">All Status</option> */}
+        <option value="1">Fresh</option>
+        <option value="2">Assigned</option>
+      </select>
+          </Col>
+        )}
+        {['1', '2', '3'].includes(user.type) && leadtype === '2' && (
+  <Col md={3}>
+    <ExecutiveSelect
+      value={actexecutive}
+      onChange={handleExecChange}
+      showAllOption
+      placeholder="All Executive"
+    />
+  </Col>
+)}
+
+
+         
         <Col md={1} className="text-end">
-          <Button variant="primary" onClick={fetchLeads}>
+          <Button variant="primary" className="btn btn-primary btn-sm" onClick={fetchLeads}>
             Go
           </Button>
         </Col>
+         <Col md={2} className="text-end">
+          {selectedRows.length > 0 && (
+ <ExecutiveSelect value={execFilter} onChange={handleExecChange1} showAllOption />
+        
+      )}
+        </Col>
+        <Col md={2} className="text-end">
+          {selectedRows.length > 0 && (
+        <button onClick={handleTransfer} className="btn btn-danger btn-sm">
+          Transfer ({selectedRows.length})
+        </button>
+        
+      )}
+        </Col>
+
       </Row>
 
       <DataTable
-        title="Fresh Leads List"
         columns={columns}
         data={data}
         progressPending={loading}
         expandableRows
         expandableRowsComponent={ExpandedComponent}
         pagination
-        selectableRows
+       selectableRows
+        onSelectedRowsChange={handleSelectedRowsChange}
+        clearSelectedRows={toggleCleared}
+
         highlightOnHover
         pointerOnHover
         responsive
@@ -518,10 +764,17 @@ const LeadsDataTable: React.FC = () => {
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
-            <Form.Group className="mb-3">
-              <Form.Label>Lead Date</Form.Label>
-              <Form.Control type="date" value={leadDate} onChange={(e) => setLeadDate(e.target.value)} required />
-            </Form.Group>
+         <Form.Group className="mb-3">
+  <Form.Label>Lead Date</Form.Label>
+  <Form.Control
+    type="date"
+    value={leadDate}
+    onChange={(e) => setLeadDate(e.target.value)}
+    disabled // 
+    required
+  />
+</Form.Group>
+
 
             <Form.Group className="mb-3">
               <Form.Label>First Name</Form.Label>
@@ -545,7 +798,7 @@ const LeadsDataTable: React.FC = () => {
 
             <Form.Group className="mb-3">
               <Form.Label>Source</Form.Label>
-              <Select options={sourceOptions} value={source} onChange={handleSourceChange} placeholder="Select Source" required />
+              <Select options={sourceOptions} value={source} onChange={handleSourceChange} placeholder="Select Source" isDisabled={true} required />
             </Form.Group>
 
             <Form.Group className="mb-3">

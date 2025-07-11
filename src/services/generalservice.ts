@@ -351,4 +351,43 @@ export const RegionList = async (
 
 
 
+export interface QualityScore {
+  id: number;
+  name: string;
+}
+
+
+export const getQualityList = async (
+    userId: string,
+  accessToken: string
+): Promise<Region[]> => {
+  try {
+    const response = await axios.post('/api/Masters/getQualityList', {
+      userIdVal: userId,
+      tokenVal: accessToken,
+      
+    });
+
+    const data = response.data;
+
+    if (Array.isArray(data?.data)) {
+      return data.data.map((reg: any) => ({
+        id: Number(reg.id),
+        name: reg.name,
+        display_name: reg.display_name || reg.name,
+      }));
+    } else {
+      console.warn('Unexpected qualityscore list format:', data);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching qualityscore list:', error);
+    return [];
+  }
+};
+
+
+
+
+
 

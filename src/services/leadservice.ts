@@ -10,7 +10,8 @@ export interface WebhookLeadayload {
   userIdVal: number;
   tokenVal: number;
   regionVal:any;
- 
+ executiveIdVal:any;
+ leadtypeVal:any;
 }
 
 export interface LeadRequestPayload {
@@ -39,6 +40,7 @@ export interface LeadCreateRequestPayload {
   branchVal: number | '';
   leadTypeVal: number | '';
   leadStatusVal: number | '';
+  qualityscoreVal: number | '';
   createdByVal: number;
   userIdVal: number;
   tokenVal: string;
@@ -46,7 +48,7 @@ export interface LeadCreateRequestPayload {
   executiveIdVal:number | '';
 }
 export interface  LeadUpdateRequestPayload {
-  id: number;
+  idVal: number;
   leadDateVal: string;
   firstNameVal: string;
   lastNameVal: string;
@@ -60,6 +62,12 @@ export interface  LeadUpdateRequestPayload {
   branchVal?: any;
   userIdVal: number;
   tokenVal: string;
+  executiveIdVal:any;
+  updatedByVal:any;
+  leadStatusVal:any;
+  regionVal:any;
+  typeVal:any;
+  qualityscoreVal:any;
   // ...other fields
 }
 
@@ -69,6 +77,11 @@ export const getLeadsList = async (payload: LeadRequestPayload) => {
   const response = await axios.post('/api/Leads/getLeadsList', payload);
   return response.data;
 };
+export const getFollowUpLeadsList = async (payload: LeadRequestPayload) => {
+  const response = await axios.post('/api/Leads/getLeadFollowupsList', payload);
+  return response.data;
+};
+
 
 export const getWebhookLeadsList = async (payload:WebhookLeadayload) => {
   const response = await axios.post('/api/Leads/getWebhookLeadsList', payload);
@@ -80,13 +93,22 @@ export const CreateLead = async (payload: LeadCreateRequestPayload) => {
   return response.data;
 };
 export const updateLead = async (payload: LeadUpdateRequestPayload) => {
-  const response = await axios.post('/api/Leads/createLead', payload);
+  const response = await axios.post('/api/Leads/updateLead', payload);
   return response.data;
 };
 export const FreshLeadTransferToLeadList = async (payload:any) => {
   const response = await axios.post('/api/Leads/leadTransfer', payload);
   return response.data;
 };
+export const BulkFreshLeadTransferToLeadList = async (payload:any) => {
+  const response = await axios.post('/api/Leads/bulkLeadTransfer', payload);
+  return response.data;
+};
+export const ImportFreshLeadTransferToLeadList = async (payload:any) => {
+  const response = await axios.post('/api/Leads/importLeadTransfer', payload);
+  return response.data;
+};
+
 
 // export const CreateLead = async (payload: LeadCreateRequestPayload): Promise<void> => {
 //   const res = await fetch('/api/Leads/createLead', {
@@ -166,10 +188,12 @@ export interface LeadPayload {
   data: any;
   userIdVal:number;
   tokenVal:string;
-  dm:number
+  dm:number,
+  // regionVal:any,
+  region:any
 }
 
-export async function ImportLeadCreate(
+export async function ImportLeadCreate1(
   payload: LeadPayload
 ): Promise<ImportCreateApiResponse<any>> {
   try {
@@ -208,8 +232,13 @@ export async function ImportLeadCreate(
   }
 }
 
+export const ImportLeadCreate = async (payload: LeadPayload) => {
+  const response = await axios.post('/api/Leads/importLeads', payload);
+  return response.data;
+};
 
-// getImportLeadsList
+
+//etImportLeadsList
 export interface ImportLeadPayload {
   start: string;
   sourceVal: any;
@@ -217,89 +246,61 @@ export interface ImportLeadPayload {
   userIdVal: number;
   tokenVal: number;
   regionVal:any;
+  executiveIdVal:any;
+  leadtypeVal:any;
+
  
 }
+
+
+
 // getImportLeadsList
-export async function getImportLeadsList(
-  payload:ImportLeadPayload
-): Promise<ImportCreateApiResponse<any>> {
-  try {
-    // Use your custom axios instance for the POST request
-    const res = await axios.post('/api/Leads/getImportLeadsList', payload);
-   
-    // Check if backend indicates login error inside the response data
-    if (res.data?.response === 'login_error') {
-      return {
-        type: 'login_error',
-        message: res.data.message || 'Unauthorized. Please login again.',
-      };
-    }
-
-    // Successful response
-    return { type: 'success', data: res.data };
-  } catch (error: any) {
-    // Use the main axios package's helper to check if this is an axios error
-    if (axio.isAxiosError(error)) {
-      // Check for 401 unauthorized HTTP status
-      if (error.response?.status === 401) {
-        return {
-          type: 'login_error',
-          message: 'Unauthorized. Please login again.',
-        };
-      }
-      // Other axios errors
-      return {
-        type: 'error',
-        message: error.response?.data?.message || error.message || 'Unknown error',
-      };
-    }
-
-    // Non-axios errors fallback
-    return { type: 'error', message: error.message || 'Network error' };
-  }
-}
+export const getImportLeadsList = async (payload: ImportLeadPayload) => {
+  const response = await axios.post('/api/Leads/getImportLeadsList', payload);
+  return response.data;
+};
 
 //getDmImportLeadsList
 
+export const getDmImportLeadsList = async (payload: ImportLeadPayload) => {
+  const response = await axios.post('/api/Leads/getDmImportLeadsList', payload);
+  return response.data;
+};
 
-export async function getDmImportLeadsList(
-  payload:ImportLeadPayload
-): Promise<ImportCreateApiResponse<any>> {
-  try {
-    // Use your custom axios instance for the POST request
-    const res = await axios.post('/api/Leads/getDmImportLeadsList', payload);
-   
-    // Check if backend indicates login error inside the response data
-    if (res.data?.response === 'login_error') {
-      return {
-        type: 'login_error',
-        message: res.data.message || 'Unauthorized. Please login again.',
-      };
-    }
-
-    // Successful response
-    return { type: 'success', data: res.data };
-  } catch (error: any) {
-    // Use the main axios package's helper to check if this is an axios error
-    if (axio.isAxiosError(error)) {
-      // Check for 401 unauthorized HTTP status
-      if (error.response?.status === 401) {
-        return {
-          type: 'login_error',
-          message: 'Unauthorized. Please login again.',
-        };
-      }
-      // Other axios errors
-      return {
-        type: 'error',
-        message: error.response?.data?.message || error.message || 'Unknown error',
-      };
-    }
-
-    // Non-axios errors fallback
-    return { type: 'error', message: error.message || 'Network error' };
-  }
+export interface PartialWalkinPayload {
+  start: string;
+  sourceVal: any;
+  typeVal?: number;
+  fromDateVal: string;
+  toDateVal: string;
+  userIdVal: number;
+  tokenVal: any;
+  leadstatusVal:any;
+  executiveIdVal:any
 }
+
+
+export const getPartialWalkinList = async (payload: PartialWalkinPayload) => {
+  const response = await axios.post('/api/Leads/getLeadPartialWalkinList', payload);
+  return response.data;
+};
+
+export interface NotificationPayload {
+  userIdVal: number;
+  tokenVal: number;
+  typeVal?: number;
+}
+
+export const getTransactionNotificationList = async (payload: NotificationPayload) => {
+  const response = await axios.post('/api/Leads/transactionList', payload);
+  return response.data;
+};
+
+
+
+
+
+
 
 
 

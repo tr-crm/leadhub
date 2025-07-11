@@ -66,7 +66,7 @@ export const menuItems: MenuItemType[] = [
     label: "Dashboard",
     icon: TbLayoutDashboard,
     url: "/dashboard",
-    minLevel: [1, 2, 3, 4, 5],
+    minLevel: [1, 2, 3, 4, 5,8,9],
   },
   {
     key: "settings",
@@ -128,6 +128,18 @@ export const menuItems: MenuItemType[] = [
       },
       
       {
+        key: "leads-followuplist",
+        label: "Lead FollowUp List",
+        url: "/leads/followup",
+        minLevel: [1, 2, 3, 4, 5],
+      },
+      {
+        key: "leads-partialwalkin",
+        label: "Partial Walkin List",
+        url: "/leads/partialwalkin",
+        minLevel: [1, 2, 3, 4, 5],
+      },
+      {
         key: "import-create",
         label: "Import Create",
         url: "/leads/import/create",
@@ -170,12 +182,12 @@ export const menuItems: MenuItemType[] = [
         url: "/import/create",
         minLevel: [1, 2, 8, 9],
       },
-    //   {
-    //     key: "dm-import-singlecreate",
-    //     label: "Single Create",
-    //     url: "/import/singlecreate",
-    //     minLevel: [1, 2, 8, 9],
-    //   },
+      {
+        key: "dm-import-singlecreate",
+        label: "DM Lead Create",
+        url: "/import/singlecreate",
+        minLevel: [1, 2, 8, 9],
+      },
     ],
   },
   {
@@ -214,6 +226,19 @@ export const menuItems: MenuItemType[] = [
         url: "report/executivewiseleadreport",
         minLevel: [1,2,3,4,5],
       },
+      {
+        key: "Monthly Wise Report",
+        label: "Monthly Wise Report",
+        url: "/reports/monthlywisereport",
+        minLevel: [1, 2, 3, 4, 5],
+      },
+       {
+        key: "Monthly Source Wise Report",
+        label: "Monthly Source Wise Report",
+        url: "/reports/monthlysourcewisereport",
+        minLevel: [1, 2, 3, 4, 5],
+      },
+      
       
 
       

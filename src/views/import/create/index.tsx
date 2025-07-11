@@ -195,6 +195,7 @@ const ExcelImport: React.FC = () => {
         sub_category_id: subcategory?.value || '',
         product_id: product?.value || '',
         branch_id: branch?.value || '',
+        region:'',
         lead_type: '4',
         created_by: user.id,
         data: parsed,
@@ -205,15 +206,24 @@ const ExcelImport: React.FC = () => {
 
       const response = await ImportLeadCreate(payload);
 
-      if (response.data.response === 'login_error') {
-        toast.error(response.message || 'Session expired, please login again.', { position: 'top-right', autoClose: 4000, theme: 'colored' });
-      } else if (response.data.response === 'error') {
-        toast.error(response.message || 'Failed to import data.', { position: 'top-right', autoClose: 5000, theme: 'colored' });
-      } else if (response.data.response === 'success') {
-        toast.success(response.message || 'Data imported successfully!', { position: 'top-right', autoClose: 5000, theme: 'colored' });
-        navigate('/leads/import/list');
+      if (response.response === 'login_error') {
+          toast.dismiss();
+           toast.error(response.message);
+
+      } else if (response.response === 'error') {
+           toast.dismiss();
+           toast.error(response.message);
+
+      } else if (response.response === 'success') {
+        toast.dismiss();
+           toast.error(response.message);
+
+        navigate('/import/list');
       }
     } catch (err: any) {
+       toast.dismiss();
+          
+
       toast.error(err.message || 'Something went wrong.', { position: 'top-right', autoClose: 4000, theme: 'colored' });
     } finally {
       setIsSubmitting(false);
@@ -228,7 +238,7 @@ const ExcelImport: React.FC = () => {
         <Form onSubmit={handleSubmit}>
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Date</Form.Label>
+              <Form.Label>Lead Date <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <DatePicker
@@ -236,7 +246,7 @@ const ExcelImport: React.FC = () => {
                 onChange={(date) => setSelectedDate(date)}
                 dateFormat="yyyy-MM-dd"
                 className="form-control w-100"
-                placeholderText="Select a Lead date"
+                placeholderText="Select Lead date"
                 required
               />
               {errors.selectedDate && <div className="text-danger">{errors.selectedDate}</div>}
@@ -245,7 +255,7 @@ const ExcelImport: React.FC = () => {
 
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Source</Form.Label>
+              <Form.Label>Source <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <Select
@@ -261,7 +271,7 @@ const ExcelImport: React.FC = () => {
 
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Category</Form.Label>
+              <Form.Label>Category <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <Select
@@ -283,7 +293,7 @@ const ExcelImport: React.FC = () => {
           {shouldShowSubCategory && subCategoryOptions.length > 0 && (
             <Row className="mb-3 align-items-center">
               <Col sm={3}>
-                <Form.Label>Subcategory</Form.Label>
+                <Form.Label>Subcategory <span style={{ color: 'red' }}>*</span></Form.Label>
               </Col>
               <Col sm={5}>
                 <Select
@@ -302,7 +312,7 @@ const ExcelImport: React.FC = () => {
           {shouldShowProduct && (
             <Row className="mb-3 align-items-center">
               <Col sm={3}>
-                <Form.Label>Product</Form.Label>
+                <Form.Label>Product <span style={{ color: 'red' }}>*</span></Form.Label>
               </Col>
               <Col sm={5}>
                 <Select
@@ -318,7 +328,7 @@ const ExcelImport: React.FC = () => {
           )}
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Branch</Form.Label>
+              <Form.Label>Branch <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <Select
@@ -334,7 +344,7 @@ const ExcelImport: React.FC = () => {
 
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Upload Excel File</Form.Label>
+              <Form.Label>Upload Excel File <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <Form.Control required type="file" accept=".xlsx,.xls" onChange={handleFileChange} />

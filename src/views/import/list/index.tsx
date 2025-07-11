@@ -29,12 +29,14 @@ const ExcelImportList: React.FC = () => {
     userIdVal: user.id,
     tokenVal: user.access_token,
     regionVal: regionVal,
+    executiveIdVal:"",
+    leadtypeVal:"",
   };
 
   try {
     const response = await getDmImportLeadsList(payload);
     
-//    console.log(response.data.response);
+   console.log(response.data.response);
 
    if (response.data.response === 'login_error') {
      setData([]);

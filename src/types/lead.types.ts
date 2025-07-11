@@ -21,6 +21,7 @@ export interface Lead {
   country_id:number;
   branch_id:number;
   lead_status:number;
+  transfer_status:number;
   lead_status_name:string;
   executive_name:string
   executive_id:any;
@@ -31,6 +32,9 @@ export interface Lead {
   campaign_name:any;
   comments:any;
   comment:any;
+  region:any;
+  quality_id:any;
+  followup_date:any;
   json_response_data: {
     full_name?: string;
     email?: string;

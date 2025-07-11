@@ -7,24 +7,24 @@ import * as XLSX from 'xlsx';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
 import { ImportLeadCreate } from '@/services/leadservice';
 import type { LeadPayload } from '@/services/leadservice';
 import { toast } from 'react-toastify';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
+import LogoutOverlay from '@/components/LogoutOverlay';
+import { getUserInfo, logout } from '@/utils/auth';
 import {
   SourceList,
   getCategoryList,
   getSubCategoryList,
   ProductList,
-  getBranchList
+  getBranchList,
+  RegionList
 } from '@/services/generalservice';
-
-import { getUserInfo } from '@/utils/auth';
 
 interface OptionType {
   label: string;
-  value: string;
+  value: any;
 }
 
 interface JsonData {
@@ -33,19 +33,30 @@ interface JsonData {
 
 const ExcelImport: React.FC = () => {
   const user = getUserInfo();
-
+  const usertype=user.type;
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!user) {
+      setShowLogoutLoader(true);
+    }
+  }, [user]);
+    const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
+
   const [sourceOptions, setSourceOptions] = useState<OptionType[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<OptionType[]>([]);
   const [subCategoryOptions, setSubCategoryOptions] = useState<OptionType[]>([]);
   const [productOptions, setProductOptions] = useState<OptionType[]>([]);
-   const [branchOptions, setBranchOptions] = useState<OptionType[]>([]);
+  const [branchOptions, setBranchOptions] = useState<OptionType[]>([]);
+   const [regionOptions, setRegionOptions] = useState<OptionType[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [source, setSource] = useState<OptionType | null>(null);
   const [category, setCategory] = useState<OptionType | null>(null);
   const [subcategory, setSubcategory] = useState<OptionType | null>(null);
   const [product, setProduct] = useState<OptionType | null>(null);
   const [branch, setBranch] = useState<OptionType | null>(null);
+
+  
+
   const [file, setFile] = useState<File | null>(null);
   const [excelData, setExcelData] = useState<JsonData[]>([]);
 
@@ -53,6 +64,37 @@ const ExcelImport: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+const getInitialRegionValue = (): OptionType | null => {
+  if (usertype === '1' || usertype === '2') {
+    return null; // Don't set a fake option
+  } else if (user?.region) {
+    return { label: user.region_name, value: user.region };
+  }
+  return null;
+};
+
+const [region, setRegion] = useState<OptionType | null>(getInitialRegionValue());
+
+
+   
+   // Fetch Region List
+ useEffect(() => {
+  const fetchRegion = async () => {
+    try {
+      const regions = await RegionList(user.id, user.access_token, user.region, user.type);
+      const options = regions.map((reg: any) => ({
+        value: String(reg.id),
+        label: reg.display_name,
+      }));
+      setRegionOptions(options);
+    } catch (err) {
+      console.error('Failed to fetch regions', err);
+    }
+  };
+  fetchRegion();
+}, [user.id, user.access_token, user.region, user.type]);
+
 
   // Fetch Branch List
   useEffect(() => {
@@ -200,21 +242,28 @@ const ExcelImport: React.FC = () => {
         data: parsed,
         userIdVal: user.id,
         tokenVal: user.access_token,
+        region:region?.value || '',
         dm:0
       };
 
       const response = await ImportLeadCreate(payload);
 
-      if (response.data.response === 'login_error') {
-        toast.error(response.message || 'Session expired, please login again.', { position: 'top-right', autoClose: 4000, theme: 'colored' });
-      } else if (response.data.response === 'error') {
-        toast.error(response.message || 'Failed to import data.', { position: 'top-right', autoClose: 5000, theme: 'colored' });
-      } else if (response.data.response === 'success') {
-        toast.success(response.message || 'Data imported successfully!', { position: 'top-right', autoClose: 5000, theme: 'colored' });
-        navigate('/leads/import/list');
-      }
+         if (response.response === 'login_error') {
+           toast.dismiss();
+                  toast.error(response.message);
+                  setShowLogoutLoader(true);
+                return;
+                } else if (response.response === 'error') {
+                   toast.dismiss();
+                  toast.error(response.message);
+                } else if (response.response === 'success') {
+                   toast.dismiss();
+                  toast.success(response.message);
+                  navigate('/leads/import/list');
+                }
+     
     } catch (err: any) {
-      toast.error(err.message || 'Something went wrong.', { position: 'top-right', autoClose: 4000, theme: 'colored' });
+      toast.error(err.message || 'Something went wrong.');
     } finally {
       setIsSubmitting(false);
     }
@@ -223,12 +272,21 @@ const ExcelImport: React.FC = () => {
   return (
     <Container fluid>
       <PageBreadcrumb title="Excel Import" />
+{showLogoutLoader && (
+  <LogoutOverlay
+    duration={5} 
+    onComplete={async () => {
+      await logout(); // your logout function
+    }}
+  />
+)}
+
 
       <Card className="p-4 shadow-sm mx-auto" style={{ maxWidth: 700 }}>
         <Form onSubmit={handleSubmit}>
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Date</Form.Label>
+              <Form.Label>Lead Date <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <DatePicker
@@ -236,7 +294,7 @@ const ExcelImport: React.FC = () => {
                 onChange={(date) => setSelectedDate(date)}
                 dateFormat="yyyy-MM-dd"
                 className="form-control w-100"
-                placeholderText="Select a Lead date"
+                placeholderText="Select Lead date"
                 required
               />
               {errors.selectedDate && <div className="text-danger">{errors.selectedDate}</div>}
@@ -245,7 +303,7 @@ const ExcelImport: React.FC = () => {
 
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Source</Form.Label>
+              <Form.Label>Source <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <Select
@@ -261,7 +319,7 @@ const ExcelImport: React.FC = () => {
 
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Category</Form.Label>
+              <Form.Label>Category <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <Select
@@ -283,7 +341,7 @@ const ExcelImport: React.FC = () => {
           {shouldShowSubCategory && subCategoryOptions.length > 0 && (
             <Row className="mb-3 align-items-center">
               <Col sm={3}>
-                <Form.Label>Subcategory</Form.Label>
+                <Form.Label>Subcategory <span style={{ color: 'red' }}>*</span></Form.Label>
               </Col>
               <Col sm={5}>
                 <Select
@@ -302,7 +360,7 @@ const ExcelImport: React.FC = () => {
           {shouldShowProduct && (
             <Row className="mb-3 align-items-center">
               <Col sm={3}>
-                <Form.Label>Product</Form.Label>
+                <Form.Label>Product <span style={{ color: 'red' }}>*</span></Form.Label>
               </Col>
               <Col sm={5}>
                 <Select
@@ -316,6 +374,26 @@ const ExcelImport: React.FC = () => {
               </Col>
             </Row>
           )}
+        
+  <Row className="mb-3 align-items-center">
+    <Col sm={3}>
+      <Form.Label>Region <span style={{ color: 'red' }}>*</span></Form.Label>
+    </Col>
+    <Col sm={5}>
+      <Select
+        options={regionOptions}
+        value={region}
+        onChange={setRegion}
+        placeholder="Select Region"
+        required
+         isDisabled={usertype == '3'}
+      />
+       
+      {errors.region && <div className="text-danger">{errors.region}</div>}
+    </Col>
+  </Row>
+
+        
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
               <Form.Label>Branch</Form.Label>
@@ -326,7 +404,7 @@ const ExcelImport: React.FC = () => {
                 value={branch}
                 onChange={setBranch}
                 placeholder="Select Branch"
-                required
+                
               />
               {errors.branch && <div className="text-danger">{errors.branch}</div>}
             </Col>
@@ -334,7 +412,7 @@ const ExcelImport: React.FC = () => {
 
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Upload Excel File</Form.Label>
+              <Form.Label>Upload Excel File <span style={{ color: 'red' }}>*</span></Form.Label>
             </Col>
             <Col sm={5}>
               <Form.Control required type="file" accept=".xlsx,.xls" onChange={handleFileChange} />

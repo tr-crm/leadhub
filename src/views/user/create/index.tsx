@@ -53,16 +53,7 @@ const getInitialRegionValue = (): string => {
     e.preventDefault();
     
       if(formData.regionVal=='0' || formData.regionVal==' '){
-      toast.error('Region Required' , {
-                 position: "top-right",
-                 autoClose: 4000,
-                 hideProgressBar: false,
-                 closeOnClick: true,
-                 pauseOnHover: true,
-                 draggable: false,
-                 progress: undefined,
-                 theme: "colored",
-               });
+      toast.error('Region Required');
 
       return;
 
@@ -91,9 +82,10 @@ const getInitialRegionValue = (): string => {
         },
         body: JSON.stringify(payload),
       });
+      console.log(res);
 
       if (!res.ok) throw new Error('Failed to create user');
-
+  toast.success("User Created Successfully");
       setStatus('success');
        navigate('/user/list');
       setFormData({
@@ -160,7 +152,9 @@ const getInitialRegionValue = (): string => {
         <Row className="mb-3">
           <Col xs={12} md={6}>
             <Form.Group controlId="firstName">
-              <Form.Label>First Name</Form.Label>
+              <Form.Label>
+                First Name <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="firstName"
@@ -186,12 +180,27 @@ const getInitialRegionValue = (): string => {
           </Col>
           <Col xs={12} md={6}>
             <Form.Group controlId="lastName">
-              <Form.Label>Last Name</Form.Label>
+              <Form.Label>
+                Last Name <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="lastName"
                 value={formData.lastName}
-                onChange={handleChange}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                let input = e.target.value;
+
+                input = input.replace(/[^a-zA-Z]/g, '');
+
+                if (input.length > 0) {
+                  input = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
+                }
+
+                setFormData((prevData) => ({
+                  ...prevData,
+                  lastName: input,
+                }));
+              }}
                 placeholder="Enter last name"
                 required
               />
@@ -203,7 +212,9 @@ const getInitialRegionValue = (): string => {
         <Row className="mb-3">
            <Col xs={12} md={6}>
             <Form.Group controlId="role">
-              <Form.Label>Role</Form.Label>
+               <Form.Label>
+                Role <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <Form.Select
                 name="role"
                 value={formData.role}
@@ -223,7 +234,9 @@ const getInitialRegionValue = (): string => {
           </Col>
           <Col xs={12} md={6}>
             <Form.Group controlId="email">
-              <Form.Label>Email</Form.Label>
+               <Form.Label>
+                Email <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <Form.Control
                 type="email"
                 name="email"
@@ -240,12 +253,18 @@ const getInitialRegionValue = (): string => {
         <Row className="mb-3">
           <Col xs={12} md={6}>
             <Form.Group controlId="phone">
-              <Form.Label>Phone Number</Form.Label>
-              <Form.Control
+               <Form.Label>
+                Phone Number <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
+               <Form.Control
                 type="tel"
                 name="phone"
                 value={formData.phone}
-                onChange={handleChange}
+                onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                  const input = e.currentTarget;
+                  input.value = input.value.replace(/\D/g, '').slice(0, 10);
+                  setFormData({ ...formData, phone: input.value });
+                }}
                 placeholder="Enter phone number"
                 required
               />
@@ -255,19 +274,29 @@ const getInitialRegionValue = (): string => {
         {(formData.role == '3') && (
           <Col xs={12} md={6}>
             <Form.Group controlId="region">
-              <Form.Label>Region</Form.Label>
+              <Form.Label>
+                Region <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <RegionSelect
-                value={formData.regionVal}
-                onChange={(selected) => setRegion(selected?.value || '0')}
-                placeholder="Select region"
-              />
+                  value={formData.regionVal}
+                  onChange={(selected) => {
+                    console.log('Selected Region:', selected);
+                    setFormData({
+                      ...formData,
+                      regionVal: selected?.value || '0'
+                    });
+                  }}
+                  placeholder="Select region"
+                />
             </Form.Group>
           </Col>
         )}
-        {user?.type === '3' && user.region && (
+        {user?.type == '3' && user.region && (
           <Col xs={12} md={6}>
             <Form.Group controlId="region">
-              <Form.Label>Region</Form.Label>
+               <Form.Label>
+                Region <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
               <RegionSelect
                 value={formData.regionVal}
                 onChange={(selected) => setRegion(selected?.value || '0')}

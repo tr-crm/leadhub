@@ -1,0 +1,14 @@
+//
+// _breadcrumb.scss
+//
+
+// Breadcrumb item arrow
+.breadcrumb-item {
+    a {
+        color: var(--#{$prefix}body-color);
+
+        &:hover {
+            color: var(--#{$prefix}primary);
+        }
+    }
+}

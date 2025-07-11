@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo,useRef } from "react";
+
 import {
   Table,
   Spinner,
@@ -13,15 +14,19 @@ import "../dailyreport/LeadReportTable.css";
 import { getRegionwiseLeadReportList } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
 import type { RegionLeadReportRequest } from "@/services/reportsservice";
-import { getUserInfo } from "@/utils/auth";
 import { useSortableData } from "@/hooks/useSortableData";
 import YearSelect from '@/components/yearselect';
 import MonthSelect from '@/components/monthselect';
 import RegionSelect from '@/components/regionselect';
-import {toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import LogoutOverlay from '@/components/LogoutOverlay';
+import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+
 const padMonth = (month: number) => String(month).padStart(2, "0");
 
 const DailyLeadReportTable: React.FC = () => {
+    const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
+  
   const now = new Date();
   const [selectedYear, setSelectedYear] = useState<string>(
     now.getFullYear().toString()
@@ -29,7 +34,18 @@ const DailyLeadReportTable: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>(
     padMonth(now.getMonth() + 1)
   );
-   const user = getUserInfo();
+
+    // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+                 const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+               
+                 // Ref to prevent double fetch in Strict Mode or repeated effect calls
+                  const didFetchRef = useRef(false);
+               
+                 useEffect(() => {
+                   if (!user) {
+                     setShowLogoutLoader(true);
+                   }
+                 }, [user]);
   const type=user.type
 
   const [data, setData] = useState<DailyLead[]>([]);
@@ -48,6 +64,7 @@ const DailyLeadReportTable: React.FC = () => {
  
 
   const fetchData = async () => {
+      if (!user) return;
     setLoading(true);
     setError("");
 
@@ -65,72 +82,42 @@ const DailyLeadReportTable: React.FC = () => {
      const response = await getRegionwiseLeadReportList(requestBody);
         
     //    console.log(response.data.response);
-    
-       if (response.data.response === 'login_error') {
-         setData([]);
-               toast.error(response.data.message , {
-                 position: "top-right",
-                 autoClose: 4000,
-                 hideProgressBar: false,
-                 closeOnClick: true,
-                 pauseOnHover: true,
-                 draggable: false,
-                 progress: undefined,
-                 theme: "colored",
-       
-               });
-       
-               // Optionally redirect to login page here
-             } else if (response.data.response === 'error') {
-                 setData([]);
-               toast.error(response.data.message, {
-                 position: "top-right",
-                 autoClose: 5000,
-                 hideProgressBar: false,
-                 closeOnClick: true,
-                 pauseOnHover: true,
-                 draggable: false,
-                 progress: undefined,
-                 theme: "colored",
-       
-               });
-               // setError(response.message || 'Failed to import data.');
-             } else if (response.data.response === 'success') {
-                setData(response.data.data);
-               toast.success(response.message, {
-                 position: "top-right",
-                 autoClose: 5000,
-                 hideProgressBar: false,
-                 closeOnClick: true,
-                 pauseOnHover: true,
-                 draggable: false,
-                 progress: undefined,
-                 theme: "colored",
-       
-               });
-             }
+          if (response.response === 'login_error') {
+                           setData([]);
+                            setShowLogoutLoader(true);
+                         toast.dismiss();
+                       toast.error(response.message);
+               
+                       // Optionally redirect to login page here
+                     } else if (response.response === 'error') {
+                         setData([]);
+                        toast.dismiss();
+                       toast.error(response.message);
+                     } else if (response.response === 'success') {
+                       setData([]);
+                        setData(response.data);
+                       
+                     }
+      
         
       } catch (err:any) {
-       toast.error(err.message || 'Something went wrong.', {
-               position: "top-right",
-               autoClose: 4000,
-               hideProgressBar: false,
-               closeOnClick: true,
-               pauseOnHover: true,
-               draggable: false,
-               progress: undefined,
-               theme: "colored",
-       
-             });
+         toast.dismiss();
+       toast.error(err.message || 'Something went wrong.');
         setData([]); // safe fallback
       } finally {
         setLoading(false);
       }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [selectedYear, selectedMonth]);
+ 
+
+    useEffect(() => {
+      if (!user) return;
+       if (!didFetchRef.current) {
+      fetchData()
+        didFetchRef.current = true;
+      }
+    }, [selectedYear, selectedMonth]);
 
   const allStatuses = useMemo(() => {
     const set = new Set<string>();
@@ -168,6 +155,14 @@ const handleRegionChange = (selectedRegion:any) => {
   return (
     <Container fluid>
       <PageBreadcrumb title="Region Wise Lead Report" />
+         {showLogoutLoader && (
+  <LogoutOverlay
+    duration={5} 
+    onComplete={async () => {
+      await logout(); // your logout function
+    }}
+  />
+)}
       <div className="mt-4 bg-white p-4 shadow-sm rounded">
         <Form className="mb-3">
           <Row>
