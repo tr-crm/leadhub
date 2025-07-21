@@ -23,7 +23,8 @@ export interface LeadRequestPayload {
   userIdVal: number;
   tokenVal: any;
   leadstatusVal:any;
-  executiveIdVal:any
+  executiveIdVal:any;
+  touchStatusVal:any;
 }
 
 export interface LeadCreateRequestPayload {
@@ -46,6 +47,7 @@ export interface LeadCreateRequestPayload {
   tokenVal: string;
   regionVal:number;
   executiveIdVal:number | '';
+  alternatephoneNumberVal: string;
 }
 export interface  LeadUpdateRequestPayload {
   idVal: number;
@@ -248,6 +250,8 @@ export interface ImportLeadPayload {
   regionVal:any;
   executiveIdVal:any;
   leadtypeVal:any;
+  fromDateVal:any;
+  toDateVal:any;
 
  
 }
@@ -295,7 +299,17 @@ export const getTransactionNotificationList = async (payload: NotificationPayloa
   const response = await axios.post('/api/Leads/transactionList', payload);
   return response.data;
 };
+export interface UpdateNotificationPayload {
+  userIdVal: number;
+  tokenVal: number;
+  typeVal?: number;
+  idVal:number;
+}
 
+export const updateTransactionNotification = async (payload: UpdateNotificationPayload) => {
+  const response = await axios.post('/api/Leads/updateTransactionStatus', payload);
+  return response.data;
+};
 
 
 

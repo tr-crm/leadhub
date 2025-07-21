@@ -58,7 +58,8 @@ const ExcelImport: React.FC = () => {
   useEffect(() => {
     const fetchBranch = async () => {
       try {
-        const branches = await getBranchList(user.id, user.access_token);
+        const branches = await getBranchList(user.id, user.access_token,'0',user.region,user.type);
+
         const options = branches.map((bran: any) => ({
           value: String(bran.id),
           label: bran.display_name,
@@ -189,7 +190,11 @@ const ExcelImport: React.FC = () => {
       setExcelData(parsed);
 
       const payload: LeadPayload = {
-        lead_date: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+        // lead_date: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+        lead_date: selectedDate
+  ? selectedDate.toLocaleDateString('en-CA') // e.g., "2025-07-18"
+  : null,
+
         source_id: source?.value || '',
         category_id: category?.value || '',
         sub_category_id: subcategory?.value || '',
@@ -328,7 +333,7 @@ const ExcelImport: React.FC = () => {
           )}
           <Row className="mb-3 align-items-center">
             <Col sm={3}>
-              <Form.Label>Branch <span style={{ color: 'red' }}>*</span></Form.Label>
+              <Form.Label>Branch</Form.Label>
             </Col>
             <Col sm={5}>
               <Select
@@ -336,7 +341,7 @@ const ExcelImport: React.FC = () => {
                 value={branch}
                 onChange={setBranch}
                 placeholder="Select Branch"
-                required
+                
               />
               {errors.branch && <div className="text-danger">{errors.branch}</div>}
             </Col>

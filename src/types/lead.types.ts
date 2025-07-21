@@ -28,17 +28,24 @@ export interface Lead {
   region_name:string
   year:any;
   month:any;
+  dm:any;
   campaign_id:any;
   campaign_name:any;
   comments:any;
   comment:any;
   region:any;
   quality_id:any;
+  import_type:any;
   followup_date:any;
+  touch_date_time:any;
+  touch_status:any;
+  time_to_first_response:any;
+  time_to_first_response_readable:any;
   json_response_data: {
     full_name?: string;
     email?: string;
     phone_number?: string;
     [key: string]: any;
   };
+  partial_walkin_date:string;
 }

@@ -185,6 +185,7 @@ const handleSubmitEdit = async () => {
     updatedByVal: user.id,
     regionVal: selectedUser.region || '',
     supervisionVal : selectedUser.supervision,
+    idletimeVal : selectedUser.idle_time || '',
   };
 
   setSubmittingEdit(true);
@@ -331,6 +332,7 @@ const handleSubmitCreate = async () => {
     regionVal: newUser.region,
     createdByVal: user.id,
     supervisionVal: user.id,
+    idletimeVal : user.idle_time,
   };
 
   setSubmittingCreate(true);
@@ -359,12 +361,14 @@ const handleSubmitCreate = async () => {
 
 
 const baseColumns = [
-  { name: 'ID', selector: (row: User) => row.id, sortable: true, width: '70px' },
+  // { name: 'ID', selector: (row: User) => row.id, sortable: true, width: '70px' },
+   { name: 'S.No', cell: (_: any, i: any) => i + 1, width: '70px' },
   { name: 'Name', selector: (row: User) => row.full_name, sortable: true },
   { name: 'Email', selector: (row: User) => row.email_address, sortable: true },
   { name: 'Phone', selector: (row: User) => row.phone_number || '-', sortable: true },
   { name: 'Role', selector: (row: User) => row.role || '-', sortable: true },
   { name: 'Region', selector: (row: User) => row.region_name, sortable: true },
+    { name: 'Idle Time', selector: (row: User) => row.idle_time, sortable: true },
   {
     name: 'Edit',
     cell: (row: User) => (
@@ -466,21 +470,22 @@ if (user.type == 1 || user.type == 2) {
 
   return (
     <Container fluid>
-      <PageBreadcrumb title="User List" />
+      
+        <PageBreadcrumb title={`User List (${data.length})`} />
        {showLogoutLoader && <LogoutOverlay
-  onComplete={async () => {
-    await logout(); // your logout function
-  }}
-/>
-}
-        <Form className="mb-4 d-flex justify-content-end">
-          <Row className="align-items-end">
-            <Col md={2} className="">
-              <Button variant="primary" onClick={refreshData}>
-                Refresh
-              </Button>
-            </Col>
-          </Row>
+          onComplete={async () => {
+            await logout(); // your logout function
+          }}
+        />
+        }
+      <Form className="mb-4 d-flex justify-content-end">
+        <Row className="align-items-end">
+          <Col md={2} className="">
+            <Button variant="primary" onClick={refreshData}>
+              Refresh
+            </Button>
+          </Col>
+        </Row>
       </Form>
       <DataTable
         columns={columns}
@@ -493,7 +498,7 @@ if (user.type == 1 || user.type == 2) {
         responsive
       />
 
-    <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
+    <Modal show={showModal} onHide={handleCloseModal} backdrop="static" keyboard={false} size="lg" centered>
       <Modal.Header closeButton>
         <Modal.Title>Edit User</Modal.Title>
       </Modal.Header>
@@ -621,6 +626,21 @@ if (user.type == 1 || user.type == 2) {
               placeholder="Select Region"
             />
           </Form.Group>
+          <Form.Group className="mb-3">
+              <Form.Label>
+              Idle Time<span className="text-danger">*</span>
+            </Form.Label>
+           <Form.Control
+                type="text"
+                value={selectedUser.idle_time}
+                onChange={(e) =>
+                  setSelectedUser({ ...selectedUser, idle_time: e.target.value })
+                }
+              />
+                {!selectedUser.idle_time && (
+                <small className="text-danger">Idle Time is required.</small>
+              )}
+          </Form.Group>
 
            <Button
             variant="success"
@@ -674,7 +694,7 @@ if (user.type == 1 || user.type == 2) {
       </Modal.Body>
     </Modal>
 
-   <Modal show={ShowResetModal} onHide={() => setShowResetModal(false)} centered>
+   <Modal show={ShowResetModal} onHide={() => setShowResetModal(false)} backdrop="static" keyboard={false} centered>
       <Modal.Header closeButton>
         <Modal.Title>Reset Password</Modal.Title>
       </Modal.Header>
@@ -721,7 +741,7 @@ if (user.type == 1 || user.type == 2) {
       </Modal.Body>
     </Modal>
 
-    <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)} size="lg" centered>
+    <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)} backdrop="static" keyboard={false} size="lg" centered>
       <Modal.Header closeButton>
         <Modal.Title>Create User</Modal.Title>
       </Modal.Header>
@@ -853,7 +873,21 @@ if (user.type == 1 || user.type == 2) {
               isDisabled={true}
             />
           </Form.Group>
-
+              <Form.Group className="mb-3">
+              <Form.Label>
+              Idle Time<span className="text-danger">*</span>
+            </Form.Label>
+           <Form.Control
+                type="text"
+                value={newUser.idle_time}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, idle_time: e.target.value })
+                }
+              />
+                {!newUser.idle_time && (
+                <small className="text-danger">Idle Time is required.</small>
+              )}
+          </Form.Group>
           <Button
             variant="success"
             disabled={submittingCreate}

@@ -5,11 +5,12 @@ import {
     LuBell,LuFacebook ,LuImport 
 } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import SimpleBar from "simplebar-react";
 import type {IconType} from "react-icons";
 import { getUserInfo } from '@/utils/auth';
-import type { NotificationPayload } from '@/services/leadservice';
-import { getTransactionNotificationList } from '@/services/leadservice';
+import type { NotificationPayload, UpdateNotificationPayload } from '@/services/leadservice';
+import { getTransactionNotificationList, updateTransactionNotification } from '@/services/leadservice';
 
 
 
@@ -34,17 +35,45 @@ const NotificationDropdown = () => {
     const [notifications, setNotifications] = useState<NotificationType[]>([]); 
     const navigate = useNavigate();
     const user = getUserInfo();
-    const handleNotificationClick = (notification: NotificationType & { transfer_type?: string }) => {
+    const handleNotificationClick = async (notification: NotificationType & { transfer_type?: string }) => {
+        const payload: UpdateNotificationPayload = {
+            userIdVal: user.id,
+            tokenVal: user.access_token,
+            typeVal: user.type,
+            idVal: Number(notification.id),
+        };
+
+    try {
+        const response = await updateTransactionNotification(payload);
+
+        if (response.response === 'login_error') {
+        toast.dismiss();
+        toast.error(response.message);
+        return;
+        } else if (response.response === 'error') {
+        toast.dismiss();
+        toast.error(response.message);
+        } else if (response.response === 'success') {
+        fetchNotifications();
+        toast.dismiss();
+        toast.success(response.message);
+        }
+    } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+    }
 
     const type = notification.transfer_type;
+
     if (type == '1') {
         navigate("/leads/webhookleadlist");
     } else if (type == '2') {
         navigate("/leads/import/list");
-    }else {
+    } else {
         navigate("/login");
     }
+     fetchNotifications();
     };
+
     const getVariantFromTransferType = (type: string): NotificationType['variant'] => {
         switch (type) {
             case '1':
@@ -93,26 +122,26 @@ const NotificationDropdown = () => {
       console.error("Failed to fetch notifications:", error);
     }
   };
-useEffect(() => {
-  let isFetching = false;
+    useEffect(() => {
+    let isFetching = false;
 
-  const safeFetchNotifications = async () => {
-    if (isFetching) return;
-    isFetching = true;
-    try {
-      await fetchNotifications();
-    } finally {
-      isFetching = false;
-    }
-  };
+    const safeFetchNotifications = async () => {
+        if (isFetching) return;
+        isFetching = true;
+        try {
+        await fetchNotifications();
+        } finally {
+        isFetching = false;
+        }
+    };
 
-  // Initial call
-  safeFetchNotifications();
+    // Initial call
+    safeFetchNotifications();
 
-  // Poll every 5 minutes
-  const intervalId = setInterval(safeFetchNotifications, 300000);
-  return () => clearInterval(intervalId);
-}, []);
+    // Poll every 5 minutes
+    const intervalId = setInterval(safeFetchNotifications, 300000);
+    return () => clearInterval(intervalId);
+    }, []);
 
     return (
         <div className="topbar-item">
@@ -180,9 +209,3 @@ useEffect(() => {
 }
 
 export default NotificationDropdown
-
-
-
-
-
-

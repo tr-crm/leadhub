@@ -66,12 +66,14 @@ interface LeadFormData {
   executiveIdVal?: any;
   leadStatusVal?: any; // ← THIS is required
   qualityscoreVal?:any;
+  touchStatusVal?:any;
+  //  touchedFilter: string;
 }
 
 
 const LeadsDataTable: React.FC = () => {
     const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
-
+const [showTouchedFilter] = useState(false); 
   const [data, setData] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,6 +96,8 @@ const LeadsDataTable: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('0');
   const [execFilter, setExecFilter] = useState('0');
 
+   const [touchedFilter, setTouchedFilter] = useState<string>('All');
+
   const [sourceOptions, setSourceOptions] = useState<OptionType[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<OptionType[]>([]);
   const [subCategoryOptions, setSubCategoryOptions] = useState<OptionType[]>([]);
@@ -103,7 +107,8 @@ const LeadsDataTable: React.FC = () => {
   const [executiveOptions, setExecutiveOptions] = useState<OptionType[]>([]);
   const [leadstatusOptions, setleadstatusOptions] = useState<OptionType[]>([]);
   const [qualityscoreOptions, setQualityscoreOptions] = useState<OptionType[]>([]);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
     const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
@@ -130,7 +135,22 @@ const LeadsDataTable: React.FC = () => {
   const [followupComment, setFollowupComment] = useState('');
   const [followupBranch, setFollowupBranch] = useState<OptionType | null>(null);
   const [followupQualityScore, setFollowupQualityScore] = useState<OptionType | null>(null);
-
+const [searchText, setSearchText] = useState('');
+  const filteredData = data.filter((row: Lead) =>
+    Object.values(row)
+      .join(' ')
+      .toLowerCase()
+      .includes(searchText.toLowerCase())
+  );
+  const SubHeaderComponent = (
+    <Form.Control
+      type="text"
+      placeholder="Search..."
+      value={searchText}
+      onChange={(e) => setSearchText(e.target.value)}
+      style={{ maxWidth: '300px' }}
+    />
+  );
 
 
   const fetchLeads = async () => {
@@ -148,6 +168,7 @@ const LeadsDataTable: React.FC = () => {
         typeVal: user.type,
         leadstatusVal: statusFilter,
         executiveIdVal: execFilter,
+        touchStatusVal:touchedFilter,
       };
       // const { data } = await getLeadsList(payload);
         const response = await getLeadsList(payload);
@@ -216,7 +237,7 @@ const LeadsDataTable: React.FC = () => {
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const branches = await getBranchList(user.id, user.access_token);
+        const branches = await getBranchList(user.id, user.access_token,'0',user.region,user.type);
         const options = branches.map((bran: any) => ({
           value: bran.id,
           label: bran.display_name,
@@ -403,8 +424,26 @@ const LeadsDataTable: React.FC = () => {
   };
 
 
-  const handleFormChange = (key: keyof LeadFormData, value: any) =>
-    setFormData((prev) => ({ ...prev, [key]: value }));
+  // const handleFormChange = (key: keyof LeadFormData, value: any) =>
+  //   setFormData((prev) => ({ ...prev, [key]: value }));
+  const handleFormChange = (key: keyof LeadFormData, value: any) => {
+    let newValue = value;
+
+    if (key === 'firstNameVal' || key === 'lastNameVal') {
+      newValue = newValue.replace(/[^a-zA-Z\s]/g, '');
+
+      // Capitalize only the first letter
+      if (newValue.length > 0) {
+        newValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+      }
+    }
+
+    if (key === 'phoneNumberVal') {
+      newValue = newValue.replace(/\D/g, '').slice(0, 10);
+    }
+
+    setFormData((prev) => ({ ...prev, [key]: newValue }));
+  };
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -563,14 +602,18 @@ const LeadsDataTable: React.FC = () => {
     setSelectedRows(state.selectedRows);
     console.log(selectedRows);
   };
-
+const touchedOptions = [
+  { value: 'All', label: 'All' },
+  { value: '1', label: 'Touched' },
+  { value: '0', label: 'Not Touched' }
+];
 
 
   const columns = [
     {
       name: 'ID',
-      cell: (_row: Lead, index: number) => index + 1,
-      width: '70px',
+      cell: (_row: Lead, index: number) =>  (currentPage - 1) * perPage + index + 1,
+      width: '30px',
     },
     {
       name: 'Action',
@@ -589,7 +632,7 @@ const LeadsDataTable: React.FC = () => {
       width: '120px',
     },
     { name: 'Date', selector: (row: Lead) => row.lead_date || '-', sortable: true, width: '110px' },
-    { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true },
+    { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true, width: '150px' },
     { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px' },
     { name: 'Source', selector: (row: Lead) => row.source_name || '-', sortable: true },
     { name: 'Category', selector: (row: Lead) => row.category_name || '-', sortable: true },
@@ -597,7 +640,9 @@ const LeadsDataTable: React.FC = () => {
     { name: 'Country', selector: (row: Lead) => row.country_name || '-', sortable: true, width: '90px' },
     { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '110px' },
     { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true, width: '150px' },
-
+     { name: 'Created On', selector: (row: Lead) => row.created_at || '-', sortable: true, width: '200px' },
+ { name: 'Touched On', selector: (row: Lead) => row.touch_date_time || '-', sortable: true, width: '200px' },
+  { name: 'Touched In Sec', selector: (row: Lead) => row.time_to_first_response || '-', sortable: true, width: '200px' },
   ];
 
 
@@ -707,7 +752,8 @@ const LeadsDataTable: React.FC = () => {
   return (
     <Container fluid>
       {/* <h2>Leads List</h2> */}
-      <PageBreadcrumb title="Leads List" />
+  
+      <PageBreadcrumb title={`Leads List (${data.length})`} />
       
       {showLogoutLoader && <LogoutOverlay
   duration={5} // 10 seconds countdown
@@ -739,7 +785,20 @@ const LeadsDataTable: React.FC = () => {
             <Form.Label>Executive</Form.Label>
             <ExecutiveSelect value={execFilter} onChange={handleExecChange} showAllOption />
           </Col>
-          <Col md={2}>
+{showTouchedFilter && (
+            <Col md={1}>
+  <Form.Label>Touched</Form.Label>
+  <Select
+  options={touchedOptions}
+  value={touchedOptions.find(opt => opt.value === touchedFilter) || null}
+  onChange={(opt) => setTouchedFilter(opt ? opt.value : '')}
+  placeholder="All"
+  isClearable
+/>
+</Col>
+          )}
+       
+          <Col md={1}>
             <Button variant="primary" onClick={fetchLeads}>Search</Button>
           </Col>
         </Row>
@@ -748,34 +807,89 @@ const LeadsDataTable: React.FC = () => {
       {error && <Alert variant="danger">{error}</Alert>}
 
       {showTable ? (
+        
         <DataTable
-          columns={columns}
-          data={data}
-          progressPending={loading}
-          expandableRows
-          expandableRowsComponent={ExpandedComponent}
-          pagination
-          selectableRows
-          onSelectedRowsChange={handleRowSelected}
-          highlightOnHover
-          pointerOnHover
-          responsive
-        />
+  columns={columns}
+  data={filteredData}
+  progressPending={loading}
+  expandableRows
+  expandableRowsComponent={ExpandedComponent}
+  pagination
+  selectableRows
+  onSelectedRowsChange={handleRowSelected}
+  highlightOnHover
+  pointerOnHover
+  subHeader
+   subHeaderComponent={SubHeaderComponent}
+  responsive
+  paginationPerPage={perPage}
+  onChangePage={(page) => setCurrentPage(page)}
+  onChangeRowsPerPage={(newPerPage, page) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
+  }}
+  conditionalRowStyles={[
+    {
+      when: row => row.touch_status == 1,
+      style: {
+        backgroundColor: '#d1ffd1', // light green
+        color: '#000',
+      },
+    },
+    {
+      when: row => row.touch_status != 1,
+      style: {
+        backgroundColor: '#ffe0e0', // light red
+        color: '#000',
+      },
+    },
+  ]}
+/>
+
+       
       ) : (
-        <DataTable
-          columns={columns}
-          data={data}
-          progressPending={loading}
-          expandableRows
-          expandableRowsComponent={ExpandedComponent}
-          pagination
-          highlightOnHover
-          pointerOnHover
-          responsive
-        />
+        
+        
+             <DataTable
+  columns={columns}
+  data={filteredData}
+  progressPending={loading}
+  expandableRows
+  expandableRowsComponent={ExpandedComponent}
+  pagination
+  selectableRows
+  onSelectedRowsChange={handleRowSelected}
+  highlightOnHover
+  pointerOnHover
+  subHeader
+   subHeaderComponent={SubHeaderComponent}
+  responsive
+  paginationPerPage={perPage}
+  onChangePage={(page) => setCurrentPage(page)}
+  onChangeRowsPerPage={(newPerPage, page) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
+  }}
+  conditionalRowStyles={[
+    {
+      when: row => row.touch_status == 1,
+      style: {
+        backgroundColor: '', // light green
+        color: '#000',
+      },
+    },
+    {
+      when: row => row.touch_status != 1,
+      style: {
+        backgroundColor: '#ffe0e0', // light red
+        color: '#000',
+      },
+    },
+  ]}
+/>
       )}
 
-      <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
+      <Modal show={showModal} onHide={handleCloseModal} backdrop="static" keyboard={false} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>Update Lead</Modal.Title>
         </Modal.Header>
@@ -861,17 +975,17 @@ const LeadsDataTable: React.FC = () => {
                   placeholder="Select Category"
                 />
               </Form.Group>
-             {formData.categoryVal === '3' && (
-  <Form.Group controlId="subCategoryVal" className="mb-3">
-    <Form.Label>Sub Category</Form.Label>
-    <Select
-      options={subCategoryOptions}
-      value={formData.subCategoryVal}
-      onChange={(opt) => handleFormChange('subCategoryVal', opt)}
-      placeholder="Select Sub Category"
-    />
-  </Form.Group>
-)}
+              {formData.categoryVal === '3' && (
+                <Form.Group controlId="subCategoryVal" className="mb-3">
+                  <Form.Label>Sub Category</Form.Label>
+                  <Select
+                    options={subCategoryOptions}
+                    value={formData.subCategoryVal}
+                    onChange={(opt) => handleFormChange('subCategoryVal', opt)}
+                    placeholder="Select Sub Category"
+                  />
+                </Form.Group>
+              )}
 
              
              
@@ -910,6 +1024,7 @@ const LeadsDataTable: React.FC = () => {
               </Form.Group>
               <Form.Group controlId="branchVal" className="mb-3">
                 <Form.Label>Branch</Form.Label>
+            
                 <Select
                   options={branchOptions}
                   value={formData.branchVal}
@@ -927,7 +1042,7 @@ const LeadsDataTable: React.FC = () => {
           )}
         </Modal.Body>
       </Modal>
-      <Modal show={showViewModal} onHide={handleCloseViewModal} centered>
+      <Modal show={showViewModal} onHide={handleCloseViewModal} backdrop="static" keyboard={false} centered>
         <Modal.Header closeButton>
           <Modal.Title>Lead Follow-Up</Modal.Title>
         </Modal.Header>

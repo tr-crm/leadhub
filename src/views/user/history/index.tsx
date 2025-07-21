@@ -79,6 +79,7 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
     { name: 'Ip Address', selector: (row: any) => row.ip_address, sortable: true },
     { name: 'Login Time', selector: (row: any) => row.login_time || '-', sortable: true },
     { name: 'Logout Time', selector: (row: any) => row.logout_time ?? '-', sortable: true },
+    { name: 'Idle Logout', selector: (row: any) =>  row.idlelogout == 1 ? 'Yes' : 'No' },
     { name: 'Status', selector: (row: any) =>  row.is_active == 1 ? 'Active' : 'Inactive'},
 
 
@@ -87,7 +88,8 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 
   return (
     <Container fluid>
-        <PageBreadcrumb title="Login History List" />
+      
+         <PageBreadcrumb title={`Login History Listt (${data.length})`} />
         {showLogoutLoader && <LogoutOverlay
   duration={5} // 10 seconds countdown
   onComplete={async () => {

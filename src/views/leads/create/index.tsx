@@ -1,360 +1,381 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Container, Form, Button, Row, Col, Card } from 'react-bootstrap';
-import PageBreadcrumb from '@/components/PageBreadcrumb';
-import { CreateLead } from '@/services/leadservice';
-import type { LeadCreateRequestPayload } from '@/services/leadservice';
-import SourceSelect from '@/components/soucrelist';
-import CategorySelect from '@/components/categoryselect';
-import SubCategorySelect from '@/components/subcategoryselect';
-import ProductSelect from '@/components/productselect';
-import BranchSelect from '@/components/branchselect';
-import ExecutiveSelect from '@/components/executiveselect';
-import QualityScoreSelect from '@/components/qualityscore';
+  import { useState, useEffect, useMemo } from 'react';
+  import { useNavigate } from 'react-router-dom';
+  import { Container, Form, Button, Row, Col, Card } from 'react-bootstrap';
+  import PageBreadcrumb from '@/components/PageBreadcrumb';
+  import { CreateLead } from '@/services/leadservice';
+  import type { LeadCreateRequestPayload } from '@/services/leadservice';
+  import SourceSelect from '@/components/soucrelist';
+  import CategorySelect from '@/components/categoryselect';
+  import SubCategorySelect from '@/components/subcategoryselect';
+  import ProductSelect from '@/components/productselect';
+  import BranchSelect from '@/components/branchselect';
+  import ExecutiveSelect from '@/components/executiveselect';
+  import QualityScoreSelect from '@/components/qualityscore';
 
-import { toast } from 'react-toastify';
-import LogoutOverlay from '@/components/LogoutOverlay';
-import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
-interface OptionType {
-  value: any;
-  label: string;
-}
+  import { toast } from 'react-toastify';
+  import LogoutOverlay from '@/components/LogoutOverlay';
+  import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+  interface OptionType {
+    value: any;
+    label: string;
+  }
 
-type CategoryName = 'Testprep' | 'ACS' | 'Immigration';
+  type CategoryName = 'Testprep' | 'ACS' | 'Immigration';
 
-const CATEGORY_NAMES: Record<number, CategoryName> = {
-  1: 'Testprep',
-  2: 'ACS',
-  3: 'Immigration',
-};
-
-const InlineField = ({
-  label,
-  name,
-  value,
-  onChange,
-  type = 'text',
-  required = true,
-  placeholder = '',
-  children,
-}: {
-  label: string;
-  name: string;
-  value: any;
-  onChange: (e: any) => void;
-  type?: string;
-  required?: boolean;
-  placeholder?: string;
-  children?: React.ReactNode;
-}) => (
-  <Row className="mb-3 align-items-center">
-    <Col md={3}>
-      <Form.Label className="mb-0">{label}</Form.Label>
-    </Col>
-    <Col md={6}>
-      {children ? (
-        children
-      ) : (
-        <Form.Control
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          required={required}
-          placeholder={placeholder}
-        />
-      )}
-    </Col>
-  </Row>
-);
-
-const LeadCreatePage: React.FC = () => {
-  const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
-  const navigate = useNavigate();
-  // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
-      const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
-    
-      
-    
-      useEffect(() => {
-        if (!user) {
-          setShowLogoutLoader(true);
-        }
-      }, [user]);
-
- 
-
-  const initialState: LeadCreateRequestPayload = {
-    leadDateVal: new Date().toISOString().split('T')[0],
-    firstNameVal: '',
-    lastNameVal: '',
-    emailAddressVal: '',
-    phoneNumberVal: '',
-    sourceVal: '',
-    categoryVal: '',
-    subCategoryVal: '',
-    productVal: '',
-    countryVal: '',
-    branchVal: '',
-    leadTypeVal: '',
-    leadStatusVal: '',
-    qualityscoreVal:'',
-    createdByVal: user.id,
-    userIdVal: user.id,
-    tokenVal: user.access_token,
-    regionVal: user.region,
-    executiveIdVal: 0,
+  const CATEGORY_NAMES: Record<number, CategoryName> = {
+    1: 'Testprep',
+    2: 'ACS',
+    3: 'Immigration',
   };
 
-  const numberFields = [
-    'sourceVal',
-    'categoryVal',
-    'subCategoryVal',
-    'leadTypeVal',
-    'leadStatusVal',
-    'productVal',
-    'countryVal',
-    'branchVal',
-    'executiveIdVal',
-    'qualityscoreVal',
-  ];
+  const InlineField = ({
+    label,
+    name,
+    value,
+    onChange,
+    type = 'text',
+    required = true,
+    placeholder = '',
+    children,
+  }: {
+    label: string;
+    name: string;
+    value: any;
+    onChange: (e: any) => void;
+    type?: string;
+    required?: boolean;
+    placeholder?: string;
+    children?: React.ReactNode;
+  }) => (
+    <Row className="mb-3 align-items-center">
+      <Col md={3}>
+        <Form.Label className="mb-0">{label}</Form.Label>
+      </Col>
+      <Col md={6}>
+        {children ? (
+          children
+        ) : (
+          <Form.Control
+            type={type}
+            name={name}
+            value={value}
+            onChange={onChange}
+            required={required}
+            placeholder={placeholder}
+          />
+        )}
+      </Col>
+    </Row>
+  );
 
-  const [formData, setFormData] = useState(initialState);
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  console.log(status,errorMessage)
+  const LeadCreatePage: React.FC = () => {
+    const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
+    const navigate = useNavigate();
+    // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+        const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+      
+        
+      
+        useEffect(() => {
+          if (!user) {
+            setShowLogoutLoader(true);
+          }
+        }, [user]);
 
-  const selectedCategoryName =
-    typeof formData.categoryVal === 'number' ? CATEGORY_NAMES[formData.categoryVal] : '';
+  
 
-  const isTestprep = selectedCategoryName === 'Testprep';
-  const isACS = selectedCategoryName === 'ACS';
-  const isImmigration = selectedCategoryName === 'Immigration';
+    const initialState: LeadCreateRequestPayload = {
+      leadDateVal: new Date().toISOString().split('T')[0],
+      firstNameVal: '',
+      lastNameVal: '',
+      emailAddressVal: '',
+      phoneNumberVal: '',
+      alternatephoneNumberVal : '',
+      sourceVal: '',
+      categoryVal: '',
+      subCategoryVal: '',
+      productVal: '',
+      countryVal: '',
+      branchVal: '',
+      leadTypeVal: '',
+      leadStatusVal: '',
+      qualityscoreVal:'',
+      createdByVal: user.id,
+      userIdVal: user.id,
+      tokenVal: user.access_token,
+      regionVal: user.region,
+      executiveIdVal: 0,
+    };
 
+    const numberFields = [
+      'sourceVal',
+      'categoryVal',
+      'subCategoryVal',
+      'leadTypeVal',
+      'leadStatusVal',
+      'productVal',
+      'countryVal',
+      'branchVal',
+      'executiveIdVal',
+      'qualityscoreVal',
+    ];
+
+    const [formData, setFormData] = useState(initialState);
+    const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    console.log(status,errorMessage)
+    
+
+    const selectedCategoryName =
+      typeof formData.categoryVal === 'number' ? CATEGORY_NAMES[formData.categoryVal] : '';
+
+    const isTestprep = selectedCategoryName === 'Testprep';
+    const isACS = selectedCategoryName === 'ACS';
+    const isImmigration = selectedCategoryName === 'Immigration';
   const handleChange = (
     e:
       | React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
       | { name: string; value: string | number }
   ) => {
     const name = 'target' in e ? e.target.name : e.name;
-    const value = 'target' in e ? e.target.value : e.value;
+    let value = 'target' in e ? e.target.value : e.value.toString();
 
+    if (name == 'firstNameVal' || name == 'lastNameVal') {
+      value = value.replace(/[^a-zA-Z\s]/g, '');
+
+      if (value.length > 0) {
+        value = value.charAt(0).toUpperCase() + value.slice(1);
+      }
+    }
+
+    if (name === 'phoneNumberVal') {
+      value = value.replace(/\D/g, '').slice(0, 10);
+    }
+  if (name === 'alternatephoneNumberVal' && value) {
+      value = value.replace(/\D/g, '').slice(0, 10);
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]: numberFields.includes(name) ? (value === '' ? '' : Number(value)) : value,
+      [name]: numberFields.includes(name)
+        ? value === ''
+          ? ''
+          : Number(value)
+        : value,
     }));
   };
 
-  const handleCategoryChange = (option: OptionType | null) => {
-    setFormData((prev) => ({
-      ...prev,
-      categoryVal: option?.value ?? '',
-      subCategoryVal: '',
-      productVal: '',
-      countryVal: '',
-    }));
-  };
 
-  const handleSourceChange = (option: OptionType | null) =>
-    setFormData((prev) => ({ ...prev, sourceVal: option?.value ?? '' }));
- const handleQualityScoreChange = (option: OptionType | null) =>
-    setFormData((prev) => ({ ...prev, qualityscoreVal: option?.value ?? '' }));
-  const handleProductChange = (option: OptionType | null) =>
-    setFormData((prev) => ({ ...prev, productVal: option?.value ?? '' }));
-
-  const handleSubCategoryChange = (option: OptionType | null) =>
-    setFormData((prev) => ({ ...prev, subCategoryVal: option?.value ?? '' }));
-
-  const handleBranchChange = (selected: OptionType | null): void => {
-    setFormData((prev) => ({
-      ...prev,
-      branchVal: selected?.value ?? '',
-    }));
-  };
-
-  const handleExecutiveChange = (selected: OptionType | null): void => {
-    setFormData((prev) => ({
-      ...prev,
-      executiveIdVal: selected?.value ?? 0,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('idle');
-    setErrorMessage('');
-    setIsLoading(true);
-
-    // Validations
-    if (isTestprep && !formData.productVal) {
-       toast.dismiss();
-      toast.error('Product Required.');
-      setStatus('error');
-      setErrorMessage('Product Required.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (isImmigration && !formData.subCategoryVal) {
-       toast.dismiss();
-      toast.error('SubCategory Required.');
-      setStatus('error');
-      setErrorMessage('SubCategory Required.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (isImmigration && !formData.productVal) {
-       toast.dismiss();
-      toast.error('Product Required.');
-      setStatus('error');
-      setErrorMessage('Product Required.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.sourceVal) {
-       toast.dismiss();
-      toast.error('Source Required.');
-      setStatus('error');
-      setErrorMessage('Source Required.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.categoryVal) {
-       toast.dismiss();
-      toast.error('Category Required.');
-      setStatus('error');
-      setErrorMessage('Category Required.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.executiveIdVal) {
-       toast.dismiss();
-      toast.error('Executive Required.');
-      setStatus('error');
-      setErrorMessage('Executive Required.');
-      setIsLoading(false);
-      return;
-    }
-    
-      if (!formData.qualityscoreVal) {
-       toast.dismiss();
-      toast.error('QUality Score Required.');
-      setStatus('error');
-      setErrorMessage('QUality Score Required.');
-      setIsLoading(false);
-      return;
-    }
-      if (!user) return;
-    const payload: LeadCreateRequestPayload = {
-      ...formData,
-      sourceVal: Number(formData.sourceVal),
-      categoryVal: Number(formData.categoryVal),
-      subCategoryVal: Number(formData.subCategoryVal),
-      productVal: Number(formData.productVal),
-      branchVal: Number(formData.branchVal),
-      executiveIdVal: Number(formData.executiveIdVal),
-      qualityscoreVal: Number(formData.qualityscoreVal),
-      createdByVal: user.id,
-      userIdVal: user.id,
-      tokenVal: user.access_token,
-      regionVal: user.region,
+    const handleCategoryChange = (option: OptionType | null) => {
+      setFormData((prev) => ({
+        ...prev,
+        categoryVal: option?.value ?? '',
+        subCategoryVal: '',
+        productVal: '',
+        countryVal: '',
+      }));
     };
 
-    try {
-      const response = await CreateLead(payload);
+    const handleSourceChange = (option: OptionType | null) =>
+      setFormData((prev) => ({ ...prev, sourceVal: option?.value ?? '' }));
+  const handleQualityScoreChange = (option: OptionType | null) =>
+      setFormData((prev) => ({ ...prev, qualityscoreVal: option?.value ?? '' }));
+    const handleProductChange = (option: OptionType | null) =>
+      setFormData((prev) => ({ ...prev, productVal: option?.value ?? '' }));
 
-      if (response.response === 'login_error') {
-         toast.dismiss();
-        toast.error(response.message);
-        // navigate('/login');
-         setShowLogoutLoader(true);
-      } else if (response.response === 'error') {
-         toast.dismiss();
-        toast.error(response.message);
-      } else if (response.response === 'success') {
-         toast.dismiss();
-        toast.success(response.message);
-        setStatus('success');
-        setFormData(initialState);
-        navigate('/leads/list');
-      }else{
-          toast.dismiss();
-        toast.error('Failed to create lead. Please try again.');
+    const handleSubCategoryChange = (option: OptionType | null) =>
+      setFormData((prev) => ({ ...prev, subCategoryVal: option?.value ?? '' }));
+
+    const handleBranchChange = (selected: OptionType | null): void => {
+      setFormData((prev) => ({
+        ...prev,
+        branchVal: selected?.value ?? '',
+      }));
+    };
+
+    const handleExecutiveChange = (selected: OptionType | null): void => {
+      setFormData((prev) => ({
+        ...prev,
+        executiveIdVal: selected?.value ?? 0,
+      }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setStatus('idle');
+      setErrorMessage('');
+      setIsLoading(true);
+
+      // Validations
+      if (isTestprep && !formData.productVal) {
+        toast.dismiss();
+        toast.error('Product Required.');
+        setStatus('error');
+        setErrorMessage('Product Required.');
+        setIsLoading(false);
+        return;
       }
-    } catch (err) {
-      setStatus('error');
-       toast.dismiss();
-      setErrorMessage('Failed to create lead. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+
+      if (isImmigration && !formData.subCategoryVal) {
+        toast.dismiss();
+        toast.error('SubCategory Required.');
+        setStatus('error');
+        setErrorMessage('SubCategory Required.');
+        setIsLoading(false);
+        return;
+      }
+
+      if (isImmigration && !formData.productVal) {
+        toast.dismiss();
+        toast.error('Product Required.');
+        setStatus('error');
+        setErrorMessage('Product Required.');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!formData.sourceVal) {
+        toast.dismiss();
+        toast.error('Source Required.');
+        setStatus('error');
+        setErrorMessage('Source Required.');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!formData.categoryVal) {
+        toast.dismiss();
+        toast.error('Category Required.');
+        setStatus('error');
+        setErrorMessage('Category Required.');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!formData.executiveIdVal) {
+        toast.dismiss();
+        toast.error('Executive Required.');
+        setStatus('error');
+        setErrorMessage('Executive Required.');
+        setIsLoading(false);
+        return;
+      }
+      
+        if (!formData.qualityscoreVal) {
+        toast.dismiss();
+        toast.error('QUality Score Required.');
+        setStatus('error');
+        setErrorMessage('QUality Score Required.');
+        setIsLoading(false);
+        return;
+      }
+        if (!user) return;
+      const payload: LeadCreateRequestPayload = {
+        ...formData,
+        sourceVal: Number(formData.sourceVal),
+        categoryVal: Number(formData.categoryVal),
+        subCategoryVal: Number(formData.subCategoryVal),
+        productVal: Number(formData.productVal),
+        branchVal: Number(formData.branchVal),
+        executiveIdVal: Number(formData.executiveIdVal),
+        qualityscoreVal: Number(formData.qualityscoreVal),
+        createdByVal: user.id,
+        userIdVal: user.id,
+        tokenVal: user.access_token,
+        regionVal: user.region,
+      };
+
+      try {
+        const response = await CreateLead(payload);
+
+        if (response.response === 'login_error') {
+          toast.dismiss();
+          toast.error(response.message);
+          // navigate('/login');
+          setShowLogoutLoader(true);
+        } else if (response.response === 'error') {
+          toast.dismiss();
+          toast.error(response.message);
+        } else if (response.response === 'success') {
+          toast.dismiss();
+          toast.success(response.message);
+          setStatus('success');
+          setFormData(initialState);
+          navigate('/leads/list');
+        }else{
+            toast.dismiss();
+          toast.error('Failed to create lead. Please try again.');
+        }
+      } catch (err) {
+        setStatus('error');
+        toast.dismiss();
+        setErrorMessage('Failed to create lead. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    return (
+      <Container fluid>
+        {showLogoutLoader && <LogoutOverlay
+    onComplete={async () => {
+      await logout(); // your logout function
+    }}
+  />
+  }
+        <PageBreadcrumb title="Leads Create" />
+        <div className="d-flex justify-content-center align-items-start">
+          <Card style={{ maxWidth: 600, width: '100%', padding: '2rem' }} className="shadow-sm">
+            <Form onSubmit={handleSubmit} className="mt-3">
+              <InlineField label="Lead Date" name="leadDateVal" value={formData.leadDateVal} onChange={handleChange} type="date" required />
+              <InlineField label="First Name" name="firstNameVal" value={formData.firstNameVal} onChange={handleChange} required placeholder="Enter first name" />
+              <InlineField label="Last Name" name="lastNameVal" value={formData.lastNameVal} onChange={handleChange} required placeholder="Enter last name" />
+              <InlineField label="Email Address" name="emailAddressVal" value={formData.emailAddressVal} onChange={handleChange} type="email" required placeholder="example@email.com" />
+              <InlineField label="Phone Number" name="phoneNumberVal" value={formData.phoneNumberVal} onChange={handleChange} type="tel" required placeholder="e.g., +91-9876543210" />
+              <InlineField label="Alternate Phone Number" name="alternatephoneNumberVal" value={formData.alternatephoneNumberVal} onChange={handleChange} required={false} type="tel" placeholder="e.g., +91-9876543210" />
+              <InlineField label="Source" name="sourceVal" value={formData.sourceVal} onChange={handleSourceChange} required>
+                <SourceSelect value={formData.sourceVal} onChange={handleSourceChange} required />
+              </InlineField>
+                <InlineField label="Quality Score" name="qualityscoreVal" value={formData.qualityscoreVal} onChange={handleQualityScoreChange} required>
+                <QualityScoreSelect value={formData.qualityscoreVal} onChange={handleQualityScoreChange} required />
+              </InlineField>
+              <InlineField label="Category" name="categoryVal" value={formData.categoryVal} onChange={handleCategoryChange} required>
+                <CategorySelect value={formData.categoryVal} onChange={handleCategoryChange} required name="categoryVal" label="Category" />
+              </InlineField>
+              {isImmigration && (
+                <InlineField label="SubCategory" name="subCategoryVal" value={formData.subCategoryVal} onChange={handleSubCategoryChange} required>
+                  <SubCategorySelect categoryId={formData.categoryVal} value={formData.subCategoryVal} onChange={handleSubCategoryChange} required />
+                </InlineField>
+              )}
+              {(isTestprep || isACS || isImmigration) && (
+                <InlineField label="Product" name="productVal" value={formData.productVal} onChange={handleProductChange} required>
+                  <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required />
+                </InlineField>
+              )}
+              <InlineField label="Tele Executive" name="executiveIdVal" value={formData.executiveIdVal} onChange={handleExecutiveChange}>
+                <ExecutiveSelect
+                  value={formData.executiveIdVal}
+                  onChange={handleExecutiveChange}
+                  name="executiveIdVal"
+                  label="Tele Executive"
+                  required
+                />
+              </InlineField>
+              <InlineField label="Branch" name="branchVal" value={formData.branchVal} onChange={handleBranchChange}>
+                <BranchSelect value={formData.branchVal} onChange={handleBranchChange} name="branchVal" label="Branch" required />
+              </InlineField>
+              <Row>
+                <Col md={{ span: 6, offset: 3 }} className="text-end">
+                  <Button type="submit" variant="primary" disabled={isLoading}>
+                    {isLoading ? 'Saving...' : 'Save'}
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+        </div>
+      </Container>
+    );
   };
 
-  return (
-    <Container fluid>
-       {showLogoutLoader && <LogoutOverlay
-  onComplete={async () => {
-    await logout(); // your logout function
-  }}
-/>
-}
-      <PageBreadcrumb title="Leads Create" />
-      <div className="d-flex justify-content-center align-items-start">
-        <Card style={{ maxWidth: 600, width: '100%', padding: '2rem' }} className="shadow-sm">
-          <Form onSubmit={handleSubmit} className="mt-3">
-            <InlineField label="Lead Date" name="leadDateVal" value={formData.leadDateVal} onChange={handleChange} type="date" required />
-            <InlineField label="First Name" name="firstNameVal" value={formData.firstNameVal} onChange={handleChange} required placeholder="Enter first name" />
-            <InlineField label="Last Name" name="lastNameVal" value={formData.lastNameVal} onChange={handleChange} required placeholder="Enter last name" />
-            <InlineField label="Email Address" name="emailAddressVal" value={formData.emailAddressVal} onChange={handleChange} type="email" required placeholder="example@email.com" />
-            <InlineField label="Phone Number" name="phoneNumberVal" value={formData.phoneNumberVal} onChange={handleChange} type="tel" required placeholder="e.g., +91-9876543210" />
-            <InlineField label="Source" name="sourceVal" value={formData.sourceVal} onChange={handleSourceChange} required>
-              <SourceSelect value={formData.sourceVal} onChange={handleSourceChange} required />
-            </InlineField>
-              <InlineField label="Quality Score" name="qualityscoreVal" value={formData.qualityscoreVal} onChange={handleQualityScoreChange} required>
-              <QualityScoreSelect value={formData.qualityscoreVal} onChange={handleQualityScoreChange} required />
-            </InlineField>
-            <InlineField label="Category" name="categoryVal" value={formData.categoryVal} onChange={handleCategoryChange} required>
-              <CategorySelect value={formData.categoryVal} onChange={handleCategoryChange} required name="categoryVal" label="Category" />
-            </InlineField>
-            {isImmigration && (
-              <InlineField label="SubCategory" name="subCategoryVal" value={formData.subCategoryVal} onChange={handleSubCategoryChange} required>
-                <SubCategorySelect categoryId={formData.categoryVal} value={formData.subCategoryVal} onChange={handleSubCategoryChange} required />
-              </InlineField>
-            )}
-            {(isTestprep || isACS || isImmigration) && (
-              <InlineField label="Product" name="productVal" value={formData.productVal} onChange={handleProductChange} required>
-                <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required />
-              </InlineField>
-            )}
-            <InlineField label="Tele Executive" name="executiveIdVal" value={formData.executiveIdVal} onChange={handleExecutiveChange}>
-              <ExecutiveSelect
-                value={formData.executiveIdVal}
-                onChange={handleExecutiveChange}
-                name="executiveIdVal"
-                label="Tele Executive"
-                required
-              />
-            </InlineField>
-            <InlineField label="Branch" name="branchVal" value={formData.branchVal} onChange={handleBranchChange}>
-              <BranchSelect value={formData.branchVal} onChange={handleBranchChange} name="branchVal" label="Branch" required />
-            </InlineField>
-            <Row>
-              <Col md={{ span: 6, offset: 3 }} className="text-end">
-                <Button type="submit" variant="primary" disabled={isLoading}>
-                  {isLoading ? 'Saving...' : 'Save'}
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-        </Card>
-      </div>
-    </Container>
-  );
-};
-
-export default LeadCreatePage;
+  export default LeadCreatePage;

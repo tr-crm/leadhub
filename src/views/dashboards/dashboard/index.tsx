@@ -1,4 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify';
+import Cookies from 'js-cookie';
 import {
   Container,
   Button,
@@ -11,11 +14,13 @@ import {
   CardBody,
   CardHeader,
   CardTitle,
+  Modal
 } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
 import OrdersStatics from './components/OrdersStatics';
 import type { leadDashBord } from '@/services/dashboardservice.ts';
 import { dashboardLeadReport } from '@/services/dashboardservice.ts';
+import {UpdateFirstloginSeenComment } from '@/services/userservice.ts';
 import CountUpClient from '@/components/CountUpClient';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
@@ -36,14 +41,21 @@ type DataCard = {
 
 const Page = () => {
   const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
+  const [showFirstLoginModal, setShowFirstLoginModal] = useState(false);
   const [dashboard, setDashboard] = useState<DataCard[]>([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [error, setError] = useState('');
+   
   const [loading, setLoading] = useState(false);
+  
+  const navigate = useNavigate();
 
   // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
   const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+const user_first_comment = user?.first_comment ?? '';
+
+  const sanitizedHTML = DOMPurify.sanitize(user_first_comment);
 
   // Ref to prevent double fetch in Strict Mode or repeated effect calls
   const didFetchRef = useRef(false);
@@ -53,6 +65,7 @@ const Page = () => {
       setShowLogoutLoader(true);
     }
   }, [user]);
+  
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
@@ -103,9 +116,9 @@ const Page = () => {
             title: 'Total Leads',
             badgeColor: 'warning',
             badgeText: '',
-            value: res.lead_count,
+            value: res.total_lead_count,
             metric: 'Monthly Total Leads',
-            targetValue: Number(res.lead_count) || 0,
+            targetValue: Number(res.total_lead_count) || 0,
           },
           {
             title: 'Total Walkins',
@@ -147,14 +160,14 @@ const Page = () => {
             metric: 'Webhook Leads',
             targetValue: Number(res.webhook_lead_count) || 0,
           },
-          {
-            title: 'Website Lead Count',
-            badgeColor: 'info',
-            badgeText: '',
-            value: res.website_lead_count,
-            metric: 'Website Leads',
-            targetValue: Number(res.website_lead_count) || 0,
-          },
+          // {
+          //   title: 'Website Lead Count',
+          //   badgeColor: 'info',
+          //   badgeText: '',
+          //   value: res.website_lead_count,
+          //   metric: 'Website Leads',
+          //   targetValue: Number(res.website_lead_count) || 0,
+          // },
         ];
 
         setDashboard(stats);
@@ -178,13 +191,71 @@ const Page = () => {
 
   useEffect(() => {
     if (!user) return;
-
+ if (user.first_login === '0') {
+    setShowFirstLoginModal(true);
+  }
     // Only fetch if we haven't already fetched for current params
     if (!didFetchRef.current) {
       fetchDashboard();
       didFetchRef.current = true;
     }
   }, [user, selectedYear, selectedMonth]);
+    const handleClick = async () => {
+      setLoading(true);
+      setError('');
+  
+      try {
+        
+         const payload = {
+                
+                createdByVal: user.id,
+                userIdVal: user.id,
+                tokenVal: user.access_token,
+                regionVal: user.region,
+                idVal:user.id,
+              };
+       
+            const response = await UpdateFirstloginSeenComment(payload);
+       
+  
+      
+        if (response.response === 'login_error') {
+          toast.dismiss();
+          toast.error(response.message);
+          // navigate('/login');
+          setShowLogoutLoader(true);
+        } else if (response.response === 'error') {
+          toast.dismiss();
+          toast.error(response.message);
+        } else if (response.response === 'success') {
+          toast.dismiss();
+          toast.success(response.message);
+         
+           setShowFirstLoginModal(false)
+           user.first_login = 1;
+
+       const cookieUser = Cookies.get('LeadHubLoginAccess');
+      if (cookieUser) {
+        try {
+          const parsedUser = JSON.parse(cookieUser);
+          parsedUser.first_login = 1;
+          Cookies.set('LeadHubLoginAccess', JSON.stringify(parsedUser));
+        } catch (err) {
+          console.error('Failed to parse cookie:', err);
+        }
+      }
+          // Navigate on success
+        navigate("/dashboard");
+      
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Something went wrong.");
+         toast.error("Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <Container fluid>
@@ -299,6 +370,27 @@ const Page = () => {
           <OrdersStatics />
         </>
       )}
+                     <Modal show={showFirstLoginModal} onHide={() => setShowFirstLoginModal(false)}  backdrop="static"  // Prevent close on backdrop click
+  keyboard={false}  centered>
+                 
+
+        <Modal.Header >
+          <Modal.Title>Welcome to Lead Hub</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {/* <p>{user_first_comment}</p> */}
+           <div dangerouslySetInnerHTML={{ __html: sanitizedHTML }} />
+        </Modal.Body>
+        <Modal.Footer>
+          {/* <Button variant="primary" onClick={() => navigate('/dashboard')}>
+            Continue to Dashboard
+          </Button> */}
+          <Button  variant="primary" onClick={handleClick} disabled={loading}> 
+        {loading ? "Submitting..." : "Continue to Dashboard"}
+      </Button>
+        </Modal.Footer>
+      </Modal>
+      
     </Container>
   );
 };

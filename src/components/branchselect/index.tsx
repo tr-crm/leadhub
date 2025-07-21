@@ -68,7 +68,7 @@ useEffect(() => {
     setLoading(true);
     try {
       if (user?.id && user?.access_token) {
-        const result = await getBranchList(user.id, user.access_token, start);
+        const result = await getBranchList(user.id, user.access_token, start,user.region,user.type);
         // console.log(result);
         const rawBranches: Branch[] = result ? result : [];
         const grouped = groupBranchesByState(rawBranches);

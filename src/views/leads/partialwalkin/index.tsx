@@ -46,15 +46,32 @@
     const [sourceFilter, setSourceFilter] = useState('0');
     const [statusFilter, setStatusFilter] = useState('0');
     const [execFilter, setExecFilter] = useState('0');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
 
     const user = getUserInfo();
 
     const handleExecChange = (opt: OptionType | null) => setExecFilter(opt?.value ?? '0');
     const handleStatusChange = (opt: OptionType | null) => setStatusFilter(opt?.value ?? '0');
     const handleFilterSourceChange = (opt: OptionType | null) => setSourceFilter(opt?.value ?? '0');
-const showSourceFilter = false;  // set to false to hide
-const showStatusFilter = false;  // set to false to hide
-
+    const showSourceFilter = false;  // set to false to hide
+    const showStatusFilter = false;  // set to false to hide
+ const [searchText, setSearchText] = useState('');
+        const filteredData = data.filter((row: Lead) =>
+          Object.values(row)
+            .join(' ')
+            .toLowerCase()
+            .includes(searchText.toLowerCase())
+        );
+        const SubHeaderComponent = (
+          <Form.Control
+            type="text"
+            placeholder="Search..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ maxWidth: '300px' }}
+          />
+        );
 
     const fetchLeads = async () => {
       setLoading(true);
@@ -93,12 +110,12 @@ const showStatusFilter = false;  // set to false to hide
     const columns = [
       {
         name: 'ID',
-        cell: (_row: Lead, index: number) => index + 1,
+        cell: (_row: Lead, index: number) =>  (currentPage - 1) * perPage + index + 1,
         width: '70px',
       },
  
       
-        { name: 'Partial Walkin Date', selector: (row: Lead) => row.followup_date || '-', sortable: true, width: '110px' },
+        { name: 'Partial Walkin Date', selector: (row: Lead) => row.partial_walkin_date || '-', sortable: true, width: '110px' },
       { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true },
       { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px' },
       { name: 'Source', selector: (row: Lead) => row.source_name || '-', sortable: true },
@@ -181,7 +198,8 @@ const showStatusFilter = false;  // set to false to hide
     return (
       <Container fluid>
         {/* <h2>Leads List</h2> */}
-        <PageBreadcrumb title="Partial Walkin List" />
+        
+          <PageBreadcrumb title={`Partial Walkin List (${data.length})`} />
         <Form className="mb-4">
           <Row className="align-items-end">
             <Col md={2}>
@@ -218,14 +236,22 @@ const showStatusFilter = false;  // set to false to hide
 
           <DataTable
             columns={columns}
-            data={data}
+            data={filteredData}
             progressPending={loading}
             expandableRows
             expandableRowsComponent={ExpandedComponent}
             pagination
             highlightOnHover
             pointerOnHover
+              subHeader
+   subHeaderComponent={SubHeaderComponent}
             responsive
+            paginationPerPage={perPage}
+            onChangePage={(page) => setCurrentPage(page)}
+            onChangeRowsPerPage={(newPerPage, page) => {
+              setPerPage(newPerPage);
+              setCurrentPage(page);
+            }}
           />
 
       </Container>

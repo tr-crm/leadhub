@@ -1,14 +1,16 @@
-import { useState,useEffect } from 'react';
+import { useState,useEffect,useMemo } from 'react';
 import { useNavigate} from 'react-router-dom';
 import { Container, Form, Button, Alert, Row, Col } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
-import { getUserInfo } from '@/utils/auth';
 import RegionSelect from '@/components/regionselect';
 import {toast } from 'react-toastify';
-
+import { getUserCreate } from '@/services/userservice';
+import LogoutOverlay from '@/components/LogoutOverlay';
+import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 
 const User = () => {
-  const user = getUserInfo();
+  // const user = getUserInfo();
+   const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
   const type=user.type;
 const navigate = useNavigate();
 const getInitialRegionValue = (): string => {
@@ -20,6 +22,7 @@ const getInitialRegionValue = (): string => {
     return '0';
   };
   const [region, setRegion] = useState<string>(getInitialRegionValue());
+    const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
   // console.log(user);
  
   
@@ -75,20 +78,18 @@ const getInitialRegionValue = (): string => {
   
 
     try {
-      const res = await fetch('https://dev.thetrcrm.com/leadhub/services/api/User/createUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-      console.log(res);
-
-      if (!res.ok) throw new Error('Failed to create user');
-  toast.success("User Created Successfully");
-      setStatus('success');
+     
+       const res = await getUserCreate(payload);
+         if (res.response === 'login_error') {
+        toast.error(res.message);
+        setShowLogoutLoader(true);
+        return;
+      } else if (res.response === 'error') {
+        toast.error(res.message);
+      } else if (res.response === 'success') {
+      toast.success(res.message);
        navigate('/user/list');
-      setFormData({
+            setFormData({
         firstName: '',
         lastName: '',
         role: '',
@@ -99,8 +100,20 @@ const getInitialRegionValue = (): string => {
         regionVal: user.region,
         supervisionVal : '',
       });
-    } catch (err) {
-      console.error(err);
+     
+      }
+
+  
+    } catch (error:any) {
+       if (error?.response?.data?.response === 'login_error') {
+        toast.error(error?.response?.data?.message || 'Login failed. Redirecting...');
+        setShowLogoutLoader(true);
+        return;
+      } else {
+      
+        toast.error('Failed to fetch leads. Please try again.');
+      }
+      console.error(error);
       setStatus('error');
     }
   };
@@ -134,6 +147,12 @@ const getInitialRegionValue = (): string => {
   return (
     <Container fluid>
       <PageBreadcrumb title="User Create" />
+      {showLogoutLoader && <LogoutOverlay
+          onComplete={async () => {
+            await logout(); // your logout function
+          }}
+        />
+        }
 
       {status === 'success' && (
         <Alert variant="success" className="mt-3">
@@ -301,6 +320,7 @@ const getInitialRegionValue = (): string => {
                 value={formData.regionVal}
                 onChange={(selected) => setRegion(selected?.value || '0')}
                 placeholder="Select region"
+                disabled
               />
             </Form.Group>
           </Col>

@@ -128,9 +128,26 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
     const [followupComment, setFollowupComment] = useState('');
     const [followupBranch, setFollowupBranch] = useState<OptionType | null>(null);
       const [followupQualityScore, setFollowupQualityScore] = useState<OptionType | null>(null);
-const showSourceFilter = false;  // set to false to hide
-const showStatusFilter = false;  // set to false to hide
-
+      const [searchText, setSearchText] = useState('');
+        const filteredData = data.filter((row: Lead) =>
+          Object.values(row)
+            .join(' ')
+            .toLowerCase()
+            .includes(searchText.toLowerCase())
+        );
+        const SubHeaderComponent = (
+          <Form.Control
+            type="text"
+            placeholder="Search..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ maxWidth: '300px' }}
+          />
+        );
+    const showSourceFilter = false;  // set to false to hide
+    const showStatusFilter = false;  // set to false to hide
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
 
     const fetchLeads = async () => {
          if (!user) return;
@@ -147,6 +164,7 @@ const showStatusFilter = false;  // set to false to hide
           typeVal: user.type,
           leadstatusVal: statusFilter,
           executiveIdVal: execFilter,
+          touchStatusVal:null
         };
       
           const response = await getFollowUpLeadsList(payload);
@@ -216,7 +234,7 @@ const showStatusFilter = false;  // set to false to hide
     useEffect(() => {
       const fetchBranches = async () => {
         try {
-          const branches = await getBranchList(user.id, user.access_token);
+          const branches = await getBranchList(user.id, user.access_token,'0',user.region,user.typ);
           const options = branches.map((bran: any) => ({
             value: bran.id,
             label: bran.display_name,
@@ -404,9 +422,26 @@ const showStatusFilter = false;  // set to false to hide
     };
 
 
-    const handleFormChange = (key: keyof LeadFormData, value: any) =>
-      setFormData((prev) => ({ ...prev, [key]: value }));
+    // const handleFormChange = (key: keyof LeadFormData, value: any) =>
+    //   setFormData((prev) => ({ ...prev, [key]: value }));
+  const handleFormChange = (key: keyof LeadFormData, value: any) => {
+    let newValue = value;
 
+    if (key === 'firstNameVal' || key === 'lastNameVal') {
+      newValue = newValue.replace(/[^a-zA-Z\s]/g, '');
+
+      // Capitalize only the first letter
+      if (newValue.length > 0) {
+        newValue = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+      }
+    }
+
+    if (key === 'phoneNumberVal') {
+      newValue = newValue.replace(/\D/g, '').slice(0, 10);
+    }
+
+    setFormData((prev) => ({ ...prev, [key]: newValue }));
+  };
     const onSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       handleUpdateLead();
@@ -568,7 +603,7 @@ const showStatusFilter = false;  // set to false to hide
     const columns = [
       {
         name: 'ID',
-        cell: (_row: Lead, index: number) => index + 1,
+        cell: (_row: Lead, index: number) =>  (currentPage - 1) * perPage + index + 1,
         width: '70px',
       },
       {
@@ -705,8 +740,7 @@ const showStatusFilter = false;  // set to false to hide
 
     return (
       <Container fluid>
-        {/* <h2>Leads List</h2> */}
-        <PageBreadcrumb title="Follow Up List" />
+        <PageBreadcrumb title={`Follow Up List (${data.length})`} />
          {showLogoutLoader && <LogoutOverlay
   onComplete={async () => {
     await logout(); // your logout function
@@ -750,7 +784,7 @@ const showStatusFilter = false;  // set to false to hide
         {showTable ? (
           <DataTable
             columns={columns}
-            data={data}
+            data={filteredData}
             progressPending={loading}
             expandableRows
             expandableRowsComponent={ExpandedComponent}
@@ -759,175 +793,188 @@ const showStatusFilter = false;  // set to false to hide
       onSelectedRowsChange={handleRowSelected}
             highlightOnHover
             pointerOnHover
+              subHeader
+   subHeaderComponent={SubHeaderComponent}
             responsive
+            paginationPerPage={perPage}
+            onChangePage={(page) => setCurrentPage(page)}
+            onChangeRowsPerPage={(newPerPage, page) => {
+              setPerPage(newPerPage);
+              setCurrentPage(page);
+            }}
           />
         ) : (
           <DataTable
             columns={columns}
-            data={data}
+            data={filteredData}
             progressPending={loading}
             expandableRows
             expandableRowsComponent={ExpandedComponent}
             pagination
             highlightOnHover
             pointerOnHover
+              subHeader
+   subHeaderComponent={SubHeaderComponent}
             responsive
+            paginationPerPage={perPage}
+            onChangePage={(page) => setCurrentPage(page)}
+            onChangeRowsPerPage={(newPerPage, page) => {
+              setPerPage(newPerPage);
+              setCurrentPage(page);
+            }}
           />
         )}
 
-         <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Update Lead</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedLead ? (
-            <Form onSubmit={onSubmit} className="mt-3">
-              <Form.Group className="mb-3" controlId="leadDateVal">
-                <Form.Label>Lead Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={formData.leadDateVal || ''}
-                  onChange={(e) => handleFormChange('leadDateVal', e.target.value)}
-                  disabled={true}
-                  required
-                />
+        <Modal show={showModal} onHide={handleCloseModal} backdrop="static" keyboard={false} size="lg" centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Update Lead</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {selectedLead ? (
+              <Form onSubmit={onSubmit} className="mt-3">
+                <Form.Group className="mb-3" controlId="leadDateVal">
+                  <Form.Label>Lead Date</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={formData.leadDateVal || ''}
+                    onChange={(e) => handleFormChange('leadDateVal', e.target.value)}
+                    disabled={true}
+                    required
+                  />
 
-              </Form.Group>
-              <Row>
-                <Col md={6}>
-                  <Form.Group controlId="firstNameVal">
-                    <Form.Label>First Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={formData.firstNameVal || ''}
-                      onChange={(e) => handleFormChange('firstNameVal', e.target.value)}
-                      required
+                </Form.Group>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group controlId="firstNameVal">
+                      <Form.Label>First Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.firstNameVal || ''}
+                        onChange={(e) => handleFormChange('firstNameVal', e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group controlId="lastNameVal">
+                      <Form.Label>Last Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.lastNameVal || ''}
+                        onChange={(e) => handleFormChange('lastNameVal', e.target.value)}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Form.Group controlId="emailAddressVal" className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={formData.emailAddressVal || ''}
+                    onChange={(e) => handleFormChange('emailAddressVal', e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="phoneNumberVal" className="mb-3">
+                  <Form.Label>Phone</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    value={formData.phoneNumberVal || ''}
+                    onChange={(e) => handleFormChange('phoneNumberVal', e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="sourceVal" className="mb-3">
+                  <Form.Label>Source</Form.Label>
+                  <Select
+                    options={sourceOptions}
+                    value={formData.sourceVal}
+                    onChange={(opt) => handleFormChange('sourceVal', opt)}
+                    placeholder="Select Source"
+                  />
+                </Form.Group>
+                  <Form.Group controlId="qualityscoreVal" className="mb-3">
+                  <Form.Label>Quality Score</Form.Label>
+                  <Select
+                    options={qualityscoreOptions}
+                    value={formData.qualityscoreVal}
+                    onChange={(opt) => handleFormChange('qualityscoreVal', opt)}
+                    placeholder="Select Quality Score"
+                  />
+                </Form.Group>
+                <Form.Group controlId="categoryVal" className="mb-3">
+                  <Form.Label>Category</Form.Label>
+                  <Select
+                    options={categoryOptions}
+                    value={formData.categoryVal}
+                    onChange={(opt) => handleFormChange('categoryVal', opt)}
+                    placeholder="Select Category"
+                  />
+                </Form.Group>
+                {formData.categoryVal === '3' && (
+                  <Form.Group controlId="subCategoryVal" className="mb-3">
+                    <Form.Label>Sub Category</Form.Label>
+                    <Select
+                      options={subCategoryOptions}
+                      value={formData.subCategoryVal}
+                      onChange={(opt) => handleFormChange('subCategoryVal', opt)}
+                      placeholder="Select Sub Category"
                     />
                   </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group controlId="lastNameVal">
-                    <Form.Label>Last Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={formData.lastNameVal || ''}
-                      onChange={(e) => handleFormChange('lastNameVal', e.target.value)}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Form.Group controlId="emailAddressVal" className="mb-3">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  value={formData.emailAddressVal || ''}
-                  onChange={(e) => handleFormChange('emailAddressVal', e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="phoneNumberVal" className="mb-3">
-                <Form.Label>Phone</Form.Label>
-                <Form.Control
-                  type="tel"
-                  value={formData.phoneNumberVal || ''}
-                  onChange={(e) => handleFormChange('phoneNumberVal', e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="sourceVal" className="mb-3">
-                <Form.Label>Source</Form.Label>
-                <Select
-                  options={sourceOptions}
-                  value={formData.sourceVal}
-                  onChange={(opt) => handleFormChange('sourceVal', opt)}
-                  placeholder="Select Source"
-                />
-              </Form.Group>
-                <Form.Group controlId="qualityscoreVal" className="mb-3">
-                <Form.Label>Quality Score</Form.Label>
-                <Select
-                  options={qualityscoreOptions}
-                  value={formData.qualityscoreVal}
-                  onChange={(opt) => handleFormChange('qualityscoreVal', opt)}
-                  placeholder="Select Quality Score"
-                />
-              </Form.Group>
-              <Form.Group controlId="categoryVal" className="mb-3">
-                <Form.Label>Category</Form.Label>
-                <Select
-                  options={categoryOptions}
-                  value={formData.categoryVal}
-                  onChange={(opt) => handleFormChange('categoryVal', opt)}
-                  placeholder="Select Category"
-                />
-              </Form.Group>
-             {formData.categoryVal === '3' && (
-  <Form.Group controlId="subCategoryVal" className="mb-3">
-    <Form.Label>Sub Category</Form.Label>
-    <Select
-      options={subCategoryOptions}
-      value={formData.subCategoryVal}
-      onChange={(opt) => handleFormChange('subCategoryVal', opt)}
-      placeholder="Select Sub Category"
-    />
-  </Form.Group>
-)}
+                )}
+                <Form.Group controlId="productVal" className="mb-3">
+                  <Form.Label>Product</Form.Label>
+                  <Select
+                    options={ProductOptions}
+                    value={formData.productVal}
+                    onChange={(opt) => handleFormChange('productVal', opt)}
+                    placeholder="Select Product"
+                    required
+                  />
+                </Form.Group>
 
-             
-             
-              <Form.Group controlId="productVal" className="mb-3">
-                <Form.Label>Product</Form.Label>
-                <Select
-                  options={ProductOptions}
-                  value={formData.productVal}
-                  onChange={(opt) => handleFormChange('productVal', opt)}
-                  placeholder="Select Product"
-                  required
-                />
-              </Form.Group>
-
-              <Form.Group controlId="leadStatusVal" className="mb-3">
-                <Form.Label> Lead Status</Form.Label>
-                <Select
-                  options={leadstatusOptions}
-                  value={formData.leadStatusVal}
-                  onChange={(opt) => handleFormChange('leadStatusVal', opt)}
-                  placeholder="Select Lead Status"
-                  isDisabled={true}
-                />
+                <Form.Group controlId="leadStatusVal" className="mb-3">
+                  <Form.Label> Lead Status</Form.Label>
+                  <Select
+                    options={leadstatusOptions}
+                    value={formData.leadStatusVal}
+                    onChange={(opt) => handleFormChange('leadStatusVal', opt)}
+                    placeholder="Select Lead Status"
+                    isDisabled={true}
+                  />
 
 
-              </Form.Group>
-              <Form.Group controlId="executiveIdVal" className="mb-3">
-                <Form.Label>Executive</Form.Label>
-                <Select
-                  options={executiveOptions}
-                  value={formData.executiveIdVal}
-                  onChange={(opt) => handleFormChange('executiveIdVal', opt)}
-                  placeholder="Select Executive"
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="branchVal" className="mb-3">
-                <Form.Label>Branch</Form.Label>
-                <Select
-                  options={branchOptions}
-                  value={formData.branchVal}
-                  onChange={(opt) => handleFormChange('branchVal', opt)}
-                  placeholder="Select Branch"
+                </Form.Group>
+                <Form.Group controlId="executiveIdVal" className="mb-3">
+                  <Form.Label>Executive</Form.Label>
+                  <Select
+                    options={executiveOptions}
+                    value={formData.executiveIdVal}
+                    onChange={(opt) => handleFormChange('executiveIdVal', opt)}
+                    placeholder="Select Executive"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="branchVal" className="mb-3">
+                  <Form.Label>Branch</Form.Label>
+                  <Select
+                    options={branchOptions}
+                    value={formData.branchVal}
+                    onChange={(opt) => handleFormChange('branchVal', opt)}
+                    placeholder="Select Branch"
 
-                />
-              </Form.Group>
-              <Button variant="primary" type="submit" disabled={isLoading}>
-                {isLoading ? <Spinner animation="border" size="sm" /> : 'Update Lead'}
-              </Button>
-            </Form>
-          ) : (
-            <Spinner />
-          )}
-        </Modal.Body>
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit" disabled={isLoading}>
+                  {isLoading ? <Spinner animation="border" size="sm" /> : 'Update Lead'}
+                </Button>
+              </Form>
+            ) : (
+              <Spinner />
+            )}
+          </Modal.Body>
       </Modal>
-      <Modal show={showViewModal} onHide={handleCloseViewModal} centered>
+      <Modal show={showViewModal} onHide={handleCloseViewModal} backdrop="static" keyboard={false} centered>
         <Modal.Header closeButton>
           <Modal.Title>Lead Follow-Up</Modal.Title>
         </Modal.Header>

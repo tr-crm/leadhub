@@ -15,7 +15,7 @@ export interface LeaveRequestPayload {
   leaveToDateVal: string;
 }
 
-export interface UserEditPayload {
+ export interface UserEditPayload {
   idVal: number;
   userIdVal: number;
   tokenVal: string;
@@ -27,7 +27,9 @@ export interface UserEditPayload {
   updatedByVal: number;
   regionVal: string | number;
   supervisionVal : string | number;
+  idletimeVal : string;
 }
+
 
 export interface UserResetPayload {
   idVal: number;
@@ -114,8 +116,13 @@ export interface UserCreatePayload{
   regionVal: number;
   createdByVal: number;
   supervisionVal: number;
+  idletimeVal : string;
 }
 
+export const getUserCreate = async (payload:any) => {
+  const response = await axios.post('/api/User/createUser', payload);
+  return response.data;
+};
 export const getUserList = async (payload: UserListRequestPayload) => {
   const response = await axios.post('/api/User/getUserList', payload);
   return response.data;
@@ -189,5 +196,13 @@ export const submitUserChangePassword = async (payload: UserChangePayload) => {
 
 export const submitUserCreate = async (payload: UserCreatePayload) => {
   const response = await axios.post('/api/User/createUser', payload);
+  return response.data;
+};
+
+
+//UpdateFirstloginSeenComment
+export const UpdateFirstloginSeenComment = async (payload:any) => {
+  const response = await axios.post('/api/User/adduserFirstLoginStatus', payload);
+  // console.log(response);
   return response.data;
 };

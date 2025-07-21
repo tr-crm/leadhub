@@ -94,4 +94,10 @@
             font-weight: 600;
             z-index: 6;
           }
-      
+
+         /* .styled-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 2;
+} */

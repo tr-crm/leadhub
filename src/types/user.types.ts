@@ -16,6 +16,7 @@ export interface User {
   job_execution?: string;
   job_score?: number;
   job_status?: string;
-  supervision:number
+  supervision:number;
+  idle_time:string;
   // ...other fields
 }

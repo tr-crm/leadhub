@@ -41,9 +41,7 @@ const ExcelImport: React.FC = () => {
   const [product, setProduct] = useState<OptionType | null>(null);
   const [branch, setBranch] = useState<OptionType | null>(null);
 
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const [contacts, setContacts] = useState([{ name: '', phone: '', email: '' }]);
 
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -56,7 +54,7 @@ const ExcelImport: React.FC = () => {
         const [sources, categories, branches] = await Promise.all([
           SourceList(user.id, user.access_token),
           getCategoryList(user.id, user.access_token),
-          getBranchList(user.id, user.access_token),
+          getBranchList(user.id, user.access_token,'0',user.region,user.type),
         ]);
 
         setSourceOptions(sources.map((item: any) => ({ value: item.id.toString(), label: item.display_name })));
@@ -94,23 +92,28 @@ const ExcelImport: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
+
     if (!source) newErrors.source = 'Source is required';
     if (!category) newErrors.category = 'Category is required';
     if (shouldShowProduct && !product) newErrors.product = 'Product is required';
     if (shouldShowSubCategory && !subcategory) newErrors.subcategory = 'Subcategory is required';
-    if (!branch) newErrors.branch = 'Branch is required';
     if (!selectedDate) newErrors.selectedDate = 'Date is required';
-    if (!name.trim()) newErrors.name = 'Name is required';
-    if (!phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\d{12}$/.test(phone.trim())) {
-      newErrors.phone = 'Phone number must be exactly 12 digits';
-    }
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      newErrors.email = 'Invalid email format';
-    }
+
+    contacts.forEach((contact, index) => {
+      if (!contact.name.trim()) {
+        newErrors[`name_${index}`] = 'Name is required';
+      }
+      if (!contact.phone.trim()) {
+        newErrors[`phone_${index}`] = 'Phone number is required';
+      } else if (!/^\d{10}$/.test(contact.phone)) {
+        newErrors[`phone_${index}`] = 'Phone number must be exactly 10 digits';
+      }
+      if (!contact.email.trim()) {
+        newErrors[`email_${index}`] = 'Email is required';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email.trim())) {
+        newErrors[`email_${index}`] = 'Invalid email format';
+      }
+    });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -123,13 +126,15 @@ const ExcelImport: React.FC = () => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
       const payload: LeadPayload = {
-        lead_date: selectedDate?.toISOString().split('T')[0] || '',
+        // lead_date: selectedDate?.toISOString().split('T')[0] || '',
+        lead_date: selectedDate
+  ? selectedDate.toLocaleDateString('en-CA') // e.g., "2025-07-18"
+  : null,
         source_id: source?.value || '',
         category_id: category?.value || '',
         sub_category_id: subcategory?.value || '',
@@ -137,24 +142,23 @@ const ExcelImport: React.FC = () => {
         branch_id: branch?.value || '',
         lead_type: '4',
         created_by: user.id,
-        data: [{
-          name: capitalizeFirst(name.trim()),
-          phone: phone.trim(),
-          email: email.trim()
-        }],
+        data: contacts.map(c => ({
+          name: capitalizeFirst(c.name.trim()),
+          phone: c.phone.trim(),
+          email: c.email.trim()
+        })),
         userIdVal: user.id,
         tokenVal: user.access_token,
-        region:"",
-        dm: 1
+        region: '',
+        dm: 1,
       };
 
       const response = await ImportLeadCreate(payload);
-
-      if (response.data.response === 'login_error') {
+      if (response.response === 'login_error') {
         toast.error(response.message || 'Session expired, please login again.');
-      } else if (response.data.response === 'error') {
+      } else if (response.response === 'error') {
         toast.error(response.message || 'Failed to import data.');
-      } else if (response.data.response === 'success') {
+      } else if (response.response === 'success') {
         toast.success(response.message || 'Data imported successfully!');
         navigate('/import/list');
       }
@@ -185,67 +189,17 @@ const ExcelImport: React.FC = () => {
             </Col>
           </Row>
 
-          <Row className="mb-3 align-items-center">
-            <Col sm={3}><Form.Label>Name <span style={{ color: 'red' }}>*</span></Form.Label></Col>
-            <Col sm={5}>
-              <Form.Control
-                type="text"
-                placeholder="Enter Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              {errors.name && <div className="text-danger">{errors.name}</div>}
-            </Col>
-          </Row>
+          
 
-          <Row className="mb-3 align-items-center">
-            <Col sm={3}><Form.Label>Phone <span style={{ color: 'red' }}>*</span></Form.Label></Col>
-            <Col sm={5}>
-              <Form.Control
-                type="text"
-                placeholder="Enter 12-digit Phone"
-                value={phone}
-                maxLength={12}
-                onChange={(e) => {
-                  const digits = e.target.value.replace(/\D/g, '');
-                  if (digits.length <= 12) setPhone(digits);
-                }}
-                required
-              />
-              {errors.phone && <div className="text-danger">{errors.phone}</div>}
-            </Col>
-          </Row>
-
-          <Row className="mb-3 align-items-center">
-            <Col sm={3}><Form.Label>Email <span style={{ color: 'red' }}>*</span></Form.Label></Col>
-            <Col sm={5}>
-              <Form.Control
-                type="email"
-                placeholder="Enter Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              {errors.email && <div className="text-danger">{errors.email}</div>}
-            </Col>
-          </Row>
-
-          <Row className="mb-3 align-items-center">
+          <Row className="mb-3">
             <Col sm={3}><Form.Label>Source <span style={{ color: 'red' }}>*</span></Form.Label></Col>
             <Col sm={5}>
-              <Select
-                options={sourceOptions}
-                value={source}
-                onChange={setSource}
-                placeholder="Select Source"
-                required
-              />
+              <Select options={sourceOptions} value={source} onChange={setSource} placeholder="Select Source" required />
               {errors.source && <div className="text-danger">{errors.source}</div>}
             </Col>
           </Row>
 
-          <Row className="mb-3 align-items-center">
+          <Row className="mb-3">
             <Col sm={3}><Form.Label>Category <span style={{ color: 'red' }}>*</span></Form.Label></Col>
             <Col sm={5}>
               <Select
@@ -264,7 +218,7 @@ const ExcelImport: React.FC = () => {
           </Row>
 
           {shouldShowSubCategory && (
-            <Row className="mb-3 align-items-center">
+            <Row className="mb-3">
               <Col sm={3}><Form.Label>Subcategory <span style={{ color: 'red' }}>*</span></Form.Label></Col>
               <Col sm={5}>
                 <Select
@@ -280,7 +234,7 @@ const ExcelImport: React.FC = () => {
           )}
 
           {shouldShowProduct && (
-            <Row className="mb-3 align-items-center">
+            <Row className="mb-3">
               <Col sm={3}><Form.Label>Product <span style={{ color: 'red' }}>*</span></Form.Label></Col>
               <Col sm={5}>
                 <Select
@@ -295,20 +249,91 @@ const ExcelImport: React.FC = () => {
             </Row>
           )}
 
-          <Row className="mb-3 align-items-center">
-            <Col sm={3}><Form.Label>Branch <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+          <Row className="mb-3">
+            <Col sm={3}><Form.Label>Branch</Form.Label></Col>
             <Col sm={5}>
-              <Select
-                options={branchOptions}
-                value={branch}
-                onChange={setBranch}
-                placeholder="Select Branch"
-                required
-                
-              />
-              {errors.branch && <div className="text-danger">{errors.branch}</div>}
+              <Select options={branchOptions} value={branch} onChange={setBranch} placeholder="Select Branch" />
             </Col>
           </Row>
+          {contacts.map((contact, index) => (
+            <div key={index} className="mb-4 border rounded p-3 position-relative">
+              <Row className="mb-2">
+                <Col sm={3}><Form.Label>Name <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                <Col sm={5}>
+                  <Form.Control
+                    type="text"
+                    value={contact.name}
+                    onChange={(e) => {
+                      const updated = [...contacts];
+                      let input = e.target.value.replace(/[^a-zA-Z ]/g, '');
+                      if (input.length > 0) {
+                        input = input.charAt(0).toUpperCase() + input.slice(1);
+                      }
+                      updated[index].name = input;
+                      setContacts(updated);
+                    }}
+                    placeholder="Enter Name"
+                    required
+                  />
+                  {errors[`name_${index}`] && <div className="text-danger">{errors[`name_${index}`]}</div>}
+                </Col>
+              </Row>
+
+              <Row className="mb-2">
+                <Col sm={3}><Form.Label>Phone <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                <Col sm={5}>
+                  <Form.Control
+                    type="text"
+                    value={contact.phone}
+                    onChange={(e) => {
+                      const updated = [...contacts];
+                      updated[index].phone = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setContacts(updated);
+                    }}
+                    placeholder="Enter 10-digit Phone"
+                    required
+                  />
+                  {errors[`phone_${index}`] && <div className="text-danger">{errors[`phone_${index}`]}</div>}
+                </Col>
+              </Row>
+
+              <Row className="mb-2">
+                <Col sm={3}><Form.Label>Email <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                <Col sm={5}>
+                  <Form.Control
+                    type="email"
+                    value={contact.email}
+                    onChange={(e) => {
+                      const updated = [...contacts];
+                      updated[index].email = e.target.value;
+                      setContacts(updated);
+                    }}
+                    placeholder="Enter Email"
+                    required
+                  />
+                  {errors[`email_${index}`] && <div className="text-danger">{errors[`email_${index}`]}</div>}
+                </Col>
+              </Row>
+
+              {contacts.length > 1 && (
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="position-absolute"
+                  style={{ top: 0, right: 0 }}
+                  onClick={() => setContacts(contacts.filter((_, i) => i !== index))}
+                >
+                  −
+                </Button>
+              )}
+            </div>
+          ))}
+
+          <div className="text-end mb-3">
+            <Button variant="secondary" onClick={() => setContacts([...contacts, { name: '', phone: '', email: '' }])}>
+              + Add Another
+            </Button>
+          </div>
 
           {error && <Alert variant="danger">{error}</Alert>}
           {successMessage && <Alert variant="success">{successMessage}</Alert>}

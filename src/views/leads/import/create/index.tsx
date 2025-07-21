@@ -100,7 +100,7 @@ const [region, setRegion] = useState<OptionType | null>(getInitialRegionValue())
   useEffect(() => {
     const fetchBranch = async () => {
       try {
-        const branches = await getBranchList(user.id, user.access_token);
+        const branches = await getBranchList(user.id, user.access_token,'0',user.region,user.typ);
         const options = branches.map((bran: any) => ({
           value: String(bran.id),
           label: bran.display_name,

@@ -32,7 +32,7 @@ export const getAuthToken = (): string | undefined => {
 export const getUserInfo = () => {
   const user = Cookies.get('LeadHubLoginAccess');
   if (!user) {
-    console.log('LeadHubLoginAccess cookie not found');
+    // console.log('LeadHubLoginAccess cookie not found');
     return null;
   }
   try {
@@ -51,7 +51,8 @@ export const isAuthenticated = (): boolean => {
 };
 
 // Logout function with API call and session cleanup
-export const logout = async (): Promise<void> => {
+export const logout = async (idlelogout: string = "0"): Promise<void> => {
+  console.log(idlelogout);
   const user = getUserInfo();
     // console.log(user);
   if (user?.id && user?.access_token && user?.type) {
@@ -62,6 +63,7 @@ export const logout = async (): Promise<void> => {
         tokenVal: user.access_token,
         typeVal: user.type,
         multiLoginVal: user.multi_login_status,
+        idlelogoutVal:idlelogout
       });
        console.log(response);
     } catch (error) {
@@ -75,5 +77,5 @@ export const logout = async (): Promise<void> => {
   Cookies.remove('LeadHubLoginAccess');
 
   // // Redirect to login page
-  // window.location.href = '/login';
+  window.location.href = '/login';
 };

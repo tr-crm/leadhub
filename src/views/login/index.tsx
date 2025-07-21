@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from '../../api/axiosInstance';
 import Cookies from 'js-cookie';
+
+
 import {
   Button,
   Card,
@@ -46,6 +48,8 @@ const SignIn = () => {
   } = useForm<LoginFormInputs>();
 
   const navigate = useNavigate();
+  
+
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [multiLogin, setMultiLogin] = useState(0);
@@ -73,7 +77,9 @@ const SignIn = () => {
 
           Cookies.set('accessToken', user.access_token, { expires: 7 });
           Cookies.set('LeadHubLoginAccess', JSON.stringify(user), { expires: 7 });
- toast.dismiss();
+          // console.log(user);
+           
+           toast.dismiss();
           toast.success(
             <div>
               Hi, {user.full_name} <br />
@@ -264,7 +270,7 @@ const SignIn = () => {
                         )}
                       </div>
                     </Form>
-
+     
                     <p className="text-center text-muted mt-4 mb-0">
                       © 2025 - {currentYear} Leads Hub — by{' '}
                       <span className="fw-semibold">TRCRM</span>

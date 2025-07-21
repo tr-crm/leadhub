@@ -215,13 +215,18 @@ export interface Branch {
 export const getBranchList = async (
   userId: string,
   token: string,
-  start: string = '0'
+  start: string = '0',
+  region:string,
+  type:string
 ): Promise<Branch[]> => {
   try {
-    const response = await axios.post('/api/Masters/getBranchList', {
+    // const response = await axios.post('/api/Masters/getBranchList', {
+        const response = await axios.post('/api/Masters/getBranchesListByRegion', {
       userIdVal: userId,
       tokenVal: token,
       start,
+      regionVal:region,
+      typeVal:type
     });
 
     const json = response.data;

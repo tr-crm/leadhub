@@ -4,7 +4,7 @@ import DataTable from 'react-data-table-component';
 import { Container, Button, Row, Col, Modal, Form } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
 import { getWebhookLeadsList,FreshLeadTransferToLeadList,BulkFreshLeadTransferToLeadList } from '@/services/leadservice';
-import { SourceList, getCategoryList, getSubCategoryList, ProductList, getBranchList } from '@/services/generalservice';
+import { SourceList, getCategoryList, getSubCategoryList, ProductList, getBranchList,getQualityList } from '@/services/generalservice';
 import type { WebhookLeadayload } from '@/services/leadservice';
 import type { Lead } from '@/types/lead.types';
 import RegionSelect from '@/components/regionselect';
@@ -14,7 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
-
+import { format } from 'date-fns';
 
 // import { s } from 'node_modules/react-router/dist/development/lib-C1JSsICm.d.mts';
 
@@ -45,29 +45,51 @@ const LeadsDataTable: React.FC = () => {
   const [productOptions, setProductOptions] = useState<OptionType[]>([]);
   // const [countryOptions, setCountryOptions] = useState<OptionType[]>([]);
   const [branchOptions, setBranchOptions] = useState<OptionType[]>([]);
+   const [qualityscoreOptions, setQualityscoreOptions] = useState<OptionType[]>([]);
   const [source, setSource] = useState<OptionType | null>(null);
   const [category, setCategory] = useState<OptionType | null>(null);
   const [subcategory, setSubCategory] = useState<OptionType | null>(null);
   const [product, setProduct] = useState<OptionType | null>(null);
   // const [country, setCountry] = useState<OptionType | null>(null);
-  const [branch, setBranch] = useState<OptionType | null>(null);
-   const [year, setYear] = useState<OptionType | null>(null);
-    const [month, setMonth] = useState<OptionType | null>(null);
-     const [campaign, setCampaign] = useState<OptionType | null>(null);
-       const [campaignname, setCampaignName] = useState<OptionType | null>(null);
-     
-       const [excecutive, setExcecutive] = useState<OptionType | null>(null);
+  // const [branch, setBranch] = useState<OptionType | null>(null);
+  const [year, setYear] = useState<OptionType | null>(null);
+  const [month, setMonth] = useState<OptionType | null>(null);
+  const [campaign, setCampaign] = useState<OptionType | null>(null);
+  const [campaignname, setCampaignName] = useState<OptionType | null>(null);
 
+  const [excecutive, setExcecutive] = useState<OptionType | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
        
-
+ const [followupDate, setFollowupDate] = useState<Date | null>();
+  const [walkinDate, setWalkinDate] = useState<Date | null>();
+  const [followupStatus, setFollowupStatus] = useState<OptionType | null>(null);
+  const [followupComment, setFollowupComment] = useState('');
+  const [followupBranch, setFollowupBranch] = useState<OptionType | null>(null);
+  const [followupQualityScore, setFollowupQualityScore] = useState<OptionType | null>(null);
 
 
   const [showSubCategory, setShowSubCategory] = useState(true);
   const [showProduct, setShowProduct] = useState(true);
   // const [showCountry, setShowCountry] = useState(false);
 
-
+  const [searchText, setSearchText] = useState('');
+        const filteredData = data.filter((row: Lead) =>
+          Object.values(row)
+            .join(' ')
+            .toLowerCase()
+            .includes(searchText.toLowerCase())
+        );
+        const SubHeaderComponent = (
+          <Form.Control
+            type="text"
+            placeholder="Search..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ maxWidth: '300px' }}
+          />
+        );
   const [submitting, setSubmitting] = useState(false);
 
 
@@ -84,6 +106,21 @@ const LeadsDataTable: React.FC = () => {
     }, [user]);
 
   const type = user.type;
+   useEffect(() => {
+      const fetchQualityScore = async () => {
+        try {
+          const quality = await getQualityList(user.id, user.access_token);
+          const options = quality.map((qua: any) => ({
+            value: qua.id,
+            label: qua.display_name,
+          }));
+          setQualityscoreOptions([{ value: null, label: 'Select Quality Score' }, ...options]);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchQualityScore();
+    }, [user.id, user.access_token]);
 
   useEffect(() => {
     const fetchSources = async () => {
@@ -175,7 +212,7 @@ const LeadsDataTable: React.FC = () => {
   useEffect(() => {
     const fetchBranch = async () => {
       try {
-        const branches = await getBranchList(user.id, user.access_token);
+        const branches = await getBranchList(user.id, user.access_token,'0',user.region,user.typ);
         const options = branches.map(item => ({
           value: item.id,
           label: item.display_name,
@@ -270,9 +307,9 @@ const LeadsDataTable: React.FC = () => {
   // const handleCountryList = (option: OptionType | null): void => {
   //   setCountry(option);
   // };
-  const handleBranchList = (option: OptionType | null): void => {
-    setBranch(option);
-  };
+  // const handleBranchList = (option: OptionType | null): void => {
+  //   setBranch(option);
+  // };
 
   const fetchLeads = async () => {
        if (!user) return;
@@ -345,6 +382,7 @@ const LeadsDataTable: React.FC = () => {
     const sourceId = String(row.source_id);
     const foundSource = sourceOptions.find(option => option.value == sourceId) || null;
     const foundCategory = categoryOptions.find(option => option.value == String(row.category_id)) || null;
+    const foundBranch = branchOptions.find(option => option.value == String(row.branch_id)) || null;
 
     //    if (!foundCategory) {
     //   // Handle cleared selection
@@ -393,6 +431,7 @@ const LeadsDataTable: React.FC = () => {
        setCampaign(row.campaign_id || '');
      setCampaignName(row.campaign_name || '');
       setExcecutive(row.executive_id || '0');
+      setFollowupBranch(foundBranch);
     setShowModal(true);
 
     
@@ -415,6 +454,12 @@ const LeadsDataTable: React.FC = () => {
        setCampaign(null);
      setCampaignName(null);
        setExcecutive(null);
+         setFollowupBranch(null);
+        setFollowupDate(null);
+        setFollowupStatus(null);
+          setFollowupComment('');
+            setFollowupQualityScore(null);
+            
     setSubmitting(false);
   };
 
@@ -437,7 +482,7 @@ const LeadsDataTable: React.FC = () => {
         subCategoryVal: subcategory ? parseInt(subcategory.value) : null,
         productVal: product ? parseInt(product.value) : null,
         // countryVal: country ? parseInt(country.value) : null,
-        branchVal: branch ? parseInt(branch.value) : null,
+        // branchVal: branch ? parseInt(branch.value) : null,
         leadTypeVal: 1,
         createdByVal: user.id,
         yearVal: year,
@@ -448,8 +493,40 @@ const LeadsDataTable: React.FC = () => {
         userIdVal: user.id,
         tokenVal: user.access_token,
         idVal:selectedLead?.id,
-        regionVal:user.region
+       regionVal : selectedLead?.region ? selectedLead.region : user.region,
+        // branchVal: branch ? parseInt(branch.value) : null,
+        branchVal: followupBranch?.value ? parseInt(followupBranch?.value) : null,
+        qualityscoreVal: followupQualityScore?.value,
+        leadStatusVal: followupStatus?.value,
+        commentVal: followupComment.trim(),
+        followupDateVal: '',
+        walkinDateVal: '',
+        createdAtVal:selectedLead?.created_at,
       };
+       if (followupStatus?.value === '2' && followupDate) {
+        if (followupDate) {
+          transferPayload.followupDateVal = `${followupDate.toLocaleDateString('en-CA')} ${followupDate.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}`;
+        } else {
+          transferPayload.followupDateVal = '';
+        }
+      }
+
+
+      if (followupStatus?.value === '3' && walkinDate && followupBranch) {
+
+        if (walkinDate) {
+          transferPayload.walkinDateVal = `${walkinDate.toLocaleDateString('en-CA')} ${walkinDate.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}`;
+        } else {
+          transferPayload.walkinDateVal = '';
+        }
+
+      }
 
       // console.log(transferPayload.monthVal);
 
@@ -552,8 +629,25 @@ const handleExecChange1 = (selected: OptionType | null) => {
  
  const isTransferDisabled = (row: any) =>
   (Number(row.lead_status) === 2 && leadtype === '2') || row.executive_id == 0;
- console.log(isTransferDisabled);
 
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    let updatedValue = value;
+
+    if (name === 'firstName' || name === 'lastName') {
+      updatedValue = updatedValue.replace(/[^a-zA-Z\s]/g, '');
+      updatedValue = updatedValue.replace(/\b\w/g, (char: string) => char.toUpperCase());
+    }
+
+    if (name === 'phoneNumber') {
+      updatedValue = updatedValue.replace(/\D/g, '').slice(0, 10);
+    }
+
+    // Update respective state
+    if (name === 'firstName') setFirstName(updatedValue);
+    else if (name === 'lastName') setLastName(updatedValue);
+    else if (name === 'phoneNumber') setPhoneNumber(updatedValue);
+  };
 
 
 
@@ -561,7 +655,7 @@ const handleExecChange1 = (selected: OptionType | null) => {
   const columns = [
     {
       name: 'ID',
-      cell: (_row: Lead, index: number) => index + 1,
+      cell: (_row: Lead, index: number) =>  (currentPage - 1) * perPage + index + 1,
       width: '70px',
     },
      {
@@ -670,7 +764,8 @@ const handleExecChange1 = (selected: OptionType | null) => {
 
   return (
     <Container fluid>
-      <PageBreadcrumb title="Webhook Fresh Leads List" />
+    
+      <PageBreadcrumb title={`Webhook Fresh Leads List (${data.length})`} />
     <ToastContainer/>
 {showLogoutLoader && (
   <LogoutOverlay
@@ -743,7 +838,7 @@ const handleExecChange1 = (selected: OptionType | null) => {
 
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredData}
         progressPending={loading}
         expandableRows
         expandableRowsComponent={ExpandedComponent}
@@ -751,108 +846,251 @@ const handleExecChange1 = (selected: OptionType | null) => {
        selectableRows
         onSelectedRowsChange={handleSelectedRowsChange}
         clearSelectedRows={toggleCleared}
-
+subHeader
+   subHeaderComponent={SubHeaderComponent}
         highlightOnHover
         pointerOnHover
         responsive
+        paginationPerPage={perPage}
+        onChangePage={(page) => setCurrentPage(page)}
+        onChangeRowsPerPage={(newPerPage, page) => {
+          setPerPage(newPerPage);
+          setCurrentPage(page);
+        }}
       />
 
       {/* Modal */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Transfer Lead</Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleSubmit}>
-          <Modal.Body>
-         <Form.Group className="mb-3">
-  <Form.Label>Lead Date</Form.Label>
-  <Form.Control
-    type="date"
-    value={leadDate}
-    onChange={(e) => setLeadDate(e.target.value)}
-    disabled // 
-    required
-  />
-</Form.Group>
+      <Modal show={showModal} onHide={handleCloseModal} backdrop="static" keyboard={false} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Transfer Lead</Modal.Title>
+      </Modal.Header>
+      <Form onSubmit={handleSubmit}>
+        <Modal.Body>
 
+          <Row className="mb-3 align-items-center">
+            <Col md={3}>
+              <Form.Label>Lead Date <span style={{ color: 'red' }}>*</span></Form.Label>
+            </Col>
+            <Col md={9}>
+              <Form.Control
+                type="date"
+                value={leadDate}
+                onChange={(e) => setLeadDate(e.target.value)}
+                disabled
+                required
+              />
+            </Col>
+          </Row>
 
-            <Form.Group className="mb-3">
-              <Form.Label>First Name</Form.Label>
-              <Form.Control type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-            </Form.Group>
+          <Row className="mb-3 align-items-center">
+            <Col md={3}>
+              <Form.Label>First Name <span style={{ color: 'red' }}>*</span></Form.Label>
+            </Col>
+            <Col md={9}>
+              <Form.Control
+                type="text"
+                name="firstName"
+                value={firstName}
+                onChange={handleInputChange}
+                required
+              />
+            </Col>
+          </Row>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-            </Form.Group>
+          <Row className="mb-3 align-items-center">
+            <Col md={3}>
+              <Form.Label>Last Name <span style={{ color: 'red' }}>*</span></Form.Label>
+            </Col>
+            <Col md={9}>
+              <Form.Control
+                type="text"
+                name="lastName"
+                value={lastName}
+                onChange={handleInputChange}
+                required
+              />
+            </Col>
+          </Row>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Phone Number</Form.Label>
-              <Form.Control type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required />
-            </Form.Group>
+          <Row className="mb-3 align-items-center">
+            <Col md={3}>
+              <Form.Label>Phone Number <span style={{ color: 'red' }}>*</span></Form.Label>
+            </Col>
+            <Col md={9}>
+              <Form.Control
+                type="tel"
+                name="phoneNumber"
+                value={phoneNumber}
+                onChange={handleInputChange}
+                required
+              />
+            </Col>
+          </Row>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </Form.Group>
+          <Row className="mb-3 align-items-center">
+            <Col md={3}>
+              <Form.Label>Email <span style={{ color: 'red' }}>*</span></Form.Label>
+            </Col>
+            <Col md={9}>
+              <Form.Control
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Col>
+          </Row>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Source</Form.Label>
-              <Select options={sourceOptions} value={source} onChange={handleSourceChange} placeholder="Select Source" isDisabled={true} required />
-            </Form.Group>
+          <Row className="mb-3 align-items-center">
+            <Col md={3}>
+              <Form.Label>Source <span style={{ color: 'red' }}>*</span></Form.Label>
+            </Col>
+            <Col md={9}>
+              <Select
+                options={sourceOptions}
+                value={source}
+                onChange={handleSourceChange}
+                placeholder="Select Source"
+                isDisabled={true}
+                required
+              />
+            </Col>
+          </Row>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Category</Form.Label>
-              <Select options={categoryOptions} value={category} onChange={handleCategory} placeholder="Select Category" required />
-            </Form.Group>
-            {showSubCategory && (
-              <Form.Group className="mb-3">
-                <Form.Label>Sub Category</Form.Label>
-                <Select options={subCategoryOptions} value={subcategory} onChange={handleSubCategory} placeholder="Select Sub Category" />
-              </Form.Group>
+          <Row className="mb-3 align-items-center">
+            <Col md={3}>
+              <Form.Label>Category <span style={{ color: 'red' }}>*</span></Form.Label>
+            </Col>
+            <Col md={9}>
+              <Select
+                options={categoryOptions}
+                value={category}
+                onChange={handleCategory}
+                placeholder="Select Category"
+                required
+              />
+            </Col>
+          </Row>
+
+          {showSubCategory && (
+            <Row className="mb-3 align-items-center">
+              <Col md={3}>
+                <Form.Label>Sub Category <span style={{ color: 'red' }}>*</span></Form.Label>
+              </Col>
+              <Col md={9}>
+                <Select
+                  options={subCategoryOptions}
+                  value={subcategory}
+                  onChange={handleSubCategory}
+                  placeholder="Select Sub Category"
+                />
+              </Col>
+            </Row>
+          )}
+
+          {showProduct && (
+            <Row className="mb-3 align-items-center">
+              <Col md={3}>
+                <Form.Label>Product <span style={{ color: 'red' }}>*</span></Form.Label>
+              </Col>
+              <Col md={9}>
+                <Select
+                  options={productOptions}
+                  value={product}
+                  onChange={handleProductList}
+                  placeholder="Select Product"
+                  required
+                />
+              </Col>
+            </Row>
+          )}
+
+         <Row className="mb-3">
+              <Col md={3}><Form.Label>Quality Score  <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+              <Col md={9}>
+                <Select options={qualityscoreOptions} value={followupQualityScore} onChange={setFollowupQualityScore} placeholder="Select Quality Score" required />
+              </Col>
+            </Row>
+
+            <Row className="mb-3">
+              <Col md={3}><Form.Label>Lead Status  <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+              <Col md={9}>
+                <Form.Select value={followupStatus?.value || ''} onChange={(e) => {
+                  const val = e.target.value;
+                  setFollowupStatus(val ? { value: val, label: val } : null);
+                }} required>
+                  <option value="" disabled>Select Status</option>
+                  <option value="2">Follow Up</option>
+                  <option value="3">Partial Walk-In</option>
+                  <option value="5">Not Interested</option>
+                  <option value="6">Joined Some Where Else</option>
+                </Form.Select>
+              </Col>
+            </Row>
+
+            {followupStatus?.value === '2' && (
+              <>
+                <Row className="mb-3">
+                  <Col md={3}><Form.Label>Follow-Up Date  <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                  <Col md={9}>
+                    <Form.Control type="datetime-local" required value={followupDate ? format(followupDate, 'yyyy-MM-dd\'T\'HH:mm') : ''} onChange={(e) => {
+                      const value = e.target.value;
+                      setFollowupDate(value ? new Date(value) : null);
+                    }} />
+                  </Col>
+                </Row>
+
+                <Row className="mb-3">
+                  <Col md={3}><Form.Label>Branch</Form.Label></Col>
+                  <Col md={9}>
+                                      <Select options={branchOptions} value={followupBranch} onChange={setFollowupBranch} required />
+
+                    {/* <Select options={branchOptions} value={branch} onChange={handleBranchList} placeholder="Select Branch" /> */}
+                  </Col>
+                </Row>
+              </>
             )}
 
-            {showProduct && (
-              <Form.Group className="mb-3">
-                <Form.Label>Product</Form.Label>
-                <Select options={productOptions} value={product} onChange={handleProductList} placeholder="Select Product" required />
-              </Form.Group>
+            {followupStatus?.value === '3' && (
+              <>
+                <Row className="mb-3">
+                  <Col md={3}><Form.Label>Partial Walk-In Date <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                  <Col md={9}>
+                    <Form.Control type="datetime-local" required value={walkinDate ? format(walkinDate, 'yyyy-MM-dd\'T\'HH:mm') : ''} onChange={(e) => {
+                      const value = e.target.value;
+                      setWalkinDate(value ? new Date(value) : null);
+                    }} />
+                  </Col>
+                </Row>
+
+                <Row className="mb-3">
+                  <Col md={3}><Form.Label>Branch <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                  <Col md={9}>
+                    <Select options={branchOptions} value={followupBranch} onChange={setFollowupBranch} required />
+                  </Col>
+                </Row>
+              </>
             )}
 
-            {/* {showCountry && (
-              <Form.Group className="mb-3">
-                <Form.Label>Country</Form.Label>
-                <Select options={countryOptions} value={country} onChange={handleCountryList} placeholder="Select Country" />
-              </Form.Group>
-            )} */}
+            <Row className="mb-3">
+              <Col md={3}><Form.Label>Comment <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+              <Col md={9}>
+                <Form.Control as="textarea" rows={4} value={followupComment} onChange={(e) => setFollowupComment(e.target.value)} required />
+              </Col>
+            </Row>
 
-            {/* <Form.Group className="mb-3">
-              <Form.Label>Sub Category</Form.Label>
-              <Select options={subCategoryOptions} value={subcategory} onChange={handleSubCategory} required placeholder="Select Sub Category" />
-            </Form.Group>
-              <Form.Group className="mb-3">
-              <Form.Label>Product</Form.Label>
-              <Select options={productOptions} value={product} onChange={handleProductList} placeholder="Select Product" required/>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Country</Form.Label>
-              <Select options={countryOptions} value={country} onChange={handleCountryList} placeholder="Select Country" required/>
-            </Form.Group> */}
-            <Form.Group className="mb-3">
-              <Form.Label>Branch</Form.Label>
-              <Select options={branchOptions} value={branch} onChange={handleBranchList} placeholder="Select Branch" />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal} disabled={submitting}>
-              Cancel
-            </Button>
-            <Button variant="primary" type="submit" disabled={submitting}>
-              {submitting ? 'Submitting...' : 'Submit'}
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal} disabled={submitting}>
+            Cancel
+          </Button>
+          <Button variant="primary" type="submit" disabled={submitting}>
+            {submitting ? 'Submitting...' : 'Submit'}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+   
     </Container>
   );
 };

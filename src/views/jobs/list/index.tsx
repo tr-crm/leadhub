@@ -326,7 +326,7 @@ const handleUpdateScore = async () => {
         pointerOnHover
         responsive
       />
-        <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)} centered>
+        <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)} backdrop="static" keyboard={false} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Create Job Plan</Modal.Title>
             </Modal.Header>
@@ -357,7 +357,7 @@ const handleUpdateScore = async () => {
                 </Form>
             </Modal.Body>
         </Modal>
-        <Modal show={showExecutionModal} onHide={() => setShowExecutionModal(false)} centered>
+        <Modal show={showExecutionModal} onHide={() => setShowExecutionModal(false)} backdrop="static" keyboard={false} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Update Job Execution</Modal.Title>
             </Modal.Header>
@@ -398,7 +398,7 @@ const handleUpdateScore = async () => {
             </Modal.Body>
         </Modal>
 
-        <Modal show={showScoreModal} onHide={() => setShowScoreModal(false)} centered>
+        <Modal show={showScoreModal} onHide={() => setShowScoreModal(false)} backdrop="static" keyboard={false} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Update Job</Modal.Title>
             </Modal.Header>
