@@ -212,7 +212,13 @@ export const menuItems: MenuItemType[] = [
         key: "Region Wise Lead Report",
         label: "Region Wise Lead Report",
         url: "/report/region",
-        minLevel: [1, 2, 3,5],
+        minLevel: [1, 2, 3],
+      },
+      {
+        key: "Branch Wise Report",
+        label: "Branch Wise Report",
+        url: "/reports/branch",
+        minLevel: [5],
       },
       {
         key: "Daily DM Lead Report",

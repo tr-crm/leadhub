@@ -48,4 +48,5 @@ export interface Lead {
     [key: string]: any;
   };
   partial_walkin_date:string;
+  branch_name:string;
 }

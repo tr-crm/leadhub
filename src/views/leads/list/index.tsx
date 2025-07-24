@@ -609,11 +609,11 @@ const touchedOptions = [
 ];
 
 
-  const columns = [
+const columns = [
     {
       name: 'ID',
       cell: (_row: Lead, index: number) =>  (currentPage - 1) * perPage + index + 1,
-      width: '30px',
+      width: '60px',
     },
     {
       name: 'Action',
@@ -622,7 +622,6 @@ const touchedOptions = [
           <Button size="sm" variant="info" onClick={() => handleViewClick(row)}>
             <FaEye />
           </Button>
-
           <Button size="sm" variant="primary" onClick={() => handleOpenModal(row)}>
             <FaEdit />
           </Button>
@@ -632,19 +631,40 @@ const touchedOptions = [
       width: '120px',
     },
     { name: 'Date', selector: (row: Lead) => row.lead_date || '-', sortable: true, width: '110px' },
-    { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true, width: '150px' },
-    { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px' },
-    { name: 'Source', selector: (row: Lead) => row.source_name || '-', sortable: true },
-    { name: 'Category', selector: (row: Lead) => row.category_name || '-', sortable: true },
-    { name: 'Product', selector: (row: Lead) => row.product_name || '-', sortable: true, width: '90px' },
-    { name: 'Country', selector: (row: Lead) => row.country_name || '-', sortable: true, width: '90px' },
-    { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '110px' },
-    { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true, width: '150px' },
-     { name: 'Created On', selector: (row: Lead) => row.created_at || '-', sortable: true, width: '200px' },
- { name: 'Touched On', selector: (row: Lead) => row.touch_date_time || '-', sortable: true, width: '200px' },
-  { name: 'Touched In Sec', selector: (row: Lead) => row.time_to_first_response || '-', sortable: true, width: '200px' },
+    { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true, width: '150px', wrap: true },
+    { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px', wrap: true },
+    { name: 'Source', selector: (row: Lead) => row.source_name || '-', sortable: true, wrap: true },
+    { name: 'Category', selector: (row: Lead) => row.category_name || '-', sortable: true, wrap: true },
+    { name: 'Product', selector: (row: Lead) => row.product_name || '-', sortable: true, width: '90px', wrap: true },
+    { name: 'Branch', selector: (row: Lead) => row.branch_name || '-', sortable: true, width: '90px', wrap: true },
+    { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '110px', wrap: true },
+    { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true, width: '150px', wrap: true },
+    //  { name: 'Created On', selector: (row: Lead) => row.created_at || '-', sortable: true, width: '200px', wrap: true },
+ { name: 'Touched On', selector: (row: Lead) => row.touch_date_time || '-', sortable: true, width: '200px', wrap: true },
+{
+  name: 'Touched In Sec',
+  selector: (row: Lead) => {
+    if (!row.created_at || !row.touch_date_time) return '-';
+    const createdAt = new Date(row.created_at).getTime();
+    const touchedAt = new Date(row.touch_date_time).getTime();
+    if (isNaN(createdAt) || isNaN(touchedAt)) return '-';
+    const diffInSeconds = Math.floor(Math.abs(createdAt - touchedAt) / 1000);
+    const days = Math.floor(diffInSeconds / (60 * 60 * 24));
+    const hours = Math.floor((diffInSeconds % (60 * 60 * 24)) / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = diffInSeconds % 60;
+    let parts = [];
+    if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+    if (hours) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
+    if (minutes) parts.push(`${minutes} min${minutes > 1 ? 's' : ''}`);
+    if (seconds || parts.length === 0) parts.push(`${seconds} sec${seconds > 1 ? 's' : ''}`);
+    return parts.join(' ');
+  },
+  sortable: true,
+  width: '200px',
+  wrap: true,
+}
   ];
-
 
 
 

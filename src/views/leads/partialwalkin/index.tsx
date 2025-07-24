@@ -57,12 +57,12 @@
     const showSourceFilter = false;  // set to false to hide
     const showStatusFilter = false;  // set to false to hide
  const [searchText, setSearchText] = useState('');
-        const filteredData = data.filter((row: Lead) =>
-          Object.values(row)
-            .join(' ')
-            .toLowerCase()
-            .includes(searchText.toLowerCase())
-        );
+       const filteredData = (data || []).filter((row: Lead) =>
+        Object.values(row)
+          .join(' ')
+          .toLowerCase()
+          .includes(searchText.toLowerCase())
+      );
         const SubHeaderComponent = (
           <Form.Control
             type="text"
@@ -101,9 +101,7 @@
       fetchLeads();
     }, [sourceFilter, statusFilter, fromDate, toDate, execFilter]);
     
-
-
-    
+   
 
 
 
@@ -122,7 +120,7 @@
       { name: 'Category', selector: (row: Lead) => row.category_name || '-', sortable: true },
       { name: 'Product', selector: (row: Lead) => row.product_name || '-', sortable: true, width: '90px' },
       { name: 'Country', selector: (row: Lead) => row.country_name || '-', sortable: true, width: '90px' },
-      { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '110px' },
+      { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '120px', wrap: true },
       { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true },
 
     ];
@@ -198,8 +196,7 @@
     return (
       <Container fluid>
         {/* <h2>Leads List</h2> */}
-        
-          <PageBreadcrumb title={`Partial Walkin List (${data.length})`} />
+          <PageBreadcrumb title={`Partial Walkin List (${Array.isArray(data) ? data.length : 0})`} />
         <Form className="mb-4">
           <Row className="align-items-end">
             <Col md={2}>

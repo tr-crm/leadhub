@@ -12,9 +12,9 @@ import {
 } from "react-bootstrap";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
-import { getRegionwiseLeadReportList, getRegionLeadClickableDetails } from "@/services/reportsservice";
+import { getBranchwiseLeadReportList, getRegionLeadClickableDetails } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
-import type { RegionLeadReportRequest, RegionLeadClickablePayload } from "@/services/reportsservice";
+import type { BranchLeadReportRequest, RegionLeadClickablePayload } from "@/services/reportsservice";
 import { useSortableData } from "@/hooks/useSortableData";
 import YearSelect from '@/components/yearselect';
 import MonthSelect from '@/components/monthselect';
@@ -72,7 +72,7 @@ const DailyLeadReportTable: React.FC = () => {
     setLoading(true);
     setError("");
 
-    const requestBody: RegionLeadReportRequest = {
+    const requestBody: BranchLeadReportRequest = {
       yearVal: selectedYear,
       monthVal: selectedMonth,
       userIdVal: user.id,
@@ -83,7 +83,7 @@ const DailyLeadReportTable: React.FC = () => {
 
    
      try {
-     const response = await getRegionwiseLeadReportList(requestBody);
+     const response = await getBranchwiseLeadReportList(requestBody);
         
     //    console.log(response.data.response);
           if (response.response === 'login_error') {

@@ -18,5 +18,6 @@ export interface User {
   job_status?: string;
   supervision:number;
   idle_time:string;
+  excutive_name:string;
   // ...other fields
 }

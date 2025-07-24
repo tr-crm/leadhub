@@ -82,9 +82,9 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 
     const [isLoading, setIsLoading] = useState(false);
  const [selectedRows, setSelectedRows] = useState([]);
-    const [fromDate, setFromDate] = useState<Date | null>(() => {
+   const [fromDate, setFromDate] = useState<Date | null>(() => {
       const d = new Date();
-      d.setDate(d.getDate() - 7);
+      d.setDate(1);
       return d;
     });
 
@@ -623,14 +623,14 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
         width: '120px',
       },
         { name: 'Follow Up Date', selector: (row: Lead) => row.followup_date || '-', sortable: true, width: '110px' },
-      { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true },
-      { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px' },
+      { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true ,  wrap: true },
+      { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true,  wrap: true  },
       { name: 'Source', selector: (row: Lead) => row.source_name || '-', sortable: true },
       { name: 'Category', selector: (row: Lead) => row.category_name || '-', sortable: true },
       { name: 'Product', selector: (row: Lead) => row.product_name || '-', sortable: true, width: '90px' },
-      { name: 'Country', selector: (row: Lead) => row.country_name || '-', sortable: true, width: '90px' },
+      // { name: 'Country', selector: (row: Lead) => row.country_name || '-', sortable: true, width: '90px' },
       { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '110px' },
-      { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true },
+      { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true,  wrap: true  },
 
     ];
 

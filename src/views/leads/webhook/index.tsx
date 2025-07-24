@@ -696,31 +696,40 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       selector: (row: Lead) => String(row.full_name || ''),
       sortable: true,
       width: '130px',
+      wrap: true
     },
     {
       name: 'Phone',
       selector: (row: Lead) => String(row.phone_number || ''),
       sortable: true,
-      width: '110px',
+      width: '120px',
     },
+     {
+      name: 'Campaign Name',
+      selector: (row: Lead) => String(row.campaign_name || ''),
+      sortable: true,
+      width: '120px',
+      wrap: true
+    },
+    
     {
       name: 'Source',
       selector: (row: Lead) => String(row.source_name || ''),
       sortable: true,
-      width: '100px',
+      width: '110px',
     },
     {
       name: 'Region',
       selector: (row: Lead) => String(row.region_name || ''),
       sortable: true,
-      width: '100px',
+      width: '110px',
     },
-    {
-      name: 'Executive',
-      selector: (row: Lead) => String(row.executive_name || ''),
-      sortable: true,
-      width: '150px',
-    },
+    // {
+    //   name: 'Executive',
+    //   selector: (row: Lead) => String(row.executive_name || ''),
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
       name: 'Created At',
       selector: (row: Lead) => new Date(row.created_at).getTime() || 0,
@@ -749,7 +758,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             <tbody>
               {Object.entries(details).map(([key, value], index) => (
                 <tr key={`${key}-${index}`}>
-                  <th style={{ width: '150px', textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</th>
+                  <th style={{ width: 'auto', textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</th>
                   <td>{String(value)}</td>
                 </tr>
               ))}

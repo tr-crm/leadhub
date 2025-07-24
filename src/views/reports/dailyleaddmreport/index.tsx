@@ -7,12 +7,14 @@ import {
   Form,
   Row,
   Col,
+  Modal,
+  Button
 } from "react-bootstrap";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
-import { getDailyDMLeadReportList } from "@/services/reportsservice";
+import { getDailyDMLeadReportList, DailyLeadDmClickableReportRequest } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
-import type { RegionLeadReportRequest } from "@/services/reportsservice";
+import type { RegionLeadReportRequest,DailyLeadDmMClickableReportPayload } from "@/services/reportsservice";
 import { useSortableData } from "@/hooks/useSortableData";
 import YearSelect from '@/components/yearselect';
 import MonthSelect from '@/components/monthselect';
@@ -23,7 +25,11 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 const padMonth = (month: number) => String(month).padStart(2, "0");
 
 const DailyLeadReportTable: React.FC = () => {
-  const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
+  const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false); 
+   const [showModal, setShowModal] = useState<boolean>(false);
+   const [modalData, setModalData] = useState<any[]>([]); 
+
+
   const now = new Date();
   const [selectedYear, setSelectedYear] = useState<string>(
     now.getFullYear().toString()
@@ -145,6 +151,46 @@ const handleRegionChange = (selectedRegion:any) => {
    
     setRegion(selectedRegion);
   };
+
+  
+  const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: string[]) => {
+       setShowModal(true);
+      setLoading(true);
+  
+      const payload: DailyLeadDmMClickableReportPayload = {
+      leadDateVal: Array.isArray(dates) ? dates : [dates],
+      leadStatusVal : statusIds,
+      userIdVal: user.id,
+      tokenVal: user.access_token,
+      typeVal: user.type,
+    };
+  
+      try {
+        const response = await DailyLeadDmClickableReportRequest(payload);
+        if (response.response === 'login_error') {
+           setModalData([]);
+            toast.dismiss();
+                  toast.error(response.message);
+                  setShowLogoutLoader(true);
+               } else if (response.response === 'error') {
+                  setModalData([]);
+                  toast.dismiss();
+                  toast.error(response.message);
+               } else if (response.response === 'success') {
+                setModalData([]);
+                setModalData(response.data);
+                
+               }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+            toast.dismiss();
+         toast.error('Something went wrong.');
+              //  navigate('/login');
+          setModalData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
  
 
   return (
@@ -249,28 +295,145 @@ const handleRegionChange = (selectedRegion:any) => {
               <tbody>
                 {sortedData.map(({ date, statuses, total }) => (
                   <tr key={date}>
-                    <td>{date}</td>
+                      <td>{date}</td>
                     {allStatuses.map((statusName) => {
                       const status = statuses.find((s) => s.name === statusName);
-                      return <td key={statusName}>{status ? status.count : 0}</td>;
+                      const count = status?.count || 0;
+                      const statusId = status?.id;
+                      return <td
+                        key={statusName}
+                        style={{
+                          cursor: count > 0 ? "pointer" : "default",
+                        }}
+                        onClick={() => {
+                          if (count > 0 && statusId) {
+                            handleOpenModelPopupClick(date, [statusId]);
+                          }
+                        }}
+                      >
+                        {count}
+                      </td>;
                     })}
-                    <td>{total}</td>
+                    <td
+                      style={{ cursor: total > 0 ? "pointer" : "default"}}
+                      onClick={() => {
+                        if (total > 0) {
+                          const allStatusIds = statuses.map((s) => s.id).filter(Boolean);
+                          handleOpenModelPopupClick(date, allStatusIds);
+                        }
+                      }}
+                    >
+                      {total}
+                    </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr>
-                  <td>Total</td>
-                  {footerTotals.map((sum, idx) => (
-                    <td key={idx}>{sum}</td>
-                  ))}
-                  <td>{grandTotal}</td>
-                </tr>
+               <tr>
+                <td>Total</td>
+                {footerTotals.map((sum, idx) => {
+                  const statusName = allStatuses[idx]; // get status name by column index
+                  const statusIds = sortedData
+                    .flatMap((row) =>
+                      row.statuses
+                        .filter((s) => s.name === statusName && s.id)
+                        .map((s) => s.id)
+                    );
+                  const allDates = sortedData.map((row) => row.date);
+
+                  return (
+                    <td
+                      key={idx}
+                      style={{
+                        cursor: sum > 0 ? "pointer" : "default"
+                      }}
+                      onClick={() => {
+                        if (sum > 0 && statusIds.length) {
+                          handleOpenModelPopupClick(allDates, [...new Set(statusIds)]);
+                        }
+                      }}
+                    >
+                      {sum}
+                    </td>
+                  );
+                })}
+                <td
+                  style={{
+                    cursor: grandTotal > 0 ? "pointer" : "default",
+                    color: grandTotal > 0 ? "blue" : "black",
+                  }}
+                  onClick={() => {
+                    if (grandTotal > 0) {
+                      const allDates = sortedData.map((row) => row.date);
+                      const allStatusIds = sortedData
+                        .flatMap((row) => row.statuses.map((s) => s.id))
+                        .filter(Boolean);
+                      handleOpenModelPopupClick(allDates, [...new Set(allStatusIds)]);
+                    }
+                  }}
+                >
+                  {grandTotal}
+                </td>
+              </tr>
               </tfoot>
             </Table>
           </div>
         )}
       </div>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
+        <Modal.Header closeButton>
+          <Modal.Title>Lead Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+         
+          {loading ? (
+            <p>Loading...</p>
+          ) : Array.isArray(modalData) && modalData.length > 0 ? (
+            <Table striped bordered hover responsive className="modal-lead-table">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Details</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Branch</th>
+                  <th>Source</th>
+                  <th>Category</th>
+                  <th>Country</th>
+                </tr>
+              </thead>
+              <tbody>
+                {modalData.map((lead:any, index:number) => (
+                  <tr key={lead.id}>
+                    <td>{index+1}</td>
+                    <td>
+                      <>
+                        {lead.full_name}
+                        <br /><br />
+                        {lead.email}
+                      </>
+                    </td>
+                    <td>{lead.phone_number}</td>
+                    <td>{lead.lead_status_name}</td>
+                    <td>{lead.branchname}</td>
+                    <td>{lead.source_name}</td>
+                    <td>{lead.category_name}</td>
+                    <td>{lead.country_name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <p>No data found.</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

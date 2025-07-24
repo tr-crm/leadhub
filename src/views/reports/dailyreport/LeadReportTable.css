@@ -95,9 +95,29 @@
             z-index: 6;
           }
 
-         /* .styled-table thead th {
-  position: sticky;
-  top: 0;
-  background-color: #f8f9fa;
-  z-index: 2;
-} */
+
+          
+     /* ✅ Safe, scoped to modal popup table */
+      .modal-body .modal-lead-table {
+        table-layout: auto !important;
+        width: 100% !important;
+        overflow-x: unset !important;
+        display: table !important;
+      }
+
+      .modal-body .modal-lead-table th,
+      .modal-body .modal-lead-table td {
+        white-space: normal;
+      }
+
+      .modal-body .modal-lead-table td:first-child,
+      .modal-body .modal-lead-table td:last-child {
+        background-color: transparent !important;
+        color: inherit !important;
+      }
+    .modal-body .modal-lead-table td:first-child {
+      position: static !important;
+      left: unset !important;
+      background: none !important;
+      z-index: auto !important;
+    }

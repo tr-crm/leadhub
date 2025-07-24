@@ -10,10 +10,10 @@ export default defineConfig({
       "@": resolve(__dirname, "src"),
     },
   },
-  server: {
-    host: '192.168.1.37',
-    port: 5173
-  }
+  // server: {
+  //   host: '192.168.1.37',
+  //   port: 5173
+  // }
   
 })
 

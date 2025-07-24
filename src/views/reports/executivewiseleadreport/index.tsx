@@ -232,7 +232,7 @@ const handleRegionChange = (selectedRegion:any) => {
           <div className="text-center text-muted mt-4">No data available.</div>
         ) : (
           <div className="table-wrapper">
-            <Table className="styled-table mb-0" bordered hover>
+            <Table className="styled-table mb-0 modal-lead-table" bordered hover >
               <thead>
                 <tr>
                   <th onClick={() => requestSort("date")}>

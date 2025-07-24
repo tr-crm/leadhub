@@ -137,12 +137,12 @@ const ExcelImportList: React.FC = () => {
      },
      
      { name: 'Date', selector: (row: Lead) => row.lead_date || '-', sortable: true, width: '110px' },
-     { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true },
-     { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px' },
+     { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true , width: '130px', wrap: true},
+     { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px', wrap: true },
      { name: 'Source', selector: (row: Lead) => row.source_name || '-', sortable: true },
      { name: 'Category', selector: (row: Lead) => row.category_name || '-', sortable: true },
      { name: 'Product', selector: (row: Lead) => row.product_name || '-', sortable: true, width: '90px' },
-     { name: 'Region', selector: (row: Lead) => row.region_name || '-', sortable: true, width: '90px' },
+     { name: 'Region', selector: (row: Lead) => row.region_name || '-', sortable: true, width: '110px', wrap: true },
      { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '110px' },
      { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true },
  

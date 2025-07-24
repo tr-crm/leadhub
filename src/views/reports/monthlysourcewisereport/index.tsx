@@ -7,12 +7,14 @@ import {
   Form,
   Row,
   Col,
+  Modal,
+  Button
 } from "react-bootstrap";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
-import { getMonthlySourceWiseReportLeadsList } from "@/services/reportsservice";
+import { getMonthlySourceWiseReportLeadsList,getMonthlySourceWiseReportClickableLeadsList } from "@/services/reportsservice";
 import type { MonthlyLead } from "@/services/reportsservice";
-import type { MonthlySourceWiseReportPayload } from "@/services/reportsservice";
+import type { MonthlySourceWiseReportPayload, getMonthlySourceWiseReportClickablePayload } from "@/services/reportsservice";
 import { useSortableData } from "@/hooks/useSortableData";
 import YearSelect from '@/components/yearselect';
  import { toast } from 'react-toastify';
@@ -116,7 +118,31 @@ const MonthlySourceWiseReportTable: React.FC = () => {
     if (sortConfig.key !== columnKey) return null;
     return sortConfig.direction === "asc" ? <> ↑</> : <> ↓</>;
   };
-          
+  
+
+  const [modalData, setModalData] = useState<any[]>([]);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleCellClick = async (months: string[], sourceIds: string[]) => {
+     setShowModal(true);
+        const payload : getMonthlySourceWiseReportClickablePayload = {
+         yearVal: selectedYear,
+          userIdVal: user.id,
+          tokenVal: user.access_token,
+          typeVal: user.type,
+          monthVal: months,
+          sourceVal: sourceIds,
+        };
+    try {
+      const response = await getMonthlySourceWiseReportClickableLeadsList(payload); // Use a separate API if needed
+      if (response.response === "success") {
+        setModalData(response.data);
+       
+      }
+    } catch (err) {
+      toast.error("Failed to fetch details.");
+    }
+  };
 
   return (
     <Container fluid>
@@ -177,35 +203,159 @@ const MonthlySourceWiseReportTable: React.FC = () => {
                 </tr>
               </thead>
              <tbody>
-                {sortedData.map(({ month, statuses, total }) => {
-                    const monthIndex = parseInt(month.slice(-2), 10) - 1;
+               {sortedData.map(({ month, statuses, total }) => {
+                const monthIndex = parseInt(month.slice(-2), 10) - 1;
+                const displayMonth = new Date(0, monthIndex).toLocaleString("default", {
+                  month: "long",
+                });
 
-                    return (
-                    <tr key={month} >
-            
-                        <td>{new Date(0, monthIndex).toLocaleString('default', { month: 'long' })}</td>
-                            {allStatuses.map((statusName) => {
-                            const status = statuses.find((s) => s.name === statusName);
-                            return <td key={statusName}>{status ? status.count : 0}</td>;
-                            })}
-                        <td>{total}</td>
-                    </tr>
-                    );
-                })}
-                </tbody>
-              <tfoot>
-                <tr>
-                  <td>Total</td>
-                  {footerTotals.map((sum, idx) => (
-                    <td key={idx}>{sum}</td>
-                  ))}
-                  <td>{grandTotal}</td>
-                </tr>
-              </tfoot>
+                return (
+                  <tr key={month}>
+                    <td>{displayMonth}</td>
+
+                    {allStatuses.map((statusName) => {
+                      const status = statuses.find((s) => s.name === statusName);
+                      const count = status ? status.count : 0;
+                      const sourceId = status ? status.id.toString() : "";
+
+                      return (
+                        <td
+                          key={statusName}
+                          style={{
+                            cursor: count > 0 ? "pointer" : "default",
+                          }}
+                          onClick={() => {
+                            if (count > 0) {
+                              // single month, single source
+                              handleCellClick([month.slice(-2)], [sourceId]);
+                            }
+                          }}
+                        >
+                          {count}
+                        </td>
+                      );
+                    })}
+
+                    <td
+                      style={{
+                        cursor: total > 0 ? "pointer" : "default",
+                      }}
+                      onClick={() => {
+                        if (total > 0) {
+                          const allSourceIds = statuses.map((s: any) => s.id.toString());
+                          // single month, all sources
+                          handleCellClick([month.slice(-2)], allSourceIds);
+                        }
+                      }}
+                    >
+                      {total}
+                    </td>
+                  </tr>
+                );
+              })}
+
+              </tbody>
+                <tfoot>
+                  <tr>
+                    <td>Total</td>
+                    {footerTotals.map((sum, idx) => {
+                      // Try to find a sourceId for the current column index
+                      const sourceId = sortedData.find(row => row.statuses[idx])?.statuses[idx]?.id?.toString();
+
+                      return (
+                        <td
+                          key={idx}
+                          style={{
+                            cursor: sum > 0 ? "pointer" : "default",
+                          }}
+                          onClick={() => {
+                            if (sum > 0 && sourceId) {
+                              const allMonthValues = sortedData.map((d) => d.month.slice(-2)); // e.g., ["07", "08"]
+                              handleCellClick(allMonthValues, [sourceId]); // All months, single source
+                            }
+                          }}
+                        >
+                          {sum}
+                        </td>
+                      );
+                    })}
+
+                    <td
+                      style={{
+                        cursor: grandTotal > 0 ? "pointer" : "default",
+                      }}
+                      onClick={() => {
+                        if (grandTotal > 0) {
+                          const allMonthValues = sortedData.map((d) => d.month.slice(-2)); // e.g., ["07", "08"]
+                          const allSourceIds = new Set<string>();
+
+                          sortedData.forEach((d) => {
+                            d.statuses.forEach((s: any) => {
+                              allSourceIds.add(s.id.toString());
+                            });
+                          });
+
+                          handleCellClick(allMonthValues, Array.from(allSourceIds)); // All months, all sources
+                        }
+                      }}
+                    >
+                      {grandTotal}
+                    </td>
+                  </tr>
+                </tfoot>
+
+
             </Table>
           </div>
         )}
       </div>
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
+        <Modal.Header closeButton>
+          <Modal.Title>Lead Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {modalData.length === 0 ? (
+            <div className="text-center text-muted">No leads found.</div>
+          ) : (
+            <Table striped bordered hover responsive className="modal-lead-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Student Name</th>
+                  <th>Mobile</th>
+                  <th>Branch</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {modalData.map((lead, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{lead.full_name || "-"}</td>
+                    <td>{lead.phone_number || "-"}</td>
+                    <td>{lead.branchname || "-"}</td>
+                    <td>{lead.lead_status_name || "-"}</td>
+                    <td>{lead.lead_date || "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setShowModal(false);
+            setModalData([]); 
+          }}
+        >
+          Close
+        </Button>
+        </Modal.Footer>
+      </Modal>
+
     </Container>
   );
 };

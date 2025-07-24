@@ -3,14 +3,12 @@ import DataTable from 'react-data-table-component';
 import { Container,Form, Button,Modal } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
 // import { getUserList, User, UserListRequestPayload } from '@/services/userservice';
-
 import type { jobsListPayload , jobsCreatePayload, jobsExecutionPayload, jobsScoresPayload} from '@/services/userservice';
 import { getJobsList, submitJobCreate , submitJobExecution, submitJobScore } from '@/services/userservice';
 import type { User } from '@/types/user.types';
   import { toast } from 'react-toastify';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
-
     const UsersDataTable: React.FC = () => {
        const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
     const [data, setData] = useState<User[]>([]);
@@ -45,13 +43,11 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
       setFromDate(formatted);
       setToDate(formatted);
     }, []);
-
     useEffect(() => {
       if (fromDate && toDate) {
         handleGoClick();
       }
     }, [fromDate, toDate]);
-
    const handleGoClick = async () => {
         if (!user) return;
     if (!fromDate || !toDate) {
@@ -59,14 +55,12 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
         toast.error('Please select both From and To dates.');
         return;
     }
-
     const payload: jobsListPayload = {
         fromDateVal: fromDate,
         toDateVal: toDate,
         userIdVal: user.id,
         tokenVal: user.access_token,
     };
-
     setLoading(true);
     try {
         const response = await getJobsList(payload);
@@ -92,15 +86,12 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
     }
     };
   
-
-
 const handleSubmitCreate = async () => {
   if (!jobPlanVal || !jobDateVal) {
      toast.dismiss();
       toast.error('Please enter both Job Plan and Job Date');
     return;
   }
-
   const payload: jobsCreatePayload = {
     jobPlanVal,
     jobDateVal,
@@ -109,12 +100,10 @@ const handleSubmitCreate = async () => {
     createdByVal: user.id,
     jobStatusVal: 'Pending',
   };
-
   setSubmittingCreate(true);
   try {
    const response= await submitJobCreate(payload);
    
-
      if (response.response === 'login_error') {
         toast.dismiss();
                 toast.error(response.message);
@@ -138,11 +127,8 @@ const handleSubmitCreate = async () => {
     setSubmittingCreate(false);
   }
 };
-
-
 const handleUpdateSubmit = async () => {
   if (!selectedJob) return;
-
   const payload : jobsExecutionPayload= {
     idVal: selectedJob.id,
     jobExecutionVal,
@@ -151,7 +137,6 @@ const handleUpdateSubmit = async () => {
     userIdVal: user.id,
     tokenVal: user.access_token,
   };
-
   try {
     const response= await submitJobExecution(payload);
     
@@ -174,10 +159,8 @@ const handleUpdateSubmit = async () => {
     toast.error('Failed to update. Please try again.');
   }
 };
-
 const handleUpdateScore = async () => {
   if (!selectedJob) return;
-
   const payload: jobsScoresPayload = {
     idVal: selectedJob.id,
     jobScoreVal: jobScoreVal,
@@ -185,7 +168,6 @@ const handleUpdateScore = async () => {
     userIdVal: user.id,
     tokenVal: user.access_token,
   };
-
   try {
     const response=await submitJobScore(payload); // Call your API
    
@@ -209,21 +191,19 @@ const handleUpdateScore = async () => {
      toast.error('Update failed. Please try again.');
   }
 };
-
 // console.log(user.type)
-
  const columns = [
     { name: 'S.No', cell: (_: any, i: any) => i + 1, width: '70px' },
-    { name: 'Job Plan', selector: (row: User) => row.job_plan, sortable: true },
-    { name: 'Job Date', selector: (row: User) => row.job_date, sortable: true },
-    { name: 'Execution', selector: (row: User) => row.job_execution || '-', sortable: true },
-    { name: 'Score', selector: (row: User) => row.job_score ?? '-', sortable: true },
-    { name: 'Status', selector: (row: User) => row.job_status || '-', sortable: true },
-
+     { name: 'Job Date', selector: (row: User) => row.job_date, sortable: true, width: '120px' },
+       { name: 'Executive', selector: (row: User) => row.excutive_name, sortable: true, width: '160px' },
+    { name: 'Job Plan', selector: (row: User) => row.job_plan, sortable: true, width: '300px', wrap: true  },
+   
+    { name: 'Job Execution', selector: (row: User) => row.job_execution || '-', sortable: true, width: '300px', wrap: true },
+    { name: 'Score', selector: (row: User) => row.job_score ?? '-', sortable: true, width: '100px' },
+    { name: 'Status', selector: (row: User) => row.job_status || '-', sortable: true, width: '100px' },
       {
         name: 'Action',
         cell: (row: User) => {
-
           if (row.job_status === 'Completed' && ((row.job_score == null)||(row.job_score == 0))) {
             if (user.type == 1 || user.type == 2) {
               return (
@@ -265,13 +245,7 @@ const handleUpdateScore = async () => {
         allowOverflow: true,
         width: '140px',
       }
-
-
-
-
 ];
-
-
   return (
     <Container fluid>
       <PageBreadcrumb title="Job List" />
@@ -291,7 +265,6 @@ const handleUpdateScore = async () => {
                 onChange={(e) => setFromDate(e.target.value)}
             />
             </Form.Group>
-
             <Form.Group>
             <Form.Label>To Date</Form.Label>
             <Form.Control
@@ -300,14 +273,12 @@ const handleUpdateScore = async () => {
                 onChange={(e) => setToDate(e.target.value)}
             />
             </Form.Group>
-
             <div className="d-flex flex-column">
             <Form.Label>&nbsp;</Form.Label>
             <Button variant="primary" onClick={handleGoClick}>
                 Go
             </Button>
             </div>
-
             <div className="ms-auto d-flex flex-column">
             <Form.Label>&nbsp;</Form.Label>
             <Button variant="success" onClick={() => setShowCreateModal(true)}>
@@ -316,7 +287,6 @@ const handleUpdateScore = async () => {
             </div>
         </div>
       </Form>
-
       <DataTable
         columns={columns}
         data={data}
@@ -350,7 +320,6 @@ const handleUpdateScore = async () => {
                         placeholder="Enter job plan details..."
                     />
                   </Form.Group>
-
                 <Button variant="success" onClick={handleSubmitCreate} disabled={submittingCreate}>
                     {submittingCreate ? 'Creating...' : 'Create Job'}
                 </Button>
@@ -368,12 +337,10 @@ const handleUpdateScore = async () => {
                     <Form.Label>Job Plan</Form.Label>
                     <Form.Control type="text" value={selectedJob.job_plan} readOnly />
                     </Form.Group>
-
                     <Form.Group className="mb-3">
                     <Form.Label>Job Date</Form.Label>
                     <Form.Control type="text" value={selectedJob.job_date} readOnly />
                     </Form.Group>
-
                     <Form.Group className="mb-3">
                     <Form.Label>Job Execution</Form.Label>
                     <Form.Control
@@ -384,7 +351,6 @@ const handleUpdateScore = async () => {
                         placeholder="Enter job execution details..."
                     />
                     </Form.Group>
-
                     <Button
                     variant="success"
                     onClick={handleUpdateSubmit}
@@ -397,7 +363,6 @@ const handleUpdateScore = async () => {
                 )}
             </Modal.Body>
         </Modal>
-
         <Modal show={showScoreModal} onHide={() => setShowScoreModal(false)} backdrop="static" keyboard={false} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Update Job</Modal.Title>
@@ -410,13 +375,11 @@ const handleUpdateScore = async () => {
                         <Form.Control  as="textarea"
                         rows={4} value={selectedJob.job_plan} readOnly />
                     </Form.Group>
-
                     <Form.Group className="mb-3">
                         <Form.Label>Job Execution</Form.Label>
                         <Form.Control  as="textarea"
                         rows={4} value={selectedJob.job_plan} readOnly />
                     </Form.Group>
-
                     <Form.Group className="mb-3">
                     <Form.Label>Job Score</Form.Label>
                      <Form.Select
@@ -434,7 +397,6 @@ const handleUpdateScore = async () => {
                         })}
                       </Form.Select>
                     </Form.Group>
-
                     <Button variant="success" onClick={handleUpdateScore}>
                     Submit Update
                     </Button>
@@ -444,10 +406,7 @@ const handleUpdateScore = async () => {
                 )}
             </Modal.Body>
         </Modal>
-
-
     </Container>
   );
 };
-
 export default UsersDataTable;

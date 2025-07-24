@@ -11,7 +11,9 @@ export interface DailyLead {
   date: string;
   statuses: Status[];
   total: number;
-  name:string
+  name:string;
+  branchIds:any;
+  id:any;
 }
 
 export interface ApiResponse {
@@ -108,6 +110,7 @@ export const getExecutivewiseLeadReportList = async (payload: RegionLeadReportRe
 };
 
 export interface MonthlyLead {
+  year_month: string;
   month: string;
   statuses: Status[];
   total: number;
@@ -174,6 +177,114 @@ export const getMonthlySourceWiseReportLeadsList = async (
 
     throw new Error('An unexpected error occurred');
   }
+};
+
+
+
+export interface DailyLeadClickableReportPayload {
+  leadDateVal: string[];
+  leadStatusVal: string[];
+  userIdVal: string;
+  tokenVal: string;
+  typeVal: string;
+}
+
+export const DailyLeadClickableReportRequest = async (payload: DailyLeadClickableReportPayload) => {
+  const response = await api.post('/api/Reports/dailyLeadReportClickable', payload);
+  return response.data;
+};
+
+export interface DailyLeadDmMClickableReportPayload {
+  leadDateVal: string[];
+  leadStatusVal: string[];
+  userIdVal: string;
+  tokenVal: string;
+  typeVal: string;
+}
+
+export const DailyLeadDmClickableReportRequest = async (payload: DailyLeadDmMClickableReportPayload) => {
+  const response = await api.post('/api/Reports/dailyDmLeadReportClickable', payload);
+  return response.data;
+};
+
+
+
+export interface DailySourceWiseLeadClickablePayload {
+  leadDateVal: string[];
+  sourceVal: string[];
+  userIdVal: string;
+  tokenVal: string;
+  typeVal: string;
+}
+
+export const getDailySourceWiseLeadClickableDetails = async (payload: DailySourceWiseLeadClickablePayload) => {
+  const response = await api.post('/api/Reports/sourceWiseLeadReportClickable', payload);
+  return response.data;
+};
+
+
+
+
+export interface MonthlyWiseClickableReportPayload {
+  monthVal: string[];
+  leadStatusVal: string[];
+  userIdVal: string;
+  tokenVal: string;
+  typeVal: string;
+  yearVal:string;
+}
+
+export const MonthlyWiseClickableReportRequest = async (payload: MonthlyWiseClickableReportPayload) => {
+  const response = await api.post('/api/Reports/leadWiseMonthlyLeadReportClickable', payload);
+  return response.data;
+};
+
+
+export interface RegionLeadClickablePayload {
+  branchIdVal: string[];
+  leadStatusVal: string[];
+  userIdVal: string;
+  tokenVal: string;
+  typeVal: string;
+}
+
+export const getRegionLeadClickableDetails = async (payload: RegionLeadClickablePayload) => {
+  const response = await api.post('/api/Reports/regionWiseLeadReportClickable', payload);
+  return response.data;
+};
+
+
+
+
+
+export interface getMonthlySourceWiseReportClickablePayload {
+  monthVal: string[];
+  sourceVal: string[];
+  userIdVal: string;
+  tokenVal: string;
+  typeVal: string;
+  yearVal: string;
+}
+
+export const getMonthlySourceWiseReportClickableLeadsList = async (payload: getMonthlySourceWiseReportClickablePayload) => {
+  const response = await api.post('/api/Reports/sourceWiseMonthlyLeadReportClickable', payload);
+  return response.data;
+};
+
+
+
+export interface BranchLeadReportRequest {
+  yearVal: string;
+  monthVal: string;
+  userIdVal: number;
+  tokenVal: string;
+  typeVal: number;
+  regionVal:any
+}
+
+export const getBranchwiseLeadReportList = async (payload: BranchLeadReportRequest) => {
+  const response = await api.post('/api/Reports/branchWiseRegionWiseLeadReport', payload);
+  return response.data;
 };
 
 
