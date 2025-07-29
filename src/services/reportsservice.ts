@@ -289,3 +289,15 @@ export const getBranchwiseLeadReportList = async (payload: BranchLeadReportReque
 
 
 
+export interface getExecutivewiseLeadReportClickablepayload {
+  userIdVal: number;
+  tokenVal: string;
+  typeVal: number;
+  executiveIdVal:string[];
+  leadStatusVal:string[];
+}
+
+export const getExecutivewiseLeadReportClickableDetails = async (payload: getExecutivewiseLeadReportClickablepayload) => {
+  const response = await api.post('/api/Reports/executiveAndLeadStatusWiseReportClickable', payload);
+  return response.data;
+};

@@ -651,24 +651,42 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
             <Card.Title>Full Details</Card.Title>
             <Row>
               {/* Left Column: Details with scroll */}
-              <Col md={6}>
-                <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                  <Table striped bordered size="sm">
+                <Col md={4}>
+                 <div style={{ maxHeight: '300px', overflowY: 'auto', width: '100%'  }}>
+                 <Table striped bordered size="sm">
                     <tbody>
-                      {Object.entries(rest).map(([key, value]) => (
-                        <tr key={key}>
-                          <th style={{ textTransform: 'capitalize' }}>
-                            {key.replace(/_/g, ' ')}
-                          </th>
-                          <td>
-                            {typeof value === 'object' && value !== null
-                              ? JSON.stringify(value)
-                              : String(value)}
-                          </td>
-                        </tr>
-                      ))}
+                      {Object.entries(rest)
+                        .filter(([key]) =>
+                          ![
+                            'id',
+                            'source_id',
+                            'category_id',
+                            'sub_category_id',
+                            'product_id',
+                            'country_id',
+                            'status',
+                            'touch_status',
+                            'created_by',
+                            'transferred_by',
+                            'executive_id',
+                            'lead_status'
+                          ].includes(key)
+                        )
+                        .map(([key, value]) => (
+                          <tr key={key}>
+                            <th style={{ textTransform: 'capitalize' }}>
+                              {key.replace(/_/g, ' ')}
+                            </th>
+                            <td>
+                              {typeof value === 'object' && value !== null
+                                ? JSON.stringify(value)
+                                : String(value)}
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </Table>
+
                 </div>
               </Col>
 

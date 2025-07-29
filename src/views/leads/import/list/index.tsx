@@ -18,6 +18,7 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
+
 interface OptionType {
   value: any;
   label: string;
@@ -731,6 +732,14 @@ const LeadsDataTable: React.FC = () => {
       sortable: true,
       width: '130px',
     },
+     {
+      name: 'Region',
+      selector: (row: Lead) => String(row.region_name || ''),
+      sortable: true,
+      width: '130px',
+      wrap: true
+    },
+   
     {
       name: 'Source',
       selector: (row: Lead) => String(row.source_name || ''),
@@ -749,12 +758,7 @@ const LeadsDataTable: React.FC = () => {
       sortable: true,
       width: '120px',
     },
-    // {
-    //   name: 'Executive',
-    //   selector: (row: Lead) => String(row.executive_name || ''),
-    //   sortable: true,
-    //   width: '100px',
-    // },
+   
     {
       name: 'Created At',
       selector: (row: Lead) => new Date(row.created_at).getTime() || 0,

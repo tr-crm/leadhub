@@ -312,6 +312,17 @@ export const updateTransactionNotification = async (payload: UpdateNotificationP
 };
 
 
+export interface SeachRequestPayload {
+  searchVal:string;
+  userIdVal: number;
+  tokenVal: number;
+  typeVal?: number;
+}
+
+export const getSeachRequestList = async (payload: SeachRequestPayload) => {
+  const response = await axios.post('/api/Leads/getsearchByPhoneNumberLeadList', payload);
+  return response.data;
+};
 
 
 

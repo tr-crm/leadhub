@@ -682,31 +682,51 @@ const columns = [
           <Card.Title>Full Details</Card.Title>
           <Row>
             {/* Left Column: Details with scroll */}
-            <Col md={6}>
-              <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+            <Col md={4}>
+              <div style={{ maxHeight: '300px', overflowY: 'auto', width: '100%'  }}>
                 <Table striped bordered size="sm">
                   <tbody>
-                    {Object.entries(rest).map(([key, value]) => (
-                      <tr key={key}>
-                        <th style={{ textTransform: 'capitalize' }}>
-                          {key.replace(/_/g, ' ')}
-                        </th>
-                        <td>
-                          {typeof value === 'object' && value !== null
-                            ? JSON.stringify(value)
-                            : String(value)}
-                        </td>
-                      </tr>
-                    ))}
+                    {Object.entries(rest)
+                      .filter(([key]) =>
+                        ![
+                          'id',
+                          'source_id',
+                          'category_id',
+                          'sub_category_id',
+                          'product_id',
+                          'country_id',
+                          'status',
+                          'branch_id',
+                          'transferred_by',
+                          'created_by',
+                          'touch_status',
+                          'executive_id',
+                          'lead_status'
+                        ].includes(key)
+                      )
+                      .map(([key, value]) => (
+                        <tr key={key}>
+                          <th style={{ textTransform: 'capitalize' }}>
+                            {key.replace(/_/g, ' ')}
+                          </th>
+                          <td>
+                            {typeof value === 'object' && value !== null
+                              ? JSON.stringify(value)
+                              : String(value)}
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </Table>
+
+
               </div>
             </Col>
 
             {/* Right Column: Comments with scroll */}
             <Col md={6}>
               <h6>Comments</h6>
-              <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+              <div style={{ maxHeight: '250px', overflowY: 'auto' , width: '50%'}}>
                 {Array.isArray(comments) && comments.length > 0 ? (
                   comments.map((cmt, idx) => (
                     <Card key={idx} className="mb-2">

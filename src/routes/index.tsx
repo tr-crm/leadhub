@@ -30,6 +30,7 @@ const MonthlySourceWiseReport = lazy(() => import('@/views/reports/monthlysource
 const Settings = lazy(() => import('@/views/settings'));
 const DailyJobList = lazy(() => import('@/views/jobs/list'));
 const BranchWiseLeadReport = lazy(() => import('@/views/reports/branch'));
+const GlobalSearch = lazy(() => import('@/views/search')) 
 
 
 
@@ -84,6 +85,17 @@ export const userRoutes: RouteObject[] = [
         }
     },
 ]
+
+export const globalSearchRoutes: RouteObject[] = [
+    { 
+        path: '/search',
+        element: <GlobalSearch/>,
+        handle: {
+           title: 'Global Search',
+        }
+    },
+]
+
 export const leadsRoutes: RouteObject[] = [
     { 
         path: '/leads/webhookleadlist',
@@ -245,6 +257,7 @@ export const appRoutes: RouteObject[] = [
             },
             ...dashboardRoutes,
             ...userRoutes,
+            ...globalSearchRoutes,
             ...leadsRoutes,
             ...reportRoutes,
             ...settingsRoutes,
@@ -254,6 +267,6 @@ export const appRoutes: RouteObject[] = [
         ],
     },
 ];
-export const otherRoutes: RouteObject[] = [...loginRoutes, ...userRoutes, ...leadsRoutes,...reportRoutes,...settingsRoutes,...importRoutes,...dailyJobsRoutes];
+export const otherRoutes: RouteObject[] = [...loginRoutes, ...userRoutes, ...globalSearchRoutes, ...leadsRoutes,...reportRoutes,...settingsRoutes,...importRoutes,...dailyJobsRoutes];
 
 export const routes: RouteObject[] = [...appRoutes, ...otherRoutes];

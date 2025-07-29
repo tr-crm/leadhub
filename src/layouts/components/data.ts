@@ -1,5 +1,6 @@
 import {type MenuItemType} from "@/types/layout";
 import {type IconType} from "react-icons";
+import { TbSearch } from 'react-icons/tb';
 import {
     // TbAlertHexagon,
     // TbBoxAlignTop,
@@ -101,6 +102,14 @@ export const menuItems: MenuItemType[] = [
       },
       
     ],
+  },
+
+  {
+    key: "search",
+    label: "search",
+    icon: TbSearch,
+    url: "/search",
+    minLevel: [1, 2, 3, 4, 5],
   },
   {
     key: "leads",
