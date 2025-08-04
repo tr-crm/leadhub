@@ -127,12 +127,12 @@
     console.log(status,errorMessage)
     
 
-    const selectedCategoryName =
-      typeof formData.categoryVal === 'number' ? CATEGORY_NAMES[formData.categoryVal] : '';
-
+    const selectedCategoryName = CATEGORY_NAMES[Number(formData.categoryVal)] || '';
     const isTestprep = selectedCategoryName === 'Testprep';
     const isACS = selectedCategoryName === 'ACS';
     const isImmigration = selectedCategoryName === 'Immigration';
+
+console.log(isImmigration );
   const handleChange = (
     e:
       | React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -169,7 +169,7 @@
     const handleCategoryChange = (option: OptionType | null) => {
       setFormData((prev) => ({
         ...prev,
-        categoryVal: option?.value ?? '',
+        categoryVal: option?.value ? Number(option.value) : '',
         subCategoryVal: '',
         productVal: '',
         countryVal: '',
@@ -347,7 +347,17 @@
                   <SubCategorySelect categoryId={formData.categoryVal} value={formData.subCategoryVal} onChange={handleSubCategoryChange} required />
                 </InlineField>
               )}
-              {(isTestprep || isACS || isImmigration) && (
+              {(isTestprep) && (
+                <InlineField label="Product" name="productVal" value={formData.productVal} onChange={handleProductChange} required>
+                  <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required />
+                </InlineField>
+              )}
+               {(isACS) && (
+                <InlineField label="Product" name="productVal" value={formData.productVal} onChange={handleProductChange} required>
+                  <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required />
+                </InlineField>
+              )}
+               {(isImmigration) && (
                 <InlineField label="Product" name="productVal" value={formData.productVal} onChange={handleProductChange} required>
                   <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required />
                 </InlineField>

@@ -739,7 +739,12 @@ const LeadsDataTable: React.FC = () => {
       width: '130px',
       wrap: true
     },
-   
+     {
+      name: 'Executive',
+      selector: (row: Lead) => String(row.executive_name || ''),
+      sortable: true,
+      width: '150px',
+    },
     {
       name: 'Source',
       selector: (row: Lead) => String(row.source_name || ''),
@@ -758,6 +763,7 @@ const LeadsDataTable: React.FC = () => {
       sortable: true,
       width: '120px',
     },
+   
    
     {
       name: 'Created At',

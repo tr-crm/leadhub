@@ -702,7 +702,8 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       name: 'Phone',
       selector: (row: Lead) => String(row.phone_number || ''),
       sortable: true,
-      width: '120px',
+      width: '130px',
+      wrap: true
     },
      {
       name: 'Campaign Name',
@@ -724,12 +725,12 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       sortable: true,
       width: '110px',
     },
-    // {
-    //   name: 'Executive',
-    //   selector: (row: Lead) => String(row.executive_name || ''),
-    //   sortable: true,
-    //   width: '150px',
-    // },
+    {
+      name: 'Executive',
+      selector: (row: Lead) => String(row.executive_name || ''),
+      sortable: true,
+      width: '150px',
+    },
     {
       name: 'Created At',
       selector: (row: Lead) => new Date(row.created_at).getTime() || 0,

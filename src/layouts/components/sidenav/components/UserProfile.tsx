@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 import {Fragment} from "react";
-import {TbSettings} from "react-icons/tb";
-import {Dropdown, DropdownDivider, DropdownItem, DropdownMenu, DropdownToggle} from "react-bootstrap";
+import {Dropdown, DropdownDivider, DropdownItem, DropdownMenu} from "react-bootstrap";
 import {userDropdownItems} from "@/layouts/components/data";
 
 import user2 from "@/assets/images/users/user-2.jpg"
@@ -24,10 +23,10 @@ const UserProfile = () => {
                     </Link>
                 </div>
                 <Dropdown>
-                    <DropdownToggle as={'a'} role="button" aria-label="profile dropdown"
+                    {/* <DropdownToggle as={'a'} role="button" aria-label="profile dropdown"
                                     className="dropdown-toggle drop-arrow-none link-reset sidenav-user-set-icon">
                         <TbSettings className="fs-24 align-middle ms-1"/>
-                    </DropdownToggle>
+                    </DropdownToggle> */}
 
                     <DropdownMenu>
                         {

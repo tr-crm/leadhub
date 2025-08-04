@@ -57,7 +57,7 @@ export const userDropdownItems: UserDropdownItemType[] = [
         icon: TbLogout2,
         url: '#',
         class: 'text-danger fw-semibold',
-        isLogout: true, // 👈 Custom flag
+        isLogout: true,
     }
 ];
 

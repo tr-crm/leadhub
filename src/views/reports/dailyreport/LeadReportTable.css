@@ -1,5 +1,8 @@
 
           .table-wrapper {
+             position: relative;
+            overflow: visible; /* <-- important */
+            z-index: 0; /* or remove if unnecessary */
             max-height: 310px;
             overflow-y: auto;
             border: 1px solid #dee2e6;

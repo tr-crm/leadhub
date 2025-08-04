@@ -21,6 +21,7 @@ import MonthSelect from '@/components/monthselect';
   import { toast } from 'react-toastify';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+import RegionSelect from '@/components/regionselect';
 const padMonth = (month: number) => String(month).padStart(2, "0");
 
 const DailyLeadReportTable: React.FC = () => {
@@ -40,7 +41,16 @@ const DailyLeadReportTable: React.FC = () => {
   const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState<any[]>([]); 
-
+  const type=user.type
+    const getInitialRegionValue = (): string => {
+    if (type === '1' || type === '2') {
+      return '1';
+    } else if (user.region) {
+      return String(user.region);
+    }
+    return '0';
+  };
+   const [region, setRegion] = useState<string>(getInitialRegionValue());
            
   const didFetchRef = useRef(false);
   
@@ -62,6 +72,7 @@ const DailyLeadReportTable: React.FC = () => {
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
+      regionVal:region
     };
 
     try {
@@ -138,6 +149,7 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
     userIdVal: user.id,
     tokenVal: user.access_token,
     typeVal: user.type,
+    regionVal:region
   };
 
     try {
@@ -166,7 +178,10 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
       setLoading(false);
     }
   };
- 
+  const handleRegionChange = (selectedRegion:any) => {
+   
+    setRegion(selectedRegion);
+  };
 
   return (
     <Container fluid>
@@ -183,7 +198,6 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
         <Form className="mb-3">
           <Row>
             <Col md={3}>
-
               <YearSelect value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} required />
             </Col>
             <Col md={3}>
@@ -192,9 +206,24 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
                 onChange={(e) => setSelectedMonth(e.target.value)}
                 required
               />
-
+              
 
             </Col>
+             {(user.type === '1' || user.type === '2') && (
+             <Col md={3}>
+              <RegionSelect
+                value={region}
+                onChange={(val) => {
+                    handleRegionChange(val?.value);
+                  
+                  }}
+                label="Region"
+                placeholder="All Regions"
+              />
+
+            
+          </Col>
+           )}
             <Col md="auto">
               <button
                 type="button"
@@ -335,6 +364,7 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
               <thead>
                 <tr>
                   <th>S.No</th>
+                  <th>Date</th>
                   <th>Details</th>
                   <th>Phone</th>
                   <th>Status</th>
@@ -349,6 +379,39 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
                   <tr key={lead.id}>
                     <td>{index+1}</td>
                     <td>
+                      <>
+                          {lead.lead_date && (
+                            <>
+                              <span>L: {lead.lead_date}</span>
+                              <br /><br />
+                            </>
+                          )}
+
+                          {lead.followup_date && (
+                            <>
+                              <span>F: {lead.followup_date}</span>
+                              <br /><br />
+                            </>
+                          )}
+
+                          {lead.partial_walkin_date && (
+                            <>
+                              <span>PW: {lead.partial_walkin_date}</span>
+                              <br /><br />
+                            </>
+                          )}
+
+                          {lead.walkin_date && (
+                            <>
+                              <span>W: {lead.walkin_date}</span>
+                              <br /><br />
+                            </>
+                          )}
+                          
+                        </>
+                      </td>
+
+                    <td style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '90px' }}>
                       <>
                         {lead.full_name}
                         <br /><br />

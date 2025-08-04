@@ -630,7 +630,22 @@ const columns = [
       button: true,
       width: '120px',
     },
-    { name: 'Date', selector: (row: Lead) => row.lead_date || '-', sortable: true, width: '110px' },
+    {
+      name: 'Date',
+      cell: (row: Lead) => (
+        <div>
+          <div><strong>L:</strong> {row.lead_date || '-'}</div>
+          <div><strong>F:</strong> {row.followup_date || '-'}</div>
+          <div><strong>PW:</strong> {row.partial_walkin_date || '-'}</div>
+          <div><strong>W:</strong> {row.walkin_date || '-'}</div>
+
+        </div>
+      ),
+      sortable: false,
+      wrap: true,
+      width: '130px'
+    },
+
     { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true, width: '150px', wrap: true },
     { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true, width: '110px', wrap: true },
     { name: 'Source', selector: (row: Lead) => row.source_name || '-', sortable: true, wrap: true },

@@ -35,6 +35,7 @@ export interface DailyLeadReportRequest {
   userIdVal: number;
   tokenVal: string;
   typeVal: number;
+  regionVal: string;
 }
 
 export interface RegionLeadReportRequest {
@@ -187,6 +188,7 @@ export interface DailyLeadClickableReportPayload {
   userIdVal: string;
   tokenVal: string;
   typeVal: string;
+  regionVal: string;
 }
 
 export const DailyLeadClickableReportRequest = async (payload: DailyLeadClickableReportPayload) => {
@@ -215,6 +217,7 @@ export interface DailySourceWiseLeadClickablePayload {
   userIdVal: string;
   tokenVal: string;
   typeVal: string;
+  regionVal: string;
 }
 
 export const getDailySourceWiseLeadClickableDetails = async (payload: DailySourceWiseLeadClickablePayload) => {
@@ -246,6 +249,8 @@ export interface RegionLeadClickablePayload {
   userIdVal: string;
   tokenVal: string;
   typeVal: string;
+  yearVal: string;
+  monthVal: string;
 }
 
 export const getRegionLeadClickableDetails = async (payload: RegionLeadClickablePayload) => {

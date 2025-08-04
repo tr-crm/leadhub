@@ -320,23 +320,65 @@ const MonthlySourceWiseReportTable: React.FC = () => {
             <Table striped bordered hover responsive className="modal-lead-table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Student Name</th>
-                  <th>Mobile</th>
-                  <th>Branch</th>
-                  <th>Status</th>
+                  <th>S.No</th>
                   <th>Date</th>
+                  <th>Details</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Branch</th>
+                  <th>Source</th>
+                  <th>Category</th>
+                  <th>Country</th>
                 </tr>
               </thead>
               <tbody>
                 {modalData.map((lead, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{lead.full_name || "-"}</td>
-                    <td>{lead.phone_number || "-"}</td>
-                    <td>{lead.branchname || "-"}</td>
-                    <td>{lead.lead_status_name || "-"}</td>
-                    <td>{lead.lead_date || "-"}</td>
+                       <td>
+                      <>
+                        {lead.lead_date && (
+                          <>
+                            <span>L: {lead.lead_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.followup_date && (
+                          <>
+                            <span>F: {lead.followup_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.partial_walkin_date && (
+                          <>
+                            <span>PW: {lead.partial_walkin_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.walkin_date && (
+                          <>
+                            <span>W: {lead.walkin_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+                      </>
+                    </td>
+                    <td style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '90px' }}>
+                      <>
+                        {lead.full_name}
+                        <br /><br />
+                        {lead.email}
+                      </>
+                    </td>
+                    <td>{lead.phone_number}</td>
+                    <td>{lead.lead_status_name}</td>
+                    <td>{lead.branchname}</td>
+                    <td>{lead.source_name}</td>
+                    <td>{lead.category_name}</td>
+                    <td>{lead.country_name}</td>
                   </tr>
                 ))}
               </tbody>

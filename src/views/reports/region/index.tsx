@@ -173,6 +173,8 @@ const handleRegionChange = (selectedRegion:any) => {
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
+      yearVal: selectedYear,
+      monthVal: selectedMonth,
     };
 
     try {
@@ -234,8 +236,6 @@ const handleRegionChange = (selectedRegion:any) => {
                   handleRegionChange(val?.value);
                  
                 }}
-              label="Region"
-              placeholder="All Regions"
             />
 
             
@@ -418,7 +418,7 @@ const handleRegionChange = (selectedRegion:any) => {
                   <th>#</th>
                   
                   <th>Date</th>
-                  <th>Student Name</th>
+                  <th>Details</th>
                   <th>Mobile</th>
                   <th>Branch</th>
                   <th>Status</th>
@@ -428,10 +428,46 @@ const handleRegionChange = (selectedRegion:any) => {
               <tbody>
                 {modalData.map((lead: any, index: number) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
-                    
-                    <td>{lead.lead_date}</td>
-                    <td>{lead.full_name}</td>
+                  <td>{index + 1}</td>
+                  
+                  <td>
+                    <>
+                        {lead.lead_date && (
+                          <>
+                            <span>L: {lead.lead_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.followup_date && (
+                          <>
+                            <span>F: {lead.followup_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.partial_walkin_date && (
+                          <>
+                            <span>PW: {lead.partial_walkin_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.walkin_date && (
+                          <>
+                            <span>W: {lead.walkin_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+                      </>
+                    </td>
+                    <td style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '90px' }}>
+                      <>
+                        {lead.full_name}
+                        <br /><br />
+                        {lead.email}
+                      </>
+                    </td>
                     <td>{lead.phone_number}</td>
                     <td>{lead.branchname}</td>
                     <td>{lead.lead_status_name}</td>

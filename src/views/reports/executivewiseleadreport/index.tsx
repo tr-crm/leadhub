@@ -400,6 +400,7 @@ const handleRegionChange = (selectedRegion:any) => {
               <thead>
                 <tr>
                   <th>S.No</th>
+                  <th>Date</th>
                   <th>Details</th>
                   <th>Phone</th>
                   <th>Status</th>
@@ -413,7 +414,38 @@ const handleRegionChange = (selectedRegion:any) => {
                 {modalData.map((lead:any, index:number) => (
                   <tr key={lead.id}>
                     <td>{index+1}</td>
-                    <td>
+                      <td>
+                    <>
+                        {lead.lead_date && (
+                          <>
+                            <span>L: {lead.lead_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.followup_date && (
+                          <>
+                            <span>F: {lead.followup_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.partial_walkin_date && (
+                          <>
+                            <span>PW: {lead.partial_walkin_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+
+                        {lead.walkin_date && (
+                          <>
+                            <span>W: {lead.walkin_date}</span>
+                            <br /><br />
+                          </>
+                        )}
+                      </>
+                    </td>
+                    <td style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '100px' }}>
                       <>
                         {lead.full_name}
                         <br /><br />
