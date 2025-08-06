@@ -50,4 +50,5 @@ export interface Lead {
   partial_walkin_date:string;
   branch_name:string;
   walkin_date:string;
+  product: string;
 }

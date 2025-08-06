@@ -870,8 +870,8 @@ const columns = [
   expandableRows
   expandableRowsComponent={ExpandedComponent}
   pagination
-  selectableRows
-  onSelectedRowsChange={handleRowSelected}
+  // selectableRows
+  // onSelectedRowsChange={handleRowSelected}
   highlightOnHover
   pointerOnHover
   subHeader

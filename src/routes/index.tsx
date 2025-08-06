@@ -30,8 +30,8 @@ const MonthlySourceWiseReport = lazy(() => import('@/views/reports/monthlysource
 const Settings = lazy(() => import('@/views/settings'));
 const DailyJobList = lazy(() => import('@/views/jobs/list'));
 const BranchWiseLeadReport = lazy(() => import('@/views/reports/branch'));
-const GlobalSearch = lazy(() => import('@/views/search')) 
-
+const GlobalSearch = lazy(() => import('@/views/search'));
+const ProductSourceWiseLeadReport = lazy(() => import('@/views/reports/productsourcewisereport')) 
 
 
 export const loginRoutes: RouteObject[] = [
@@ -203,6 +203,15 @@ export const reportRoutes: RouteObject[] = [
            title: 'Branch Wise Report',
         }
     }, 
+      {
+        path: '/reports/productsourcewisereport',
+        element: <ProductSourceWiseLeadReport/>,
+         handle: {
+           title: 'Product And Source Wise Report',
+        }
+    }, 
+
+    
    
 ]
 export const settingsRoutes: RouteObject[] = [

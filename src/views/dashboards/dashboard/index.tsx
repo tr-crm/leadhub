@@ -25,7 +25,7 @@ import CountUpClient from '@/components/CountUpClient';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 import { DonutChart } from '@/views/dashboards/dashboard/charts.tsx';
-
+import RegionSelect from '@/components/regionselect';
 import { toast } from 'react-toastify';
 
 type DataCard = {
@@ -50,13 +50,22 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
-
+   
   // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
   const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
 const user_first_comment = user?.first_comment ?? '';
 
   const sanitizedHTML = DOMPurify.sanitize(user_first_comment);
-
+ const type=user.type
+  const getInitialRegionValue = (): string => {
+    if (type === '1' || type === '2') {
+      return '1';
+    } else if (user.region) {
+      return String(user.region);
+    }
+    return '0';
+  };
+  const [region, setRegion] = useState<string>(getInitialRegionValue());
   // Ref to prevent double fetch in Strict Mode or repeated effect calls
   const didFetchRef = useRef(false);
 
@@ -94,6 +103,7 @@ const user_first_comment = user?.first_comment ?? '';
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
+      regionVal:region,
     };
 
     try {
@@ -273,6 +283,11 @@ const user_first_comment = user?.first_comment ?? '';
       }
     };
 
+    const handleRegionChange = (selectedRegion:any) => {
+   
+    setRegion(selectedRegion);
+  };
+
   return (
     <Container fluid>
       <PageBreadcrumb title="Dashboard" />
@@ -328,6 +343,39 @@ const user_first_comment = user?.first_comment ?? '';
                   ))}
                 </Form.Select>
               </Col>
+                 {(user.type === '1' || user.type === '2') && (
+             <Col md={3}>
+                <RegionSelect
+                  value={region}
+                //   onChange={handleRegionChange}
+                  onChange={(val) => {
+                      handleRegionChange(val?.value ?? 0);
+                    
+                    }}
+                  label="Region"
+                  placeholder="All Regions"
+                />
+
+                
+              </Col>
+              )}
+              {(user.type === '3') && (
+                <Col md={3}>
+                <RegionSelect
+                  value={region}
+                //   onChange={handleRegionChange}
+                  onChange={(val) => {
+                      handleRegionChange(val?.value);
+                    
+                    }}
+                  label="Region"
+                  placeholder="All Regions"
+                  disabled
+                />
+
+                
+              </Col>
+              )}
 
               <Col md={2}>
                 <Button

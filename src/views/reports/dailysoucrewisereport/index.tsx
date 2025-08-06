@@ -41,7 +41,7 @@ const DailyLeadReportTable: React.FC = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<any[]>([]);
-
+    const [category, setCategory] = useState<string>('0');
   const handleOpenModelPopupClick = async (dates: string[] | string, sourceIds: string[]) => {
     setShowModal(true);
     setLoading(true);
@@ -52,7 +52,8 @@ const DailyLeadReportTable: React.FC = () => {
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
-      regionVal: region
+      regionVal: region,
+      catgoryIdVal: category,
     };
 
     try {
@@ -100,7 +101,7 @@ const DailyLeadReportTable: React.FC = () => {
       return '0';
     };
      const [region, setRegion] = useState<string>(getInitialRegionValue());
-
+ 
   const fetchData = async () => {
      if (!user) return;
     setLoading(true);
@@ -112,7 +113,8 @@ const DailyLeadReportTable: React.FC = () => {
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
-      regionVal: region
+      regionVal: region,
+      catgoryIdVal: category,
     };
 
     try {
@@ -186,6 +188,10 @@ const DailyLeadReportTable: React.FC = () => {
    
     setRegion(selectedRegion);
   };
+  
+    const handleCategoryChange = (selectedCategory: any) => {
+    setCategory(selectedCategory);
+    };
 
   return (
     <Container fluid>
@@ -201,14 +207,14 @@ const DailyLeadReportTable: React.FC = () => {
       <div className="mt-4 bg-white p-4 shadow-sm rounded">
         <Form className="mb-3">
           <Row>
-            <Col md={3}>
+            <Col md={2}>
               <YearSelect
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
                 required
               />
             </Col>
-            <Col md={3}>
+            <Col md={2}>
               <MonthSelect
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
@@ -220,7 +226,7 @@ const DailyLeadReportTable: React.FC = () => {
               <RegionSelect
                 value={region}
                 onChange={(val) => {
-                    handleRegionChange(val?.value);
+                    handleRegionChange(val?.value ?? 0);
                   
                   }}
                 label="Region"
@@ -229,6 +235,23 @@ const DailyLeadReportTable: React.FC = () => {
 
             
           </Col>
+          
+           )}
+           {(user.type === '1' || user.type === '2') && (
+               <Col md={3}>
+              <Form.Group controlId="categorySelect">
+                <Form.Control
+                  as="select"
+                  value={category === "" ? "" : Number(category)}
+                  onChange={(e) => handleCategoryChange(Number(e.target.value))}
+                >
+                  <option value="">All Products</option>
+                  <option value="1">Test Prep</option>
+                  <option value="2">ACS</option>
+                  <option value="3">Immigration</option>
+                </Form.Control>
+              </Form.Group>
+                </Col>
            )}
             <Col md="auto">
               <button

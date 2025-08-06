@@ -70,6 +70,8 @@ const DailyLeadReportTable: React.FC = () => {
      setLoading(true);
  
      const payload: getExecutivewiseLeadReportClickablepayload = {
+        yearVal: selectedYear,
+        monthVal: selectedMonth,
         userIdVal: user.id,
         tokenVal: user.access_token,
         typeVal: user.type,
@@ -223,7 +225,7 @@ const handleRegionChange = (selectedRegion:any) => {
               value={region}
             //   onChange={handleRegionChange}
               onChange={(val) => {
-                  handleRegionChange(val?.value);
+                  handleRegionChange(val?.value ?? 0);
                  
                 }}
               label="Region"

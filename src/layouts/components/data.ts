@@ -253,6 +253,12 @@ export const menuItems: MenuItemType[] = [
         url: "/reports/monthlysourcewisereport",
         minLevel: [1, 2, 3, 4, 5],
       },
+      {
+        key: "Product And Source Wise Report",
+        label: "Product And Source Wise Report",
+        url: "/reports/productsourcewisereport",
+        minLevel: [1, 2, 3],
+      },
       
       
 

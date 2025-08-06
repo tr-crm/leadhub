@@ -9,12 +9,14 @@
   import SubCategorySelect from '@/components/subcategoryselect';
   import ProductSelect from '@/components/productselect';
   import BranchSelect from '@/components/branchselect';
-  import ExecutiveSelect from '@/components/executiveselect';
+  // import ExecutiveSelect from '@/components/executiveselect';
   import QualityScoreSelect from '@/components/qualityscore';
-
+import Select from 'react-select';
   import { toast } from 'react-toastify';
   import LogoutOverlay from '@/components/LogoutOverlay';
   import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+  import { getExecutivesByRole } from '@/services/leadservice';
+
   interface OptionType {
     value: any;
     label: string;
@@ -200,6 +202,42 @@ console.log(isImmigration );
       }));
     };
 
+    const [executiveOptions, setExecutiveOptions] = useState<OptionType[]>([]);
+    useEffect(() => {
+  const fetchExecutives = async () => {
+    try {
+      const response = await getExecutivesByRole({
+        userIdVal: user.id,
+        tokenVal: user.access_token,
+        typeVal: user.type,
+        regionVal: user.region,
+      });
+
+      if (response?.data?.length) {
+        const options = response.data.map((exec: any) => ({
+          value: exec.id,
+          label: exec.display_name,
+        }));
+        setExecutiveOptions(options);
+
+        if (!formData.executiveIdVal && options.length) {
+          setFormData((prev) => ({
+            ...prev,
+            executiveIdVal: options[0].value,
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load executives:', error);
+    }
+  };
+
+  if (user?.id && user?.access_token) {
+    fetchExecutives();
+  }
+}, [user]); // Runs when user changes
+
+
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       setStatus('idle');
@@ -362,15 +400,15 @@ console.log(isImmigration );
                   <ProductSelect categoryId={formData.categoryVal} value={formData.productVal} onChange={handleProductChange} required />
                 </InlineField>
               )}
-              <InlineField label="Tele Executive" name="executiveIdVal" value={formData.executiveIdVal} onChange={handleExecutiveChange}>
-                <ExecutiveSelect
-                  value={formData.executiveIdVal}
-                  onChange={handleExecutiveChange}
-                  name="executiveIdVal"
-                  label="Tele Executive"
-                  required
-                />
-              </InlineField>
+            <InlineField label="Tele Executive" name="executiveIdVal" value={formData.executiveIdVal} onChange={handleExecutiveChange}>
+            <Select
+              value={executiveOptions.find((opt) => opt.value === formData.executiveIdVal) || null}
+              onChange={(selected) => handleExecutiveChange(selected)}
+              options={executiveOptions}
+              placeholder="Select Executive"
+              isClearable
+            />
+          </InlineField>
               <InlineField label="Branch" name="branchVal" value={formData.branchVal} onChange={handleBranchChange}>
                 <BranchSelect value={formData.branchVal} onChange={handleBranchChange} name="branchVal" label="Branch" required />
               </InlineField>

@@ -166,7 +166,7 @@ const handleRegionChange = (selectedRegion:any) => {
   const handleOpenModalPopupClick = async (branchIds: string[], statusIds: string[]) => {
     setShowModal(true);
     setLoading(true);
-
+    console.log(statusIds);
     const payload : RegionLeadClickablePayload = {
       branchIdVal: branchIds,
       leadStatusVal: statusIds,
@@ -233,7 +233,7 @@ const handleRegionChange = (selectedRegion:any) => {
               value={region}
             //   onChange={handleRegionChange}
               onChange={(val) => {
-                  handleRegionChange(val?.value);
+                  handleRegionChange(val?.value ?? 0);
                  
                 }}
             />
@@ -380,6 +380,7 @@ const handleRegionChange = (selectedRegion:any) => {
                     {sum}
                   </td>
                 ))}
+
                 <td
                   style={{
                     cursor: Number(grandTotal) > 0 ? "pointer" : "default",
@@ -387,7 +388,7 @@ const handleRegionChange = (selectedRegion:any) => {
                   onClick={() => {
                     if (Number(grandTotal) > 0) {
                       const branchIds = sortedData.map((b: any) => b.id?.toString());
-                      const statusIds = allStatuses.map((s: any) => s.id?.toString());
+                      const statusIds = sortedData[0]?.statuses.map((s: any) => s.id?.toString()) || [];
                       handleOpenModalPopupClick(branchIds, statusIds);
                     }
                   }}
@@ -396,6 +397,7 @@ const handleRegionChange = (selectedRegion:any) => {
                 </td>
               </tr>
             </tfoot>
+
 
             </Table>
           </div>

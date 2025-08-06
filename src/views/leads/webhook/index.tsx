@@ -712,7 +712,13 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       width: '120px',
       wrap: true
     },
-    
+    {
+      name: 'Product',
+      selector: (row: Lead) => String(row.product || row.json_response_data?.product || ''),
+      sortable: true,
+      width: '120px',
+      wrap: true
+    },
     {
       name: 'Source',
       selector: (row: Lead) => String(row.source_name || ''),

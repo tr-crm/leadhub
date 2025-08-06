@@ -330,4 +330,19 @@ export const getSeachRequestList = async (payload: SeachRequestPayload) => {
 
 
 
+// services/userservice.ts
 
+export interface GetExecutiveListPayload {
+  userIdVal: number;
+  tokenVal: string;
+  typeVal?: number;
+  regionVal?: number;
+}
+
+export const getExecutivesByRole = async (payload: GetExecutiveListPayload) => {
+  const response = await axios.post(
+    '/api/User/getUserByRole',
+    payload
+  );
+  return response.data;
+};

@@ -36,6 +36,7 @@ export interface DailyLeadReportRequest {
   tokenVal: string;
   typeVal: number;
   regionVal: string;
+  catgoryIdVal: any; 
 }
 
 export interface RegionLeadReportRequest {
@@ -189,6 +190,7 @@ export interface DailyLeadClickableReportPayload {
   tokenVal: string;
   typeVal: string;
   regionVal: string;
+  catgoryIdVal: string;
 }
 
 export const DailyLeadClickableReportRequest = async (payload: DailyLeadClickableReportPayload) => {
@@ -218,6 +220,7 @@ export interface DailySourceWiseLeadClickablePayload {
   tokenVal: string;
   typeVal: string;
   regionVal: string;
+  catgoryIdVal: string;
 }
 
 export const getDailySourceWiseLeadClickableDetails = async (payload: DailySourceWiseLeadClickablePayload) => {
@@ -295,6 +298,8 @@ export const getBranchwiseLeadReportList = async (payload: BranchLeadReportReque
 
 
 export interface getExecutivewiseLeadReportClickablepayload {
+  yearVal: string;
+  monthVal: string;
   userIdVal: number;
   tokenVal: string;
   typeVal: number;
@@ -306,3 +311,39 @@ export const getExecutivewiseLeadReportClickableDetails = async (payload: getExe
   const response = await api.post('/api/Reports/executiveAndLeadStatusWiseReportClickable', payload);
   return response.data;
 };
+
+
+
+
+export interface ProductSourceReportRequest {
+  yearVal: string;
+  monthVal: string;
+  userIdVal: number;
+  tokenVal: string;
+  typeVal: number;
+  regionVal: string;
+}
+
+export const getProductSourceWiseLeadReportLeadsList = async (payload: ProductSourceReportRequest) => {
+  const response = await api.post('/api/Reports/ProductWiseLeadReport', payload);
+  return response.data;
+};
+
+
+
+export interface ProductSourceWiseLeadClickablePayload {
+   yearVal: string;
+  monthVal: string;
+  catgoryIdVal: string[];
+  sourceVal: string[];
+  userIdVal: number;
+  tokenVal: string;
+  typeVal: number;
+  regionVal: string;
+}
+
+export const getProductSourceWiseLeadClickableDetails = async (payload: ProductSourceWiseLeadClickablePayload) => {
+  const response = await api.post('/api/Reports/productWiseLeadReportClickable', payload);
+  return response.data;
+};
+

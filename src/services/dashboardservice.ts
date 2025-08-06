@@ -6,6 +6,7 @@ export interface leadDashBord {
   userIdVal: number;
   tokenVal: number;
   typeVal?: number;
+  regionVal : string;
 }
 
 // Define expected User shape (adjust to match API response)
