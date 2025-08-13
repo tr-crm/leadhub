@@ -346,3 +346,158 @@ export const getExecutivesByRole = async (payload: GetExecutiveListPayload) => {
   );
   return response.data;
 };
+
+
+
+export interface LeadIdBasedRequestPayload {
+  leadIdVal: number;
+  userIdVal: number;
+  tokenVal: string;
+  typeVal?: number;
+}
+
+export const LeadIdBasedDetails = async (payload: LeadIdBasedRequestPayload) => {
+  const response = await axios.post(
+    '/api/Leads/getLeadDetailsByLeadIdWithComments',
+    payload
+  );
+  return response.data;
+};
+
+
+export interface SeachOldCrmRequestPayload {
+  contactnoVal: string;
+  namesearchVal : string;
+}
+
+export const getSeachOldCrmRequestList = async (payload: SeachOldCrmRequestPayload) => {
+  const response = await axios.post(
+    'https://api.texasreview.in/university/api//Applicant/get_applicant_by_mobileno',
+    payload
+  );
+  return response.data;
+};
+
+
+
+
+export interface SeachOldCrmFollowUpRequestPayload {
+  fromdateVal: string;
+  todateVal : string;
+  leadtoVal: string;
+}
+
+export const getOldCrmFollowUpLeadsList = async (payload: SeachOldCrmFollowUpRequestPayload) => {
+  const response = await axios.post(
+    'https://api.texasreview.in/university/api//Applicant/get_lead_followup_list_by_dates',
+    payload
+  );
+  return response.data;
+};
+
+
+
+export interface oldCRMAddFollowupRequestPayload {
+   leaddateVal?: string;
+  firstnameVal?: string;
+  lastNameVal?: string;
+  emailidVal?: string;
+  mobilenoVal?: string;
+
+  // Lead Identifiers
+  applicantidVal?: string | number;
+  teleleadidVal?: string | number;
+  levelidVal?: string | number;
+  leadtoVal?: string;
+
+  // Department & Product Info
+  deptidVal?: string | number;
+  maincatproductVal?: string;
+  subcatproductVal?: string;
+  keywordVal?: string;
+
+  // Source & Category
+  sourceVal?: any;
+  categoryVal?: any;
+  subCategoryVal?: any;
+  productVal?: any;
+  productdetailsVal?: any;
+  branchVal?: any;
+  visitbranchVal?: any;
+
+  // Executive & Assignment
+  executiveIdVal?: any;
+  excutiveIdVal?: any;
+
+  // Status & Quality
+  qualityscoreVal?: any;
+  qualityVal?: string;
+  PartialWalkin?: string;
+  leadStatusVal?: any;
+  leadstatusVal?: string;
+
+  // Follow-up Info
+  followupdateVal?: string;
+  commentsVal?: string;
+
+  // Metadata
+  createdbyVal?: string | number;
+}
+
+export const oldCRMaddLeadFollowUp = async (payload: oldCRMAddFollowupRequestPayload) => {
+  const response = await axios.post(
+    'https://api.texasreview.in/university/api//Sudheer_Test/update_leadform_data',
+    payload
+  );
+  return response.data;
+};
+
+export interface LeadOldCRMToNewCRMTransferRequestPayload {
+ 
+leadDateVal: string;
+    firstNameVal: string;
+    lastNameVal: string;
+    emailAddressVal: string;
+    phoneNumberVal: string;
+    sourceVal: string;
+    qualityscoreVal: string;
+    categoryVal: string;
+    subCategoryVal: string;
+    userIdVal: string;
+    tokenVal: string;
+    branchVal: string;
+    productVal: string;
+    countryVal: string;
+    leadStatusVal: string;
+    executiveIdVal: string;
+    updatedByVal: string;
+    regionVal: string;
+    typeVal: string;
+    createdByVal: string;
+    applicantidVal: string;
+}
+
+export const LeadTransferLeadHub = async (payload: LeadOldCRMToNewCRMTransferRequestPayload) => {
+  const response = await axios.post(
+    '/api/Leads/createLead',
+    payload
+  );
+  return response.data;
+};
+
+
+
+
+export interface UpdateOldCRMApllicantIDLeadHubPayload {
+ 
+    applicantidVal: string;
+}
+
+export const UpdateOldCRMApllicantIDLeadHub = async (payload: UpdateOldCRMApllicantIDLeadHubPayload) => {
+  const response = await axios.post(
+    'https://api.texasreview.in/university/api//Sudheer_Test/update_applicantid_based_teleid_remove',
+    payload
+  );
+  return response.data;
+};
+

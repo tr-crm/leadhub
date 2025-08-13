@@ -22,8 +22,9 @@ import PageBreadcrumb from '@/components/PageBreadcrumb';
 import type {
   LeadRequestPayload,
   LeadUpdateRequestPayload,
+  LeadIdBasedRequestPayload,
 } from '@/services/leadservice';
-import { getLeadsList, updateLead, addLeadFollowUp } from '@/services/leadservice';
+import { getLeadsList, updateLead, addLeadFollowUp, LeadIdBasedDetails } from '@/services/leadservice';
 import { SourceList, getCategoryList, getSubCategoryList, getBranchList, ProductList, ExecutiveList, StatusList,getQualityList } from '@/services/generalservice';
 import type { Lead } from '@/types/lead.types';
 import { toast } from 'react-toastify';
@@ -608,7 +609,7 @@ const touchedOptions = [
   { value: '0', label: 'Not Touched' }
 ];
 
-
+ const [expandedData, setExpandedData] = useState<{ [id: number]: Lead }>({});
 const columns = [
     {
       name: 'ID',
@@ -682,127 +683,75 @@ const columns = [
   ];
 
 
+const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
+  if (!data || typeof data !== 'object') {
+    return <div className="text-muted mt-2">No additional data available.</div>;
+  }
 
-  const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
-    if (!data || typeof data !== 'object') {
-      return <div className="text-muted mt-2">No additional data available.</div>;
-    }
+  const { comments, ...rest } = data;
 
-    const { comments, ...rest } = data;
-    console.log(comments);
+  return (
+    <Card className="mt-3">
+      <Card.Body>
+        <Card.Title>Full Details</Card.Title>
+        <Row>
+          <Col md={4}>
+            <div style={{ maxHeight: '300px', overflowY: 'auto', width: '100%' }}>
+              <Table striped bordered size="sm">
+                <tbody>
+                  {Object.entries(rest)
+                    .filter(([key]) =>
+                      ![
+                        'id', 'source_id', 'category_id', 'sub_category_id', 'product_id',
+                        'country_id', 'status', 'branch_id', 'transferred_by', 'created_by',
+                        'touch_status', 'executive_id', 'lead_status'
+                      ].includes(key)
+                    )
+                    .map(([key, value]) => (
+                      <tr key={key}>
+                        <th style={{ textTransform: 'capitalize' }}>
+                          {key.replace(/_/g, ' ')}
+                        </th>
+                        <td>
+                          {typeof value === 'object' && value !== null
+                            ? JSON.stringify(value)
+                            : String(value)}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </div>
+          </Col>
 
-    return (
-      <Card className="mt-3">
-        <Card.Body>
-          <Card.Title>Full Details</Card.Title>
-          <Row>
-            {/* Left Column: Details with scroll */}
-            <Col md={4}>
-              <div style={{ maxHeight: '300px', overflowY: 'auto', width: '100%'  }}>
-                <Table striped bordered size="sm">
-                  <tbody>
-                    {Object.entries(rest)
-                      .filter(([key]) =>
-                        ![
-                          'id',
-                          'source_id',
-                          'category_id',
-                          'sub_category_id',
-                          'product_id',
-                          'country_id',
-                          'status',
-                          'branch_id',
-                          'transferred_by',
-                          'created_by',
-                          'touch_status',
-                          'executive_id',
-                          'lead_status'
-                        ].includes(key)
-                      )
-                      .map(([key, value]) => (
-                        <tr key={key}>
-                          <th style={{ textTransform: 'capitalize' }}>
-                            {key.replace(/_/g, ' ')}
-                          </th>
-                          <td>
-                            {typeof value === 'object' && value !== null
-                              ? JSON.stringify(value)
-                              : String(value)}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </Table>
+          <Col md={4}>
+            <h6>Comments</h6>
+            <div style={{ maxHeight: '250px', overflowY: 'auto', width: '100%' }}>
+              {Array.isArray(comments) && comments.length > 0 ? (
+                comments.map((cmt, idx) => (
+                  <Card key={idx} className="mb-2">
+                    <Card.Body>
+                      <Card.Text>{cmt.comment}</Card.Text>
+                      {cmt.created_at && (
+                        <small className="text-muted pull-right">
+                          {cmt.created_by_name}{' '}
+                          {new Date(cmt.created_at).toLocaleString()}
+                        </small>
+                      )}
+                    </Card.Body>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-muted">No comments available.</div>
+              )}
+            </div>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
+  );
+};
 
-
-              </div>
-            </Col>
-
-            {/* Right Column: Comments with scroll */}
-            <Col md={6}>
-              <h6>Comments</h6>
-              <div style={{ maxHeight: '250px', overflowY: 'auto' , width: '50%'}}>
-                {Array.isArray(comments) && comments.length > 0 ? (
-                  comments.map((cmt, idx) => (
-                    <Card key={idx} className="mb-2">
-                      <Card.Body>
-
-                        <Card.Text>{cmt.comment}</Card.Text>
-                        {cmt.created_at && (
-                          <small className="text-muted pull-right">
-                            {cmt.created_by_name}  {new Date(cmt.created_at).toLocaleString()}
-                          </small>
-                        )}
-
-                      </Card.Body>
-                    </Card>
-                  ))
-                ) : (
-                  <div className="text-muted">No comments available.</div>
-                )}
-              </div>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-    );
-  };
-
-
-
-
-
-
-  // const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
-  //   const details = data;
-  //   return (
-  //     <div
-  //       style={{
-  //         backgroundColor: '#F9F9F9',
-  //         padding: '15px',
-  //         borderRadius: '5px',
-  //         border: '1px solid #ddd',
-  //         marginTop: '10px',
-  //       }}
-  //     >
-  //       <strong>Full Details:</strong>
-  //       {details && typeof details === 'object' ? (
-  //         <table className="table table-sm mt-2">
-  //           <tbody>
-  //             {Object.entries(details).map(([key, value], index) => (
-  //               <tr key={`${key}-${index}`}>
-  //                 <th style={{ width: '150px', textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</th>
-  //                 <td>{String(value)}</td>
-  //               </tr>
-  //             ))}
-  //           </tbody>
-  //         </table>
-  //       ) : (
-  //         <div className="text-muted mt-2">No additional data available.</div>
-  //       )}
-  //     </div>
-  //   );
-  // };
 
   return (
     <Container fluid>
@@ -811,12 +760,12 @@ const columns = [
       <PageBreadcrumb title={`Leads List (${data.length})`} />
       
       {showLogoutLoader && <LogoutOverlay
-  duration={5} // 10 seconds countdown
-  onComplete={async () => {
-    await logout(); // your logout function
-  }}
-/>
-}
+        duration={5} // 10 seconds countdown
+        onComplete={async () => {
+          await logout(); // your logout function
+        }}
+      />
+      }
 
       <Form className="mb-4">
         <Row className="align-items-end">
@@ -840,17 +789,17 @@ const columns = [
             <Form.Label>Executive</Form.Label>
             <ExecutiveSelect value={execFilter} onChange={handleExecChange} showAllOption />
           </Col>
-{showTouchedFilter && (
-            <Col md={1}>
-  <Form.Label>Touched</Form.Label>
-  <Select
-  options={touchedOptions}
-  value={touchedOptions.find(opt => opt.value === touchedFilter) || null}
-  onChange={(opt) => setTouchedFilter(opt ? opt.value : '')}
-  placeholder="All"
-  isClearable
-/>
-</Col>
+            {showTouchedFilter && (
+                        <Col md={1}>
+              <Form.Label>Touched</Form.Label>
+              <Select
+              options={touchedOptions}
+              value={touchedOptions.find(opt => opt.value === touchedFilter) || null}
+              onChange={(opt) => setTouchedFilter(opt ? opt.value : '')}
+              placeholder="All"
+              isClearable
+            />
+            </Col>
           )}
        
           <Col md={1}>
@@ -864,84 +813,148 @@ const columns = [
       {showTable ? (
         
         <DataTable
-  columns={columns}
-  data={filteredData}
-  progressPending={loading}
-  expandableRows
-  expandableRowsComponent={ExpandedComponent}
-  pagination
-  // selectableRows
-  // onSelectedRowsChange={handleRowSelected}
-  highlightOnHover
-  pointerOnHover
-  subHeader
-   subHeaderComponent={SubHeaderComponent}
-  responsive
-  paginationPerPage={perPage}
-  onChangePage={(page) => setCurrentPage(page)}
-  onChangeRowsPerPage={(newPerPage, page) => {
-    setPerPage(newPerPage);
-    setCurrentPage(page);
-  }}
-  conditionalRowStyles={[
-    {
-      when: row => row.touch_status == 1,
-      style: {
-        backgroundColor: '#d1ffd1', // light green
-        color: '#000',
-      },
-    },
-    {
-      when: row => row.touch_status != 1,
-      style: {
-        backgroundColor: '#ffe0e0', // light red
-        color: '#000',
-      },
-    },
-  ]}
-/>
+        columns={columns}
+        data={filteredData}
+        progressPending={loading}
+       
+        pagination
+        // selectableRows
+        // onSelectedRowsChange={handleRowSelected}
+        highlightOnHover
+        pointerOnHover
+        subHeader
+        subHeaderComponent={SubHeaderComponent}
+        responsive
+        paginationPerPage={perPage}
+        onChangePage={(page) => setCurrentPage(page)}
+        onChangeRowsPerPage={(newPerPage, page) => {
+          setPerPage(newPerPage);
+          setCurrentPage(page);
+        }}
+        conditionalRowStyles={[
+          {
+            when: row => row.touch_status == 1,
+            style: {
+              backgroundColor: '#d1ffd1', // light green
+              color: '#000',
+            },
+          },
+          {
+            when: row => row.touch_status != 1,
+            style: {
+              backgroundColor: '#ffe0e0', // light red
+              color: '#000',
+            },
+          },
+        ]}
+
+
+      expandableRows
+      expandableRowsComponent={({ data }) => (
+        <ExpandedComponent data={expandedData[data.id] || data} />
+      )}
+      onRowExpandToggled={async (expanded, row) => {
+        if (expanded && !expandedData[row.id]) {
+          const payload : LeadIdBasedRequestPayload= {
+            leadIdVal: row.id,
+            userIdVal: user.id,
+            tokenVal: user.access_token,
+          };
+
+          try {
+            const response = await LeadIdBasedDetails(payload);
+            const leadDetails = response.data?.[0];
+
+            setExpandedData(prev => ({
+              ...prev,
+              [row.id]: {
+                ...leadDetails, // Includes comments and other lead info
+              },
+            }));
+          } catch (error) {
+            console.error('Error fetching follow-up data:', error);
+
+            setExpandedData(prev => ({
+              ...prev,
+              [row.id]: {
+                ...row,
+                comments: [],
+              },
+            }));
+          }
+        }
+      }}
+
+      />
 
        
       ) : (
         
         
              <DataTable
-  columns={columns}
-  data={filteredData}
-  progressPending={loading}
-  expandableRows
-  expandableRowsComponent={ExpandedComponent}
-  pagination
-  selectableRows
-  onSelectedRowsChange={handleRowSelected}
-  highlightOnHover
-  pointerOnHover
-  subHeader
-   subHeaderComponent={SubHeaderComponent}
-  responsive
-  paginationPerPage={perPage}
-  onChangePage={(page) => setCurrentPage(page)}
-  onChangeRowsPerPage={(newPerPage, page) => {
-    setPerPage(newPerPage);
-    setCurrentPage(page);
-  }}
-  conditionalRowStyles={[
-    {
-      when: row => row.touch_status == 1,
-      style: {
-        backgroundColor: '', // light green
-        color: '#000',
-      },
-    },
-    {
-      when: row => row.touch_status != 1,
-      style: {
-        backgroundColor: '#ffe0e0', // light red
-        color: '#000',
-      },
-    },
-  ]}
-/>
+        columns={columns}
+        data={filteredData}
+        progressPending={loading}
+        pagination
+        selectableRows
+        onSelectedRowsChange={handleRowSelected}
+        highlightOnHover
+        pointerOnHover
+        subHeader
+        subHeaderComponent={SubHeaderComponent}
+        responsive
+        paginationPerPage={perPage}
+        onChangePage={(page) => setCurrentPage(page)}
+        onChangeRowsPerPage={(newPerPage, page) => {
+          setPerPage(newPerPage);
+          setCurrentPage(page);
+        }}
+        conditionalRowStyles={[
+          {
+            when: row => row.touch_status == 1,
+            style: {
+              backgroundColor: '', // light green
+              color: '#000',
+            },
+          },
+          {
+            when: row => row.touch_status != 1,
+            style: {
+              backgroundColor: '#ffe0e0', // light red
+              color: '#000',
+            },
+          },
+        ]}
+
+        expandableRows
+        expandableRowsComponent={({ data }) => (
+          <ExpandedComponent data={expandedData[data.id] || data} />
+        )}
+        onRowExpandToggled={async (expanded, row) => {
+          if (expanded && !expandedData[row.id]) {
+            const payload : LeadIdBasedRequestPayload= {
+              leadIdVal: row.id,
+              userIdVal: user.id,
+              tokenVal: user.access_token,
+            };
+
+            try {
+               const response = await LeadIdBasedDetails(payload);
+              const leadDetails = response.data?.[0];
+
+              setExpandedData(prev => ({
+                ...prev,
+                [row.id]: {
+                  ...row,
+                  ...leadDetails, // includes comments
+                },
+              }));
+            } catch (error) {
+              console.error('Error fetching follow-up data:', error);
+            }
+          }
+        }}
+      />
       )}
 
       <Modal show={showModal} onHide={handleCloseModal} backdrop="static" keyboard={false} size="lg" centered>

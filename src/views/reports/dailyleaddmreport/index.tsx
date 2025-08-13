@@ -8,6 +8,7 @@ import {
   Row,
   Col,
   Modal,
+  Card,
   Button
 } from "react-bootstrap";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
@@ -22,6 +23,9 @@ import RegionSelect from '@/components/regionselect';
   import { toast } from 'react-toastify';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+import type { Lead } from '@/types/lead.types';
+import DataTable from 'react-data-table-component';
+
 const padMonth = (month: number) => String(month).padStart(2, "0");
 
 const DailyLeadReportTable: React.FC = () => {
@@ -29,7 +33,8 @@ const DailyLeadReportTable: React.FC = () => {
    const [showModal, setShowModal] = useState<boolean>(false);
    const [modalData, setModalData] = useState<any[]>([]); 
 
-
+  const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
   const now = new Date();
   const [selectedYear, setSelectedYear] = useState<string>(
     now.getFullYear().toString()
@@ -191,7 +196,71 @@ const handleRegionChange = (selectedRegion:any) => {
         setLoading(false);
       }
     };
- 
+    
+
+      const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
+        if (!data || typeof data !== 'object') {
+          return <div className="text-muted mt-2">No additional data available.</div>;
+        }
+
+      const { comments, ...rest } = data;
+
+        return (
+          <Card className="my-3 border-0 shadow-sm">
+            <Card.Body>
+              <Card.Title className="mb-3">Full Details</Card.Title>
+              <Row>
+                <Col md={6}>
+                  <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                    <Table striped bordered size="sm">
+                      <tbody>
+                        {Object.entries(rest)
+                          .filter(([key]) =>
+                            ![
+                              'year','month','source_id', 'category_id', 'sub_category_id', 'product_id',
+                              'country_id', 'status', 'branch_id', 'transferred_by',
+                              'created_by', 'touch_status', 'executive_id', 'lead_status'
+                            ].includes(key)
+                          )
+                          .map(([key, value]) => (
+                            <tr key={key}>
+                              <th style={{ textTransform: 'capitalize' }}>
+                                {key.replace(/_/g, ' ')}
+                              </th>
+                              <td>{typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value)}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                </Col>
+
+                <Col md={6}>
+                  <h6 className="mb-2">Comments</h6>
+                  <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                    {Array.isArray(comments) && comments.length > 0 ? (
+                      comments.map((cmt, idx) => (
+                        <Card key={idx} className="mb-2">
+                          <Card.Body>
+                            <Card.Text>{cmt.comment}</Card.Text>
+                            {cmt.created_at && (
+                              <small className="text-muted float-end">
+                                {cmt.created_by_name} — {new Date(cmt.created_at).toLocaleString()}
+                              </small>
+                            )}
+                          </Card.Body>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="text-muted">No comments available.</div>
+                    )}
+                  </div>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        );
+    };
 
   return (
     <Container fluid>
@@ -381,86 +450,123 @@ const handleRegionChange = (selectedRegion:any) => {
         )}
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
+     
+     <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered>
         <Modal.Header closeButton>
-          <Modal.Title>Lead Details</Modal.Title>
+          <Modal.Title>Lead Details ({modalData.length})</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-         
+        <Modal.Body style={{ maxHeight: '80vh', overflowY: 'auto' }}>
           {loading ? (
-            <p>Loading...</p>
+            <div className="text-center">
+              <Spinner animation="border" />
+              <p>Loading...</p>
+            </div>
           ) : Array.isArray(modalData) && modalData.length > 0 ? (
-            <Table striped bordered hover responsive className="modal-lead-table">
-              <thead>
-                <tr>
-                  <th>S.No</th>
-                  <th>Date</th>
-                  <th>Details</th>
-                  <th>Phone</th>
-                  <th>Status</th>
-                  <th>Branch</th>
-                  <th>Source</th>
-                  <th>Category</th>
-                  <th>Country</th>
-                </tr>
-              </thead>
-              <tbody>
-                {modalData.map((lead:any, index:number) => (
-                  <tr key={lead.id}>
-                    <td>{index+1}</td>
-                    <td>
-                    <>
-                        {lead.lead_date && (
-                          <>
-                            <span>L: {lead.lead_date}</span>
-                            <br /><br />
-                          </>
-                        )}
-
-                        {lead.followup_date && (
-                          <>
-                            <span>F: {lead.followup_date}</span>
-                            <br /><br />
-                          </>
-                        )}
-
-                        {lead.partial_walkin_date && (
-                          <>
-                            <span>PW: {lead.partial_walkin_date}</span>
-                            <br /><br />
-                          </>
-                        )}
-
-                        {lead.walkin_date && (
-                          <>
-                            <span>W: {lead.walkin_date}</span>
-                            <br /><br />
-                          </>
-                        )}
-                      </>
-                    </td>
-                     <td style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '90px' }}>
-                      <>
-                        {lead.full_name}
-                        <br /><br />
-                        {lead.email}
-                      </>
-                    </td>
-                    <td>{lead.phone_number}</td>
-                    <td>{lead.lead_status_name}</td>
-                    <td>{lead.branchname}</td>
-                    <td>{lead.source_name}</td>
-                    <td>{lead.category_name}</td>
-                    <td>{lead.country_name}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+            <DataTable
+              columns={[
+                {
+                  name: "S.No",
+                  cell: (_row, index) => (
+                    <>{(currentPage - 1) * rowsPerPage + index + 1}</>
+                  ),
+                  width: "60px",
+                },
+                {
+                  name: "Date",
+                  selector: (row: Lead) => row.lead_date ?? '',
+                  sortable: true,
+                  format: (row: Lead) => (
+                    <div style={{ lineHeight: "2" }}>
+                      {row.lead_date && <div>L: {row.lead_date}</div>}
+                      {row.followup_date && <div>F: {row.followup_date}</div>}
+                      {row.partial_walkin_date && <div>PW: {row.partial_walkin_date}</div>}
+                      {row.walkin_date && <div>W: {row.walkin_date}</div>}
+                    </div>
+                  ),
+                  width: "120px",
+                  grow: 2,
+                },
+                {
+                  name: "Details",
+                  selector: (row: Lead) => row.full_name ?? '',
+                  sortable: true,
+                  cell: (row) => (
+                    <div style={{ whiteSpace: "normal", wordBreak: "break-word", maxWidth: "180px" }}>
+                      <span>{row.full_name}</span>
+                      <br /> <br />
+                      <span>{row.email}</span>
+                    </div>
+                  ),
+                   width: "130px",
+                  grow: 2,
+                },
+                {
+                  name: "Phone",
+                  selector: (row: Lead) => row.phone_number ?? '-',
+                  sortable: true,
+                  width: "120px",
+                  wrap: true,
+                },
+                {
+                  name: "Status",
+                  selector: (row: Lead) => row.lead_status_name ?? '-',
+                  sortable: true,
+                  wrap: true,
+                },
+                {
+                  name: "Branch",
+                  selector: (row: Lead) => row.branchname ?? '-',
+                  sortable: true,
+                  width: "120px",
+                  wrap: true,
+                },
+                {
+                  name: "Executive",
+                  selector: (row: Lead) => row.executive_name ?? '-',
+                  sortable: true,
+                  width: "120px",
+                  wrap: true,
+                },
+                
+                {
+                  name: "Source",
+                  selector: (row: Lead) => row.source_name ?? '-',
+                  sortable: true,
+                   wrap: true,
+                },
+                {
+                  name: "Product",
+                  selector: (row: Lead) => row.category_name ?? '-',
+                  sortable: true,
+                   wrap: true,
+                },
+                {
+                  name: "Country",
+                  selector: (row: Lead) => row.country_name ?? '-',
+                  sortable: true,
+                   wrap: true,
+                },
+              ]}
+              data={modalData}
+              pagination
+              paginationPerPage={rowsPerPage}
+              paginationDefaultPage={currentPage}
+              onChangePage={(page) => setCurrentPage(page)}
+              onChangeRowsPerPage={(newPerPage, page) => {
+                setRowsPerPage(newPerPage);
+                setCurrentPage(page); // Update both
+              }}
+              responsive
+              highlightOnHover
+              dense
+              expandableRows
+              expandableRowsComponent={ExpandedComponent}
+            />
           ) : (
-            <p>No data found.</p>
+            <p className="text-muted">No data found.</p>
           )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="justify-content-end">
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>

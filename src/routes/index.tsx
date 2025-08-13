@@ -31,8 +31,9 @@ const Settings = lazy(() => import('@/views/settings'));
 const DailyJobList = lazy(() => import('@/views/jobs/list'));
 const BranchWiseLeadReport = lazy(() => import('@/views/reports/branch'));
 const GlobalSearch = lazy(() => import('@/views/search'));
-const ProductSourceWiseLeadReport = lazy(() => import('@/views/reports/productsourcewisereport')) 
-
+const ProductSourceWiseLeadReport = lazy(() => import('@/views/reports/productsourcewisereport'));
+const GlobalCRMSearch = lazy(() => import('@/views/oldcrmsearch'));
+const FollowupsList = lazy(() => import('@/views/crmfollowup/crmfollowuplist'));
 
 export const loginRoutes: RouteObject[] = [
 
@@ -82,6 +83,16 @@ export const userRoutes: RouteObject[] = [
         element: <UserLognHistory/>,
         handle: {
            title: 'Login History',
+        }
+    },
+]
+
+export const globalCRMSearchRoutes: RouteObject[] = [
+    { 
+        path: '/oldcrmsearch',
+        element: <GlobalCRMSearch/>,
+        handle: {
+           title: 'CRM Global Search',
         }
     },
 ]
@@ -147,6 +158,17 @@ export const leadsRoutes: RouteObject[] = [
     }
 
 
+]
+
+
+export const crmoldFollowupsRoutes: RouteObject[] = [
+    { 
+        path: '/crmfollowup/crmfollowuplist',
+        element: <FollowupsList/>,
+        handle: {
+           title: 'Followup List',
+        }
+    },
 ]
 export const reportRoutes: RouteObject[] = [
     {
@@ -266,8 +288,10 @@ export const appRoutes: RouteObject[] = [
             },
             ...dashboardRoutes,
             ...userRoutes,
+            ...globalCRMSearchRoutes,
             ...globalSearchRoutes,
             ...leadsRoutes,
+            ...crmoldFollowupsRoutes,
             ...reportRoutes,
             ...settingsRoutes,
             ...importRoutes,
@@ -276,6 +300,7 @@ export const appRoutes: RouteObject[] = [
         ],
     },
 ];
-export const otherRoutes: RouteObject[] = [...loginRoutes, ...userRoutes, ...globalSearchRoutes, ...leadsRoutes,...reportRoutes,...settingsRoutes,...importRoutes,...dailyJobsRoutes];
+export const otherRoutes: RouteObject[] = [...loginRoutes, ...userRoutes,  ...globalCRMSearchRoutes, ...globalSearchRoutes, ...leadsRoutes,
+    ...crmoldFollowupsRoutes, ...reportRoutes,...settingsRoutes,...importRoutes,...dailyJobsRoutes];
 
 export const routes: RouteObject[] = [...appRoutes, ...otherRoutes];

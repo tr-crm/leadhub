@@ -105,12 +105,22 @@ export const menuItems: MenuItemType[] = [
   },
 
   {
+    key: "oldcrmsearch",
+    label: "Old CRM Search",
+    icon: TbSearch,
+    url: "/oldcrmsearch",
+    minLevel: [1, 2, 3, 4, 5],
+  },
+
+  {
     key: "search",
     label: "search",
     icon: TbSearch,
     url: "/search",
     minLevel: [1, 2, 3, 4, 5],
   },
+
+  
   {
     key: "leads",
     label: "Leads",
@@ -163,13 +173,26 @@ export const menuItems: MenuItemType[] = [
       
     ],
   },
+
+  {
+        key: 'CRMFollows',
+        label: 'Old CRM',
+        icon: TbSubtask,
+        minLevel: [1,2,3,4,5,8, 9],
+        children: [
+            
+               {key: 'CRM Followup List', label: 'CRM Followup List', url: '/crmfollowup/crmfollowuplist'}
+        ]
+  },
+
+
   {
         key: 'Jobs',
         label: 'Productivity',
         icon: TbSubtask,
         minLevel: [1,2,3,4,5,8, 9],
         children: [
-            {key: 'Job-list', label: 'Daily Job List', url: '/jobs/list'}
+           {key: 'Job-list', label: 'Daily Job List', url: '/jobs/list'}
            
         ]
     },
