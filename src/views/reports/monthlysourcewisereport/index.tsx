@@ -11,6 +11,7 @@ import {
   Card,
   Button
 } from "react-bootstrap";
+import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
 import { getMonthlySourceWiseReportLeadsList,getMonthlySourceWiseReportClickableLeadsList } from "@/services/reportsservice";
@@ -40,16 +41,39 @@ const MonthlySourceWiseReportTable: React.FC = () => {
 
   // const user = getUserInfo();
   // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
-                const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
-              
-                // Ref to prevent double fetch in Strict Mode or repeated effect calls
-                 const didFetchRef = useRef(false);
-              
-                useEffect(() => {
-                  if (!user) {
-                    setShowLogoutLoader(true);
-                  }
-                }, [user]);
+    const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+  
+    // Ref to prevent double fetch in Strict Mode or repeated effect calls
+      const didFetchRef = useRef(false);
+  
+    useEffect(() => {
+      if (!user) {
+        setShowLogoutLoader(true);
+      }
+    }, [user]);
+
+    const options = [
+      { value: "0", label: "All Products" },
+      { value: "1", label: "Test Prep" },
+      { value: "2", label: "ACS" },
+      { value: "3", label: "Immigration" },
+    ];
+  
+    // ✅ keep only IDs
+    const [category, setCategory] = useState<string[]>(["1", "2"]);
+  
+    const handleCategoryChange = (selected: any) => {
+      if (!selected || selected.length === 0) {
+        setCategory([]);
+        return;
+      }
+
+      if (selected.some((opt: any) => opt.value === "0")) {
+        setCategory(["0"]);
+      } else {
+        setCategory(selected.map((opt: any) => opt.value));
+      }
+    };
 
   const fetchData = async () => {
       if (!user) return;
@@ -61,6 +85,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
+      catgoryIdVal: category,
     };
 
     try {
@@ -139,6 +164,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
           typeVal: user.type,
           monthVal: months,
           sourceVal: sourceIds,
+           catgoryIdVal: category,
         };
     try {
       const response = await getMonthlySourceWiseReportClickableLeadsList(payload); // Use a separate API if needed
@@ -149,6 +175,12 @@ const MonthlySourceWiseReportTable: React.FC = () => {
     } catch (err) {
       toast.error("Failed to fetch details.");
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setModalData([]);
+    setCurrentPage(1);   // ✅ reset to page 1
   };
 
      const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
@@ -233,7 +265,15 @@ const MonthlySourceWiseReportTable: React.FC = () => {
 
               <YearSelect value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} required />
             </Col>
-          
+             <Col md={4}>
+             <Select
+              options={options}
+              isMulti
+              value={options.filter((opt) => category.includes(opt.value))} // must pass objects
+              onChange={handleCategoryChange}
+              placeholder="Select categories..."
+            />
+            </Col>
             <Col md="auto">
               <button
                 type="button"
@@ -380,7 +420,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
           </div>
         )}
       </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered>
+      <Modal show={showModal} onHide={handleCloseModal} size="xl" centered>
         <Modal.Header closeButton>
           <Modal.Title>Lead Details ({modalData.length})</Modal.Title>
         </Modal.Header>
@@ -496,7 +536,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
           )}
         </Modal.Body>
         <Modal.Footer className="justify-content-end">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>
         </Modal.Footer>

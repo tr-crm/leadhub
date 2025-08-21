@@ -45,7 +45,8 @@ export interface RegionLeadReportRequest {
   userIdVal: number;
   tokenVal: string;
   typeVal: number;
-  regionVal:any
+  regionVal:any,
+  catgoryIdVal: string[];
 }
 
 export const getDailyReportLeadsList = async (
@@ -123,6 +124,7 @@ export interface MonthlyWiseReportPayload {
   userIdVal: number;
   tokenVal: string;
   typeVal: number;
+  catgoryIdVal : string[];
 }
 //getMonthlyWiseReportLeadsList
 
@@ -154,6 +156,7 @@ export interface MonthlySourceWiseReportPayload {
   userIdVal: number;
   tokenVal: string;
   typeVal: number;
+  catgoryIdVal: string[];
 }
 
 //getMonthlySourceWiseReportLeadsList
@@ -190,7 +193,7 @@ export interface DailyLeadClickableReportPayload {
   tokenVal: string;
   typeVal: string;
   regionVal: string;
-  catgoryIdVal: string;
+  catgoryIdVal: string[];
 }
 
 export const DailyLeadClickableReportRequest = async (payload: DailyLeadClickableReportPayload) => {
@@ -204,6 +207,7 @@ export interface DailyLeadDmMClickableReportPayload {
   userIdVal: string;
   tokenVal: string;
   typeVal: string;
+  catgoryIdVal: string[];
 }
 
 export const DailyLeadDmClickableReportRequest = async (payload: DailyLeadDmMClickableReportPayload) => {
@@ -220,7 +224,7 @@ export interface DailySourceWiseLeadClickablePayload {
   tokenVal: string;
   typeVal: string;
   regionVal: string;
-  catgoryIdVal: string;
+  catgoryIdVal: string[];
 }
 
 export const getDailySourceWiseLeadClickableDetails = async (payload: DailySourceWiseLeadClickablePayload) => {
@@ -238,6 +242,7 @@ export interface MonthlyWiseClickableReportPayload {
   tokenVal: string;
   typeVal: string;
   yearVal:string;
+  catgoryIdVal : string[];
 }
 
 export const MonthlyWiseClickableReportRequest = async (payload: MonthlyWiseClickableReportPayload) => {
@@ -254,6 +259,7 @@ export interface RegionLeadClickablePayload {
   typeVal: string;
   yearVal: string;
   monthVal: string;
+  catgoryIdVal: string[];
 }
 
 export const getRegionLeadClickableDetails = async (payload: RegionLeadClickablePayload) => {
@@ -272,6 +278,7 @@ export interface getMonthlySourceWiseReportClickablePayload {
   tokenVal: string;
   typeVal: string;
   yearVal: string;
+  catgoryIdVal : string[];
 }
 
 export const getMonthlySourceWiseReportClickableLeadsList = async (payload: getMonthlySourceWiseReportClickablePayload) => {
@@ -305,6 +312,7 @@ export interface getExecutivewiseLeadReportClickablepayload {
   typeVal: number;
   executiveIdVal:string[];
   leadStatusVal:string[];
+  catgoryIdVal: string[];
 }
 
 export const getExecutivewiseLeadReportClickableDetails = async (payload: getExecutivewiseLeadReportClickablepayload) => {
@@ -322,6 +330,7 @@ export interface ProductSourceReportRequest {
   tokenVal: string;
   typeVal: number;
   regionVal: string;
+  catgoryIdVal : string[];
 }
 
 export const getProductSourceWiseLeadReportLeadsList = async (payload: ProductSourceReportRequest) => {
@@ -347,3 +356,38 @@ export const getProductSourceWiseLeadClickableDetails = async (payload: ProductS
   return response.data;
 };
 
+
+
+export interface getDailyExecutivewiseLeadReportPayload {
+   fromDateVal: string;
+  toDateVal: string;
+  userIdVal: number;
+  tokenVal: string;
+  typeVal: number;
+  regionVal: string;
+    catgoryIdVal: string[];
+}
+
+export const getDailyExecutivewiseLeadReportList = async (payload: getDailyExecutivewiseLeadReportPayload) => {
+  const response = await api.post('/api/Reports/telecallerDateWiseReport', payload);
+  return response.data;
+};
+
+
+
+export interface getDailyExecutivewiseLeadReportClickablepayload {
+   fromDateVal: string;
+  toDateVal: string;
+   
+  userIdVal: number;
+ tokenVal: string;
+  typeVal: number;
+  executiveIdVal: string[];
+  leadStatusVal: string[];
+  catgoryIdVal: string[];
+}
+
+export const getDailyExecutivewiseLeadReportClickableDetails = async (payload: getDailyExecutivewiseLeadReportClickablepayload) => {
+  const response = await api.post('/api/Reports/executiveAndLeadStatusDateWiseReportClickable', payload);
+  return response.data;
+};

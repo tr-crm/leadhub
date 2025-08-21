@@ -16,6 +16,7 @@ import {
   CardTitle,
   Modal
 } from 'react-bootstrap';
+import Select from "react-select";
 import PageBreadcrumb from '@/components/PageBreadcrumb';
 import OrdersStatics from './components/OrdersStatics';
 import type { leadDashBord } from '@/services/dashboardservice.ts';
@@ -69,6 +70,30 @@ const user_first_comment = user?.first_comment ?? '';
   // Ref to prevent double fetch in Strict Mode or repeated effect calls
   const didFetchRef = useRef(false);
 
+const options = [
+    { value: "0", label: "All Products" },
+    { value: "1", label: "Test Prep" },
+    { value: "2", label: "ACS" },
+    { value: "3", label: "Immigration" },
+  ];
+
+  // ✅ keep only IDs
+  const [category, setCategory] = useState<string[]>(["1", "2"]);
+
+  const handleCategoryChange = (selected: any) => {
+     if (!selected || selected.length === 0) {
+      setCategory([]);
+      return;
+    }
+
+    if (selected.some((opt: any) => opt.value === "0")) {
+      setCategory(["0"]);
+    } else {
+      setCategory(selected.map((opt: any) => opt.value));
+    }
+  };
+
+
   useEffect(() => {
     if (!user) {
       setShowLogoutLoader(true);
@@ -104,6 +129,7 @@ const user_first_comment = user?.first_comment ?? '';
       tokenVal: user.access_token,
       typeVal: user.type,
       regionVal:region,
+      catgoryIdVal: category,
     };
 
     try {
@@ -344,7 +370,7 @@ const user_first_comment = user?.first_comment ?? '';
                 </Form.Select>
               </Col>
                  {(user.type === '1' || user.type === '2') && (
-             <Col md={3}>
+             <Col md={2}>
                 <RegionSelect
                   value={region}
                 //   onChange={handleRegionChange}
@@ -359,23 +385,17 @@ const user_first_comment = user?.first_comment ?? '';
                 
               </Col>
               )}
-              {(user.type === '3') && (
-                <Col md={3}>
-                <RegionSelect
-                  value={region}
-                //   onChange={handleRegionChange}
-                  onChange={(val) => {
-                      handleRegionChange(val?.value);
-                    
-                    }}
-                  label="Region"
-                  placeholder="All Regions"
-                  disabled
-                />
+              
 
-                
-              </Col>
-              )}
+              <Col md={4}>
+             <Select
+              options={options}
+              isMulti
+              value={options.filter((opt) => category.includes(opt.value))} // must pass objects
+              onChange={handleCategoryChange}
+              placeholder="Select categories..."
+            />
+            </Col>
 
               <Col md={2}>
                 <Button

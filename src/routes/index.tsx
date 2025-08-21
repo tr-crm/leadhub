@@ -34,6 +34,7 @@ const GlobalSearch = lazy(() => import('@/views/search'));
 const ProductSourceWiseLeadReport = lazy(() => import('@/views/reports/productsourcewisereport'));
 const GlobalCRMSearch = lazy(() => import('@/views/oldcrmsearch'));
 const FollowupsList = lazy(() => import('@/views/crmfollowup/crmfollowuplist'));
+const DailyExecutivewiseLeadReport = lazy(() => import('@/views/reports/dailyexecutiveleadreport'));
 
 export const loginRoutes: RouteObject[] = [
 
@@ -197,11 +198,12 @@ export const reportRoutes: RouteObject[] = [
          handle: {
            title: 'Daily DM Lead Report',
         }
-    },{
+    },
+    {
         path: '/report/executivewiseleadreport',
         element: <ExecutivewiseLeadReport/>,
          handle: {
-           title: 'Executive Wise Lead Report',
+           title: 'Month Wise Executive Report',
         }
     },
     {
@@ -232,7 +234,13 @@ export const reportRoutes: RouteObject[] = [
            title: 'Product And Source Wise Report',
         }
     }, 
-
+    {
+        path: '/report/dailyexecutiveleadreport',
+        element: <DailyExecutivewiseLeadReport/>,
+         handle: {
+           title: 'Daily Wise Executive Report',
+        }
+    },
     
    
 ]

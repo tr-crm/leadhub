@@ -11,6 +11,7 @@ import {
   Card,
   Button
 } from "react-bootstrap";
+import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
 import { getMonthlyWiseReportLeadsList, MonthlyWiseClickableReportRequest } from "@/services/reportsservice";
@@ -35,7 +36,28 @@ const MonthlyWiseReportTable: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const options = [
+      { value: "0", label: "All Products" },
+      { value: "1", label: "Test Prep" },
+      { value: "2", label: "ACS" },
+      { value: "3", label: "Immigration" },
+    ];
 
+    // ✅ keep only IDs
+    const [category, setCategory] = useState<string[]>(["1", "2"]);
+
+    const handleCategoryChange = (selected: any) => {
+      if (!selected || selected.length === 0) {
+        setCategory([]);
+        return;
+      }
+
+      if (selected.some((opt: any) => opt.value === "0")) {
+        setCategory(["0"]);
+      } else {
+        setCategory(selected.map((opt: any) => opt.value));
+      }
+    };
   const user = getUserInfo();
 
   const fetchData = async () => {
@@ -47,6 +69,7 @@ const MonthlyWiseReportTable: React.FC = () => {
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
+      catgoryIdVal: category,
     };
 
     try {
@@ -110,6 +133,7 @@ const MonthlyWiseReportTable: React.FC = () => {
         tokenVal: user.access_token,
         typeVal: user.type,
         yearVal:Array.isArray(dates) ? new Date(dates[0]).getFullYear().toString() : new Date(dates).getFullYear().toString(),
+        catgoryIdVal : category, // Use the same category filter
       };
     
         try {
@@ -137,7 +161,12 @@ const MonthlyWiseReportTable: React.FC = () => {
           setLoading(false);
         }
       };
-      // const statusesWithId = sortedData.find(d => d.statuses?.length)?.statuses || [];
+    
+      const handleCloseModal = () => {
+        setShowModal(false);
+        setModalData([]);
+        setCurrentPage(1);   // ✅ reset to page 1
+      };
 
 
          const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
@@ -211,11 +240,19 @@ const MonthlyWiseReportTable: React.FC = () => {
       <div className="mt-4 bg-white p-4 shadow-sm rounded">
         <Form className="mb-3">
           <Row>
-            <Col md={3}>
+            <Col md={2}>
 
               <YearSelect value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} required />
             </Col>
-          
+             <Col md={4}>
+             <Select
+              options={options}
+              isMulti
+              value={options.filter((opt) => category.includes(opt.value))} // must pass objects
+              onChange={handleCategoryChange}
+              placeholder="Select categories..."
+            />
+            </Col>
             <Col md="auto">
               <button
                 type="button"
@@ -361,7 +398,7 @@ const MonthlyWiseReportTable: React.FC = () => {
       </div>
 
         
-        <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered>
+        <Modal show={showModal} onHide={handleCloseModal} size="xl" centered>
         <Modal.Header closeButton>
           <Modal.Title>Lead Details ({modalData.length})</Modal.Title>
         </Modal.Header>
@@ -477,7 +514,7 @@ const MonthlyWiseReportTable: React.FC = () => {
           )}
         </Modal.Body>
         <Modal.Footer className="justify-content-end">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>
         </Modal.Footer>

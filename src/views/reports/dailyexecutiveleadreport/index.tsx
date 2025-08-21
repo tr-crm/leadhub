@@ -12,14 +12,14 @@ import {
   Button
 } from "react-bootstrap";
 import Select from "react-select";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
-import { getExecutivewiseLeadReportList , getExecutivewiseLeadReportClickableDetails} from "@/services/reportsservice";
+import { getDailyExecutivewiseLeadReportList , getDailyExecutivewiseLeadReportClickableDetails} from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
-import type { RegionLeadReportRequest,getExecutivewiseLeadReportClickablepayload } from "@/services/reportsservice";
+import type { getDailyExecutivewiseLeadReportPayload ,getDailyExecutivewiseLeadReportClickablepayload } from "@/services/reportsservice";
 import { useSortableData } from "@/hooks/useSortableData";
-import YearSelect from '@/components/yearselect';
-import MonthSelect from '@/components/monthselect';
 import RegionSelect from '@/components/regionselect';
  import { toast } from 'react-toastify';
 import LogoutOverlay from '@/components/LogoutOverlay';
@@ -27,21 +27,22 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 import type { Lead } from '@/types/lead.types';
 import DataTable from 'react-data-table-component';
 
-const padMonth = (month: number) => String(month).padStart(2, "0");
 
-const DailyLeadReportTable: React.FC = () => {
+
+const DailyExecutiveLeadReportTable: React.FC = () => {
   const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
-  const now = new Date();
+  
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [selectedYear, setSelectedYear] = useState<string>(
-    now.getFullYear().toString()
-  );
-  const [selectedMonth, setSelectedMonth] = useState<string>(
-    padMonth(now.getMonth() + 1)
-  );
+  const [fromDate, setFromDate] = useState<Date | null>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 7);
+    return d;
+  });
+
+  const [toDate, setToDate] = useState<Date | null>(new Date());
   
     // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
               const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
@@ -98,10 +99,11 @@ const DailyLeadReportTable: React.FC = () => {
    const handleOpenModelPopupClick = async (executiveId: string[], statusId: string[]) => {
      setShowModal(true);
      setLoading(true);
+     setCurrentPage(1); 
  
-     const payload: getExecutivewiseLeadReportClickablepayload = {
-        yearVal: selectedYear,
-        monthVal: selectedMonth,
+     const payload: getDailyExecutivewiseLeadReportClickablepayload = {
+        fromDateVal: fromDate?.toISOString().slice(0, 10) ?? '',
+        toDateVal: toDate?.toISOString().slice(0, 10) ?? '',
         userIdVal: user.id,
         tokenVal: user.access_token,
         typeVal: user.type,
@@ -111,7 +113,7 @@ const DailyLeadReportTable: React.FC = () => {
      };
  
      try {
-       const response = await getExecutivewiseLeadReportClickableDetails(payload); // create or import this API
+       const response = await getDailyExecutivewiseLeadReportClickableDetails(payload); // create or import this API
        if (response.response === 'login_error') {
          setModalData([]);
          toast.dismiss();
@@ -135,18 +137,16 @@ const DailyLeadReportTable: React.FC = () => {
 
    const handleCloseModal = () => {
     setShowModal(false);
-    setModalData([]);
-    setCurrentPage(1);   // ✅ reset to page 1
+    setModalData([]);  // or setModalData(null) if you prefer
   };
-
   const fetchData = async () => {
          if (!user) return;
     setLoading(true);
     setError("");
 
-    const requestBody: RegionLeadReportRequest = {
-      yearVal: selectedYear,
-      monthVal: selectedMonth,
+    const requestBody: getDailyExecutivewiseLeadReportPayload = {
+     fromDateVal: fromDate?.toISOString().slice(0, 10) ?? '',
+     toDateVal: toDate?.toISOString().slice(0, 10) ?? '',
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
@@ -156,7 +156,7 @@ const DailyLeadReportTable: React.FC = () => {
 
    
      try {
-     const response = await getExecutivewiseLeadReportList(requestBody);
+     const response = await getDailyExecutivewiseLeadReportList(requestBody);
         
     //    console.log(response.data.response);
     
@@ -193,7 +193,7 @@ const DailyLeadReportTable: React.FC = () => {
     fetchData()
       didFetchRef.current = true;
     }
-  }, [selectedYear, selectedMonth]);
+  }, [fromDate, toDate]);
 
    
 
@@ -228,6 +228,8 @@ const handleRegionChange = (selectedRegion:any) => {
    
     setRegion(selectedRegion);
   };
+
+   
 
        const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
         if (!data || typeof data !== 'object') {
@@ -296,7 +298,7 @@ const handleRegionChange = (selectedRegion:any) => {
 
   return (
     <Container fluid>
-      <PageBreadcrumb title="Executive Wise Lead Report" />
+      <PageBreadcrumb title="Daily Wise Executive Report" />
            {showLogoutLoader && (
         <LogoutOverlay
           duration={5} 
@@ -308,18 +310,13 @@ const handleRegionChange = (selectedRegion:any) => {
       <div className="mt-4 bg-white p-4 shadow-sm rounded">
         <Form className="mb-3">
           <Row>
-            <Col md={2}>
-
-              <YearSelect value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} required />
+           <Col md={2}>
+            {/* <Form.Label>From Date</Form.Label> */}
+            <DatePicker selected={fromDate} onChange={setFromDate} className="form-control" dateFormat="yyyy-MM-dd" />
             </Col>
             <Col md={2}>
-              <MonthSelect
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                required
-              />
-
-
+            {/* <Form.Label>To Date</Form.Label> */}
+            <DatePicker selected={toDate} onChange={setToDate} className="form-control" dateFormat="yyyy-MM-dd" />
             </Col>
               {(user.type === '1' || user.type === '2') && (
              <Col md={2}>
@@ -626,4 +623,4 @@ const handleRegionChange = (selectedRegion:any) => {
   );
 };
 
-export default DailyLeadReportTable;
+export default DailyExecutiveLeadReportTable;

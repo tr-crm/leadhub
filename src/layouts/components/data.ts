@@ -114,7 +114,7 @@ export const menuItems: MenuItemType[] = [
 
   {
     key: "search",
-    label: "search",
+    label: "Search",
     icon: TbSearch,
     url: "/search",
     minLevel: [1, 2, 3, 4, 5],
@@ -256,13 +256,7 @@ export const menuItems: MenuItemType[] = [
         key: "Daily DM Lead Report",
         label: "Daily DM Lead Report",
         url: "/report/dailyleaddmreport",
-        minLevel: [1,2,8,9],
-      },
-      {
-        key: "Executive Wise Lead Report",
-        label: "Executive Wise Lead Report",
-        url: "report/executivewiseleadreport",
-        minLevel: [1,2,3],
+        minLevel: [8,9],
       },
       {
         key: "Monthly Wise Report",
@@ -282,7 +276,18 @@ export const menuItems: MenuItemType[] = [
         url: "/reports/productsourcewisereport",
         minLevel: [1, 2, 3],
       },
-      
+      {
+        key: "Month Wise Executive Report",
+        label: "Month Wise Executive Report",
+        url: "report/executivewiseleadreport",
+        minLevel: [1,2,3],
+      },
+      {
+        key: "Daily Wise Executive Report",
+        label: "Daily Wise Executive Report",
+        url: "report/dailyexecutiveleadreport",
+        minLevel: [1,2,3],
+      },
       
 
       

@@ -11,6 +11,7 @@ import {
   Button,
   Card
 } from "react-bootstrap";
+import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "./LeadReportTable.css";
 import { getDailyReportLeadsList, DailyLeadClickableReportRequest } from "@/services/reportsservice";
@@ -59,7 +60,29 @@ const DailyLeadReportTable: React.FC = () => {
     return '0';
   };
    const [region, setRegion] = useState<string>(getInitialRegionValue());
-  const [category, setCategory] = useState<string>('0');        
+  const options = [
+    { value: "0", label: "All Products" },
+    { value: "1", label: "Test Prep" },
+    { value: "2", label: "ACS" },
+    { value: "3", label: "Immigration" },
+  ];
+
+  // ✅ keep only IDs
+  const [category, setCategory] = useState<string[]>(["1", "2"]);
+
+  const handleCategoryChange = (selected: any) => {
+    if (!selected || selected.length === 0) {
+      setCategory([]);
+      return;
+    }
+
+    if (selected.some((opt: any) => opt.value === "0")) {
+      setCategory(["0"]);
+    } else {
+      setCategory(selected.map((opt: any) => opt.value));
+    }
+  };
+
   const didFetchRef = useRef(false);
   
            
@@ -151,7 +174,7 @@ const DailyLeadReportTable: React.FC = () => {
 const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: string[]) => {
      setShowModal(true);
     setLoading(true);
-
+    setCurrentPage(1); 
     const payload: DailyLeadClickableReportPayload = {
     leadDateVal: Array.isArray(dates) ? dates : [dates],
     leadStatusVal : statusIds,
@@ -188,14 +211,17 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
       setLoading(false);
     }
   };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setModalData([]);
+    setCurrentPage(1);   // ✅ reset to page 1
+  };
   const handleRegionChange = (selectedRegion:any) => {
    
     setRegion(selectedRegion);
   };
 
-    const handleCategoryChange = (selectedCategory: any) => {
-    setCategory(selectedCategory);
-    };
 
 
     
@@ -292,7 +318,7 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
 
             </Col>
              {(user.type === '1' || user.type === '2') && (
-             <Col md={3}>
+             <Col md={2}>
               <RegionSelect
                 value={region}
                 onChange={(val) => {
@@ -306,22 +332,17 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
             
           </Col>
            )}
-           {(user.type === '1' || user.type === '2') && (
-               <Col md={3}>
-              <Form.Group controlId="categorySelect">
-                <Form.Control
-                  as="select"
-                  value={category === "" ? "" : Number(category)}
-                  onChange={(e) => handleCategoryChange(Number(e.target.value))}
-                >
-                  <option value="">All Products</option>
-                  <option value="1">Test Prep</option>
-                  <option value="2">ACS</option>
-                  <option value="3">Immigration</option>
-                </Form.Control>
-              </Form.Group>
-                </Col>
-           )}
+          
+              <Col md={4}>
+             <Select
+              options={options}
+              isMulti
+              value={options.filter((opt) => category.includes(opt.value))} // must pass objects
+              onChange={handleCategoryChange}
+              placeholder="Select categories..."
+            />
+            </Col>
+          
             <Col md="auto">
               <button
                 type="button"
@@ -450,7 +471,7 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
         )}
       </div>
       
-     <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered>
+     <Modal show={showModal} onHide={handleCloseModal} size="xl" centered>
         <Modal.Header closeButton>
           <Modal.Title>Lead Details ({modalData.length})</Modal.Title>
         </Modal.Header>
@@ -566,7 +587,7 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
           )}
         </Modal.Body>
         <Modal.Footer className="justify-content-end">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>
         </Modal.Footer>

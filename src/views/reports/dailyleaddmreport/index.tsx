@@ -11,6 +11,7 @@ import {
   Card,
   Button
 } from "react-bootstrap";
+import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
 import { getDailyDMLeadReportList, DailyLeadDmClickableReportRequest } from "@/services/reportsservice";
@@ -66,7 +67,28 @@ const DailyLeadReportTable: React.FC = () => {
     return '0';
   };
   const [region, setRegion] = useState<string>(getInitialRegionValue());
+ const options = [
+    { value: "0", label: "All Products" },
+    { value: "1", label: "Test Prep" },
+    { value: "2", label: "ACS" },
+    { value: "3", label: "Immigration" },
+  ];
 
+  // ✅ keep only IDs
+  const [category, setCategory] = useState<string[]>(["1", "2"]);
+
+  const handleCategoryChange = (selected: any) => {
+    if (!selected || selected.length === 0) {
+      setCategory([]);
+      return;
+    }
+
+    if (selected.some((opt: any) => opt.value === "0")) {
+      setCategory(["0"]);
+    } else {
+      setCategory(selected.map((opt: any) => opt.value));
+    }
+  };
  
 
   const fetchData = async () => {
@@ -80,7 +102,8 @@ const DailyLeadReportTable: React.FC = () => {
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
-      regionVal:region
+      regionVal:region,
+      catgoryIdVal: category,
     };
 
    
@@ -161,13 +184,15 @@ const handleRegionChange = (selectedRegion:any) => {
   const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: string[]) => {
        setShowModal(true);
       setLoading(true);
-  
+      setCurrentPage(1); 
+
       const payload: DailyLeadDmMClickableReportPayload = {
       leadDateVal: Array.isArray(dates) ? dates : [dates],
       leadStatusVal : statusIds,
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
+      catgoryIdVal: category,
     };
   
       try {
@@ -197,6 +222,12 @@ const handleRegionChange = (selectedRegion:any) => {
       }
     };
     
+    const handleCloseModal = () => {
+    setShowModal(false);
+    setModalData([]);
+    setCurrentPage(1); 
+  };
+
 
       const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
         if (!data || typeof data !== 'object') {
@@ -276,11 +307,11 @@ const handleRegionChange = (selectedRegion:any) => {
       <div className="mt-4 bg-white p-4 shadow-sm rounded">
         <Form className="mb-3">
           <Row>
-            <Col md={3}>
+            <Col md={2}>
 
               <YearSelect value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} required />
             </Col>
-            <Col md={3}>
+            <Col md={2}>
               <MonthSelect
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
@@ -290,7 +321,7 @@ const handleRegionChange = (selectedRegion:any) => {
 
             </Col>
               {(user.type === '1' || user.type === '2') && (
-             <Col md={3}>
+             <Col md={2}>
             <RegionSelect
               value={region}
             //   onChange={handleRegionChange}
@@ -306,7 +337,7 @@ const handleRegionChange = (selectedRegion:any) => {
           </Col>
            )}
            {(user.type === '3' ) && (
-             <Col md={3}>
+             <Col md={2}>
             <RegionSelect
               value={region}
             //   onChange={handleRegionChange}
@@ -322,6 +353,16 @@ const handleRegionChange = (selectedRegion:any) => {
             
           </Col>
            )}
+
+            <Col md={4}>
+            <Select
+              options={options}
+              isMulti
+              value={options.filter((opt) => category.includes(opt.value))} // must pass objects
+              onChange={handleCategoryChange}
+              placeholder="Select categories..."
+            />
+            </Col>
             <Col md="auto">
               <button
                 type="button"
@@ -451,7 +492,7 @@ const handleRegionChange = (selectedRegion:any) => {
       </div>
 
      
-     <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered>
+     <Modal show={showModal} onHide={handleCloseModal} size="xl" centered>
         <Modal.Header closeButton>
           <Modal.Title>Lead Details ({modalData.length})</Modal.Title>
         </Modal.Header>
@@ -567,7 +608,7 @@ const handleRegionChange = (selectedRegion:any) => {
           )}
         </Modal.Body>
         <Modal.Footer className="justify-content-end">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>
         </Modal.Footer>

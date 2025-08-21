@@ -11,6 +11,7 @@ import {
   Card,
   Button
 } from "react-bootstrap";
+import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
 import { getProductSourceWiseLeadReportLeadsList, getProductSourceWiseLeadClickableDetails } from "@/services/reportsservice";
@@ -47,8 +48,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<any[]>([]);
-
-
+ 
   const handleOpenModelPopupClick = async (productIds: string[] | string, sourceIds: string[]) => {
     setShowModal(true);
     setLoading(true);
@@ -88,6 +88,12 @@ const ProductSourceWiseReportTable: React.FC = () => {
   };
 
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setModalData([]);
+    setCurrentPage(1);   // ✅ reset to page 1
+  };
+
  // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
     const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
     
@@ -110,7 +116,29 @@ const ProductSourceWiseReportTable: React.FC = () => {
       return '0';
     };
      const [region, setRegion] = useState<string>(getInitialRegionValue());
-     
+      const options = [
+      { value: "0", label: "All Products" },
+      { value: "1", label: "Test Prep" },
+      { value: "2", label: "ACS" },
+      { value: "3", label: "Immigration" },
+    ];
+  
+    // ✅ keep only IDs
+    const [category, setCategory] = useState<string[]>(["1", "2"]);
+  
+    const handleCategoryChange = (selected: any) => {
+      if (!selected || selected.length === 0) {
+        setCategory([]);
+        return;
+      }
+
+      if (selected.some((opt: any) => opt.value === "0")) {
+        setCategory(["0"]);
+      } else {
+        setCategory(selected.map((opt: any) => opt.value));
+      }
+    };
+
 
   const fetchData = async () => {
      if (!user) return;
@@ -124,6 +152,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
       tokenVal: user.access_token,
       typeVal: user.type,
       regionVal: region,
+      catgoryIdVal: category,
     };
 
     try {
@@ -293,7 +322,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
               />
             </Col>
             {(user.type === '1' || user.type === '2') && (
-                 <Col md={3}>
+                 <Col md={2}>
                     <RegionSelect
                         value={region}
                         onChange={(val) => {
@@ -309,6 +338,16 @@ const ProductSourceWiseReportTable: React.FC = () => {
             )
 
             }
+
+              <Col md={4}>
+             <Select
+              options={options}
+              isMulti
+              value={options.filter((opt) => category.includes(opt.value))} // must pass objects
+              onChange={handleCategoryChange}
+              placeholder="Select categories..."
+            />
+            </Col>
            
             <Col md="auto">
               <button
@@ -452,7 +491,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
         )}
       </div>
 
-          <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" centered>
+          <Modal show={showModal} onHide={handleCloseModal} size="xl" centered>
         <Modal.Header closeButton>
           <Modal.Title>Lead Details ({modalData.length})</Modal.Title>
         </Modal.Header>
@@ -568,7 +607,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
           )}
         </Modal.Body>
         <Modal.Footer className="justify-content-end">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Close
           </Button>
         </Modal.Footer>
