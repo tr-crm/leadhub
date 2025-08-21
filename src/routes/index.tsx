@@ -282,7 +282,7 @@ export const dailyJobsRoutes: RouteObject[] = [
         path: '/jobs/list', 
         element: <DailyJobList/>,
         handle: {
-           title: 'Daily Job List',
+           title: 'Daily Job List', 
         }
     }
 ]
