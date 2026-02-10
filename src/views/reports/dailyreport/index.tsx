@@ -13,7 +13,7 @@ import {
 } from "react-bootstrap";
 import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
-import "./LeadReportTable.css";
+import "../executivewiseleadreport/report.css";
 import { getDailyReportLeadsList, DailyLeadClickableReportRequest } from "@/services/reportsservice";
 import type { DailyLead , DailyLeadClickableReportPayload} from "@/services/reportsservice";
 import type { DailyLeadReportRequest } from "@/services/reportsservice";
@@ -33,6 +33,7 @@ const DailyLeadReportTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10); // Or whatever your page size is
   
+const EXCLUDED_STATUS_ID = "0"; // Branch Assigned
 
 
   const [selectedYear, setSelectedYear] = useState<string>(
@@ -162,8 +163,16 @@ const DailyLeadReportTable: React.FC = () => {
     );
   }, [data, allStatuses]);
 
-  const grandTotal = useMemo(() => {
-    return data.reduce((sum, row) => sum + row.total, 0);
+  // const grandTotal = useMemo(() => {
+  //   return data.reduce((sum, row) => sum + row.total, 0);          
+  // }, [data]);
+   const grandTotal = useMemo(() => {
+    return data.reduce((sum, row) => {
+      const rowTotal = row.statuses
+        .filter((s) => String(s.id) !== EXCLUDED_STATUS_ID) // ❌ exclude Branch Assigned
+        .reduce((r, s) => r + s.count, 0);
+      return sum + rowTotal;
+    }, 0);
   }, [data]);
 
   const SortArrow = ({ columnKey }: { columnKey: string }) => {
@@ -332,6 +341,15 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
             
           </Col>
            )}
+           {((user.type === '5') && (user.region === '1')) && (
+                <Col md={3}>
+        
+                  <Form.Select value={region} onChange={(e) => handleRegionChange(e.target.value)}>
+                      <option value="0">All Region</option>
+                      <option value="1">TR</option>
+                    </Form.Select>
+                </Col>
+            )}
           
               <Col md={4}>
              <Select
@@ -371,56 +389,89 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
                   <th onClick={() => requestSort("date")}>
                     Date <SortArrow columnKey="date" />
                   </th>
+                   <th onClick={() => requestSort("total")}>
+                    Total <SortArrow columnKey="total" />
+                  </th>
                   {allStatuses.map((status) => (
                     <th key={status} onClick={() => requestSort(status)}>
                       {status}
                       <SortArrow columnKey={status} />
                     </th>
                   ))}
-                  <th onClick={() => requestSort("total")}>
-                    Total <SortArrow columnKey="total" />
-                  </th>
+                 
                 </tr>
               </thead>
               <tbody>
-                {sortedData.map(({ date, statuses, total }) => (
-                  <tr key={date}>
-                    <td>{date}</td>
-                    {allStatuses.map((statusName) => {
-                      const status = statuses.find((s) => s.name === statusName);
-                      const count = status?.count || 0;
-                      const statusId = status?.id;
-                      return <td
-                        key={statusName}
-                        style={{
-                          cursor: count > 0 ? "pointer" : "default",
-                        }}
-                        onClick={() => {
-                          if (count > 0 && statusId) {
-                            handleOpenModelPopupClick(date, [statusId]);
-                          }
-                        }}
-                      >
-                        {count}
-                      </td>;
-                    })}
-                    <td
-                      style={{ cursor: total > 0 ? "pointer" : "default",  }}
+            {sortedData.map(({ date, statuses }) => {
+              console.log("Rendering row for date:", date, "statuses:", statuses);
+
+                  const rowTotal = statuses
+                    .filter((s) => String(s.id) !== EXCLUDED_STATUS_ID)
+                    .reduce((sum, s) => sum + s.count, 0);
+    return (
+      <tr key={date}>
+        <td>{date}</td>
+ {/* ✅ TOTAL — same as footer (NOT clickable) */}
+                      <td style={{ cursor: rowTotal > 0 ? "pointer" : "default", fontWeight: 600 }}
                       onClick={() => {
-                        if (total > 0) {
-                          const allStatusIds = statuses.map((s) => s.id).filter(Boolean);
-                          handleOpenModelPopupClick(date, allStatusIds);
-                        }
-                      }}
-                    >
-                      {total}
-                    </td>
-                  </tr>
-                ))}
+                                  if (rowTotal > 0) {
+                                    const allStatusIds = statuses.map((s) => s.id);
+                                    handleOpenModelPopupClick([date], allStatusIds); // ✅ id now exists
+                                  }
+                                }}
+                      >
+                        {rowTotal}
+                      </td>
+        {allStatuses.map((statusName) => {
+          const status = statuses.find((s) => s.name === statusName);
+            const statusId = status?.id;
+          const count = status?.count ?? 0;
+
+          // return <td key={statusName}>{count}</td>;
+              return (
+                          <td
+                            key={statusName}
+                            style={{
+                              cursor:
+                                count > 0 && statusId !== EXCLUDED_STATUS_ID
+                                  ? "pointer"
+                                  : "default",
+                              opacity: statusId === EXCLUDED_STATUS_ID ? 0.6 : 1,
+                            }}
+                            onClick={() => {
+                              if (count > 0 && statusId) {
+                                handleOpenModelPopupClick([date], [statusId]);
+                              }
+                            }}
+                          >
+                            {count}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
+
               <tfoot>
               <tr>
                 <td>Total</td>
+                  <td
+                  style={{
+                    cursor: grandTotal > 0 ? "pointer" : "default",
+                  }}
+                  onClick={() => {
+                    if (grandTotal > 0) {
+                      const allDates = sortedData.map((row) => row.date);
+                      const allStatusIds = sortedData
+                        .flatMap((row) => row.statuses.map((s) => s.id))
+                        .filter(Boolean);
+                      handleOpenModelPopupClick(allDates, [...new Set(allStatusIds)]);
+                    }
+                  }}
+                >
+                  {grandTotal}
+                </td>
                 {footerTotals.map((sum, idx) => {
                   const statusName = allStatuses[idx]; // get status name by column index
                   const statusIds = sortedData
@@ -447,22 +498,7 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
                     </td>
                   );
                 })}
-                <td
-                  style={{
-                    cursor: grandTotal > 0 ? "pointer" : "default",
-                  }}
-                  onClick={() => {
-                    if (grandTotal > 0) {
-                      const allDates = sortedData.map((row) => row.date);
-                      const allStatusIds = sortedData
-                        .flatMap((row) => row.statuses.map((s) => s.id))
-                        .filter(Boolean);
-                      handleOpenModelPopupClick(allDates, [...new Set(allStatusIds)]);
-                    }
-                  }}
-                >
-                  {grandTotal}
-                </td>
+              
               </tr>
             </tfoot>
 
@@ -489,7 +525,7 @@ const handleOpenModelPopupClick = async (dates: string[] | string, statusIds: st
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

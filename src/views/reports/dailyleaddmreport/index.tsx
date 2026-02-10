@@ -16,7 +16,7 @@ import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
 import { getDailyDMLeadReportList, DailyLeadDmClickableReportRequest } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
-import type { RegionLeadReportRequest,DailyLeadDmMClickableReportPayload } from "@/services/reportsservice";
+import type { RegionLeadReportRequest } from "@/services/reportsservice";
 import { useSortableData } from "@/hooks/useSortableData";
 import YearSelect from '@/components/yearselect';
 import MonthSelect from '@/components/monthselect';
@@ -186,13 +186,14 @@ const handleRegionChange = (selectedRegion:any) => {
       setLoading(true);
       setCurrentPage(1); 
 
-      const payload: DailyLeadDmMClickableReportPayload = {
+      const payload: any = {
       leadDateVal: Array.isArray(dates) ? dates : [dates],
       leadStatusVal : statusIds,
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
       catgoryIdVal: category,
+       regionVal:region,
     };
   
       try {
@@ -510,7 +511,7 @@ const handleRegionChange = (selectedRegion:any) => {
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

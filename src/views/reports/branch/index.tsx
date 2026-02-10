@@ -17,7 +17,7 @@ import PageBreadcrumb from "@/components/PageBreadcrumb";
 import "../dailyreport/LeadReportTable.css";
 import { getBranchwiseLeadReportList, getRegionLeadClickableDetails } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
-import type { BranchLeadReportRequest, RegionLeadClickablePayload } from "@/services/reportsservice";
+import type { BranchLeadReportRequest } from "@/services/reportsservice";
 import { useSortableData } from "@/hooks/useSortableData";
 import YearSelect from '@/components/yearselect';
 import MonthSelect from '@/components/monthselect';
@@ -190,7 +190,7 @@ const handleRegionChange = (selectedRegion:any) => {
     setShowModal(true);
     setLoading(true);
      setCurrentPage(1); 
-    const payload : RegionLeadClickablePayload = {
+    const payload : any = {
       branchIdVal: branchIds,
       leadStatusVal: statusIds,
       userIdVal: user.id,
@@ -199,6 +199,7 @@ const handleRegionChange = (selectedRegion:any) => {
       yearVal: selectedYear,
       monthVal: selectedMonth,
       catgoryIdVal: category,
+       regionVal:region,
     };
 
     try {
@@ -354,6 +355,16 @@ const handleRegionChange = (selectedRegion:any) => {
 
             
           </Col>
+           )}
+  {/* {user.region} */}
+           {((user.type === '5') && (user.region === '1')) && (
+              <Col md={3}>
+       
+                <Form.Select value={region} onChange={(e) => handleRegionChange(e.target.value)}>
+                    <option value="0">All Region</option>
+                    <option value="1">TR</option>
+                  </Form.Select>
+              </Col>
            )}
 
                 <Col md={4}>
@@ -540,7 +551,7 @@ const handleRegionChange = (selectedRegion:any) => {
                     cell: (_row, index) => (
                       <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                     ),
-                    width: "60px",
+                    width: "80px",
                   },
                   {
                     name: "Date",

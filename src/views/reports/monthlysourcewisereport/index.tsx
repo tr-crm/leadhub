@@ -13,17 +13,20 @@ import {
 } from "react-bootstrap";
 import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
-import "../dailyreport/LeadReportTable.css";
+import "../executivewiseleadreport/report.css";
 import { getMonthlySourceWiseReportLeadsList,getMonthlySourceWiseReportClickableLeadsList } from "@/services/reportsservice";
 import type { MonthlyLead } from "@/services/reportsservice";
 import type { MonthlySourceWiseReportPayload, getMonthlySourceWiseReportClickablePayload } from "@/services/reportsservice";
-import { useSortableData } from "@/hooks/useSortableData";
+
 import YearSelect from '@/components/yearselect';
  import { toast } from 'react-toastify';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 import type { Lead } from '@/types/lead.types';
 import DataTable from 'react-data-table-component';
+import RegionSelect from '@/components/regionselect';
+
+
 
 const MonthlySourceWiseReportTable: React.FC = () => {
   const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
@@ -86,6 +89,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
       tokenVal: user.access_token,
       typeVal: user.type,
       catgoryIdVal: category,
+      regionVal: region,
     };
 
     try {
@@ -130,8 +134,53 @@ const MonthlySourceWiseReportTable: React.FC = () => {
     );
     return Array.from(set);
   }, [data]);
+   
+  // 1️⃣ sort state
+const [sortConfig, setSortConfig] = useState<{
+  key: keyof MonthlyLead | string;
+  direction: "asc" | "desc";
+} | null>(null);
 
-  const { sortedItems: sortedData, requestSort, sortConfig } = useSortableData(data);
+// 2️⃣ requestSort function
+const requestSort = (key: keyof MonthlyLead | string) => {
+  setSortConfig((prev) => {
+    if (prev?.key === key) {
+      return {
+        key,
+        direction: prev.direction === "asc" ? "desc" : "asc",
+      };
+    }
+    return { key, direction: "asc" };
+  });
+};
+
+// 3️⃣ sorted data
+const sortedData = useMemo(() => {
+  if (!sortConfig) return data;
+
+  return [...data].sort((a, b) => {
+    let aValue = 0;
+    let bValue = 0;
+
+    if (sortConfig.key === "month") {
+      aValue = parseInt(a.month.split("-")[1], 10);
+      bValue = parseInt(b.month.split("-")[1], 10);
+    } else if (sortConfig.key === "total") {
+      aValue = a.total;
+      bValue = b.total;
+    } else {
+      const aStatus = a.statuses.find(s => s.name === sortConfig.key);
+      const bStatus = b.statuses.find(s => s.name === sortConfig.key);
+      aValue = aStatus?.count ?? 0;
+      bValue = bStatus?.count ?? 0;
+    }
+
+    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+}, [data, sortConfig]);
+
 
   const footerTotals = useMemo(() => {
     return allStatuses.map((statusName) =>
@@ -146,17 +195,34 @@ const MonthlySourceWiseReportTable: React.FC = () => {
     return data.reduce((sum, row) => sum + row.total, 0);
   }, [data]);
 
-  const SortArrow = ({ columnKey }: { columnKey: string }) => {
-    if (sortConfig.key !== columnKey) return null;
-    return sortConfig.direction === "asc" ? <> ↑</> : <> ↓</>;
+ const SortArrow = ({ columnKey }: { columnKey: string }) => {
+  if (!sortConfig || sortConfig.key !== columnKey) return null;
+  return sortConfig.direction === "asc" ? <> ↑</> : <> ↓</>;
+};
+
+   const type=user.type;
+    const getInitialRegionValue = (): string => {
+      if (type === '1' || type === '2') {
+        return '1';
+      } else if (user.region) {
+        return String(user.region);
+      }
+      return '0';
+    };
+     const [region, setRegion] = useState<string>(getInitialRegionValue());
+     const handleRegionChange = (selectedRegion:any) => {
+   
+    setRegion(selectedRegion);
   };
-  
 
   const [modalData, setModalData] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
 
   const handleCellClick = async (months: string[], sourceIds: string[]) => {
      setShowModal(true);
+      setModalLoading(true); 
+       setModalData([]);  
         const payload : getMonthlySourceWiseReportClickablePayload = {
          yearVal: selectedYear,
           userIdVal: user.id,
@@ -165,6 +231,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
           monthVal: months,
           sourceVal: sourceIds,
            catgoryIdVal: category,
+          regionVal: region
         };
     try {
       const response = await getMonthlySourceWiseReportClickableLeadsList(payload); // Use a separate API if needed
@@ -174,13 +241,16 @@ const MonthlySourceWiseReportTable: React.FC = () => {
       }
     } catch (err) {
       toast.error("Failed to fetch details.");
-    }
+    } finally {
+        setModalLoading(false);  // ✅ stop modal loading
+      }
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setModalData([]);
-    setCurrentPage(1);   // ✅ reset to page 1
+    setCurrentPage(1); 
+   
   };
 
      const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
@@ -249,7 +319,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
 
   return (
     <Container fluid>
-      <PageBreadcrumb title="Monthly Lead Report" />
+      <PageBreadcrumb title="Monthly Source Lead Report" />
            {showLogoutLoader && (
   <LogoutOverlay
     duration={5} 
@@ -265,6 +335,30 @@ const MonthlySourceWiseReportTable: React.FC = () => {
 
               <YearSelect value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} required />
             </Col>
+            {(user.type === '1' || user.type === '2') && (
+             <Col md={2}>
+              <RegionSelect
+                value={region}
+                onChange={(val) => {
+                    handleRegionChange(val?.value ?? 0);
+                  
+                  }}
+                label="Region"
+                placeholder="All Regions"
+              />
+
+            
+          </Col>
+           )}
+             {((user.type === '5') && (user.region === '1')) && (
+                <Col md={3}>
+        
+                  <Form.Select value={region} onChange={(e) => handleRegionChange(e.target.value)}>
+                      <option value="0">All Region</option>
+                      <option value="1">TR</option>
+                    </Form.Select>
+                </Col>
+              )}
              <Col md={4}>
              <Select
               options={options}
@@ -302,95 +396,73 @@ const MonthlySourceWiseReportTable: React.FC = () => {
                   <th onClick={() => requestSort("month")}>
                     Date <SortArrow columnKey="month" />
                   </th>
+                   <th onClick={() => requestSort("total")}>
+                    Total <SortArrow columnKey="total" />
+                  </th>
                  {allStatuses.map((status) => (
                     <th key={status} onClick={() => requestSort(status)}>
                       {status}
                       <SortArrow columnKey={status} />
                     </th>
                   ))}
-                  <th onClick={() => requestSort("total")}>
-                    Total <SortArrow columnKey="total" />
-                  </th>
+                 
                 </tr>
               </thead>
-             <tbody>
-               {sortedData.map(({ month, statuses, total }) => {
-                const monthIndex = parseInt(month.slice(-2), 10) - 1;
-                const displayMonth = new Date(0, monthIndex).toLocaleString("default", {
-                  month: "long",
-                });
+           <tbody>
+            {sortedData.map(({ month, statuses, total }) => {
+              const monthNo = month.split("-")[1].padStart(2, "0");
+              const monthIndex = Number(monthNo) - 1;
 
-                return (
-                  <tr key={month}>
-                    <td>{displayMonth}</td>
+              const displayMonth = new Date(0, monthIndex).toLocaleString("default", {
+                month: "long",
+              });
 
-                    {allStatuses.map((statusName) => {
-                      const status = statuses.find((s) => s.name === statusName);
-                      const count = status ? status.count : 0;
-                      const sourceId = status ? status.id.toString() : "";
+              return (
+                <tr key={month}>
+                  {/* ✅ Use displayMonth or monthNo */}
+                  <td>{displayMonth}</td>
 
-                      return (
-                        <td
-                          key={statusName}
-                          style={{
-                            cursor: count > 0 ? "pointer" : "default",
-                          }}
-                          onClick={() => {
-                            if (count > 0) {
-                              // single month, single source
-                              handleCellClick([month.slice(-2)], [sourceId]);
-                            }
-                          }}
-                        >
-                          {count}
-                        </td>
-                      );
-                    })}
+                  <td
+                    style={{ cursor: total > 0 ? "pointer" : "default" }}
+                    onClick={() => {
+                      if (total > 0) {
+                        const allSourceIds = statuses.map((s: any) =>
+                          s.id.toString()
+                        );
+                        handleCellClick([monthNo], allSourceIds);
+                      }
+                    }}
+                  >
+                    {total}
+                  </td>
 
-                    <td
-                      style={{
-                        cursor: total > 0 ? "pointer" : "default",
-                      }}
-                      onClick={() => {
-                        if (total > 0) {
-                          const allSourceIds = statuses.map((s: any) => s.id.toString());
-                          // single month, all sources
-                          handleCellClick([month.slice(-2)], allSourceIds);
-                        }
-                      }}
-                    >
-                      {total}
-                    </td>
-                  </tr>
-                );
-              })}
+                  {allStatuses.map((statusName) => {
+                    const status = statuses.find((s) => s.name === statusName);
+                    const count = status?.count ?? 0;
+                    const sourceId = status?.id?.toString();
 
-              </tbody>
+                    return (
+                      <td
+                        key={statusName}
+                        style={{ cursor: count > 0 ? "pointer" : "default" }}
+                        onClick={() => {
+                          if (count > 0 && sourceId) {
+                            handleCellClick([monthNo], [sourceId]);
+                          }
+                        }}
+                      >
+                        {count}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+
                 <tfoot>
                   <tr>
                     <td>Total</td>
-                    {footerTotals.map((sum, idx) => {
-                      // Try to find a sourceId for the current column index
-                      const sourceId = sortedData.find(row => row.statuses[idx])?.statuses[idx]?.id?.toString();
-
-                      return (
-                        <td
-                          key={idx}
-                          style={{
-                            cursor: sum > 0 ? "pointer" : "default",
-                          }}
-                          onClick={() => {
-                            if (sum > 0 && sourceId) {
-                              const allMonthValues = sortedData.map((d) => d.month.slice(-2)); // e.g., ["07", "08"]
-                              handleCellClick(allMonthValues, [sourceId]); // All months, single source
-                            }
-                          }}
-                        >
-                          {sum}
-                        </td>
-                      );
-                    })}
-
                     <td
                       style={{
                         cursor: grandTotal > 0 ? "pointer" : "default",
@@ -412,6 +484,33 @@ const MonthlySourceWiseReportTable: React.FC = () => {
                     >
                       {grandTotal}
                     </td>
+                    {footerTotals.map((sum, idx) => {
+                      // Try to find a sourceId for the current column index
+                      const sourceId = sortedData.find(row => row.statuses[idx])?.statuses[idx]?.id?.toString();
+
+                      return (
+                        <td
+                          key={idx}
+                          style={{
+                            cursor: sum > 0 ? "pointer" : "default",
+                          }}
+                          onClick={() => {
+                            if (sum > 0 && sourceId) {
+                              const allMonthValues = sortedData.map((d) => {
+                                const monthPart = d.month.split("-")[1]; // get the month
+                                return monthPart.padStart(2, "0");           // pad single-digit months
+                              });
+                              handleCellClick(allMonthValues, [sourceId]); // All months, single source
+                            }
+                          }}
+                        >
+                          {sum}
+                        </td>
+                      );
+                    })}
+
+
+                    
                   </tr>
                 </tfoot>
 
@@ -425,7 +524,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
           <Modal.Title>Lead Details ({modalData.length})</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ maxHeight: '80vh', overflowY: 'auto' }}>
-          {loading ? (
+          {modalLoading  ? (
             <div className="text-center">
               <Spinner animation="border" />
               <p>Loading...</p>
@@ -438,7 +537,7 @@ const MonthlySourceWiseReportTable: React.FC = () => {
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo,  useCallback } from 'react';
 import { FaEye, FaEdit } from 'react-icons/fa';
 
 import Select from 'react-select';
@@ -15,17 +15,17 @@ import {
   Col,
   Spinner,
   Alert,
+  Dropdown
 } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
 import type {
-  LeadRequestPayload,
   LeadUpdateRequestPayload,
   LeadIdBasedRequestPayload,
 } from '@/services/leadservice';
 import { getLeadsList, updateLead, addLeadFollowUp, LeadIdBasedDetails } from '@/services/leadservice';
-import { SourceList, getCategoryList, getSubCategoryList, getBranchList, ProductList, ExecutiveList, StatusList,getQualityList } from '@/services/generalservice';
+import { SourceList, getCategoryList, getSubCategoryList, getRegionBasedBranchList, ProductList, StatusList, getQualityList, RegionList, getUserListByRegion, } from '@/services/generalservice';
 import type { Lead } from '@/types/lead.types';
 import { toast } from 'react-toastify';
 import SourceSelect from '@/components/soucrelist';
@@ -33,6 +33,7 @@ import StatusSelect from '@/components/statusselect';
 import ExecutiveSelect from '@/components/executiveselect';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+import { getSavedFilters, addSavedFilters } from '@/services/userservice';
 
 interface OptionType {
   value: any;
@@ -66,38 +67,138 @@ interface LeadFormData {
   branchVal?: any;
   executiveIdVal?: any;
   leadStatusVal?: any; // ← THIS is required
-  qualityscoreVal?:any;
-  touchStatusVal?:any;
+  qualityscoreVal?: any;
+  touchStatusVal?: any;
   //  touchedFilter: string;
 }
 
 
 const LeadsDataTable: React.FC = () => {
-    const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
-const [showTouchedFilter] = useState(false); 
+
+  // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+  const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+
+
+  useEffect(() => {
+    if (!user) {
+      setShowLogoutLoader(true);
+    }
+  }, [user]);
+
+
+  
+   const today = new Date(); 
+    const [fromDate, setFromDate] = useState<Date | null>(today);
+    const [toDate, setToDate] = useState<Date | null>(today);
+   const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  useEffect(() => {
+  const fetchSavedFilters = async () => {
+    try {
+      const payload = {
+        userIdVal: user.id,
+        createdByVal: user.id,
+        tokenVal: user.access_token,
+        userTypeVal: user.type,
+      };
+
+      const res = await getSavedFilters(payload);
+
+      if (res.response === "success") {
+        const f = res.data[0];
+
+        const parsedFrom = f.from_date ? new Date(f.from_date) : null;
+        const parsedTo = f.to_date ? new Date(f.to_date) : null;
+
+        // Normalize dates to local midnight
+        const normalize = (d: Date | null) =>
+          d ? new Date(d.getFullYear(), d.getMonth(), d.getDate()) : null;
+        
+        setFromDate(normalize(parsedFrom));
+        setToDate(normalize(parsedTo));
+
+        setSelectedFilter(f.date_type || "all");
+        setExecFilter(f.counselor_id);
+        setStatusFilter(f.status_id);
+      }
+    } catch (err) {
+      console.error("Error loading filters:", err);
+    }
+  };
+
+  fetchSavedFilters();
+}, [user.id]);
+
+
+ 
+  const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
+  const [showTouchedFilter] = useState(false);
   const [data, setData] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [formData, setFormData] = useState<LeadFormData>({});
-
+ 
 
 
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [fromDate, setFromDate] = useState<Date | null>(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 7);
-    return d;
-  });
+  // const [selectedRows, setSelectedRows] = useState([]);
 
-  const [toDate, setToDate] = useState<Date | null>(new Date());
+ 
+  const formatDate = (date: Date | null) => {
+    if (!date) return '';
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+  const handleFilterChange = (val: string) => {
+
+    setSelectedFilter(val);
+    const today = new Date();
+    let startDate: Date | null = null;
+    let endDate: Date | null = null;
+
+    if (val === 'today') {
+      startDate = endDate = today;
+    } else if (val === 'yesterday') {
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      startDate = endDate = yesterday;
+    } else if (val === 'last_10_days') {
+      const past = new Date(today);
+      past.setDate(today.getDate() - 9);
+      startDate = past;
+      endDate = today;
+    } else if (val === 'this_month') {
+     
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      startDate = firstDay;
+      endDate = lastDay;
+
+    } else if (val === 'custom') {
+      startDate = fromDate;
+      endDate = toDate;
+    } else if (val === 'all') {
+      startDate = new Date('2025-09-01');
+      endDate = today;
+    }
+
+
+    // Update state first
+    setFromDate(startDate);
+    setToDate(endDate);
+
+  };
+
+
+
   const [sourceFilter, setSourceFilter] = useState('0');
   const [statusFilter, setStatusFilter] = useState('0');
   const [execFilter, setExecFilter] = useState('0');
 
-   const [touchedFilter, setTouchedFilter] = useState<string>('All');
+  const [touchedFilter, setTouchedFilter] = useState<string>('All');
 
   const [sourceOptions, setSourceOptions] = useState<OptionType[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<OptionType[]>([]);
@@ -111,17 +212,7 @@ const [showTouchedFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
-    const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
   
-    // Ref to prevent double fetch in Strict Mode or repeated effect calls
-    const didFetchRef = useRef(false);
-  
-    useEffect(() => {
-      if (!user) {
-        setShowLogoutLoader(true);
-      }
-    }, [user]);
   const usertype = Number(user.type);
   const showTable = Number(usertype === 1) || Number(usertype === 2) || Number(usertype === 3);
 
@@ -136,7 +227,20 @@ const [showTouchedFilter] = useState(false);
   const [followupComment, setFollowupComment] = useState('');
   const [followupBranch, setFollowupBranch] = useState<OptionType | null>(null);
   const [followupQualityScore, setFollowupQualityScore] = useState<OptionType | null>(null);
-const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [revertStatus, setrevertStatus] = useState<string>('All'); // Default to '0' for Fresh leads
+  const handleRevertStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setrevertStatus(e.target.value);
+  };
+   const [selectedCounsellor, setSelectedCounsellor] = useState<any>("0");
+    const handleNewExecChange = useCallback((opt: OptionType | null) => {
+      setSelectedCounsellor(opt?.value ?? '0');
+     }, []);
+
+     const chagneFollowupBranch = useCallback((opt: OptionType | null) => {
+      setFollowupBranch(opt?.value ?? '0');
+     }, []);
+
   const filteredData = data.filter((row: Lead) =>
     Object.values(row)
       .join(' ')
@@ -154,58 +258,109 @@ const [searchText, setSearchText] = useState('');
   );
 
 
+  const [regionOptions, setRegionOptions] = useState<OptionType[]>([]);
+  const [region, setRegion] = useState(user.region);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchRegion = async () => {
+      try {
+        const regions = await RegionList(user.id, user.access_token, user.region, user.type);
+        const options = regions.map((reg: any) => ({
+          value: String(reg.id),           // change according to API response
+          label: reg.display_name || ""   // adjust key as per response
+        }));
+
+        setRegionOptions([
+          { value: "0", label: "Select Region" },
+          ...options,
+        ]);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchRegion();
+  }, [user]);
+
+    useEffect(() => {
+      if (!user) return;
+      if (!fromDate || !toDate) return;
+
+      fetchLeads();
+    }, [fromDate, toDate, execFilter]);
+
   const fetchLeads = async () => {
-     if (!user) return;
+    if (!user) return;
     setLoading(true);
     setError(null);
     try {
-      const payload: LeadRequestPayload = {
+      const payload: any = {
         start: '1000',
         sourceVal: sourceFilter,
-        fromDateVal: fromDate?.toISOString().slice(0, 10) ?? '',
-        toDateVal: toDate?.toISOString().slice(0, 10) ?? '',
+        fromDateVal: formatDate(fromDate),
+        toDateVal: formatDate(toDate),
         userIdVal: user.id,
         tokenVal: user.access_token,
         typeVal: user.type,
         leadstatusVal: statusFilter,
         executiveIdVal: execFilter,
-        touchStatusVal:touchedFilter,
+        touchStatusVal: touchedFilter,
+        revertStatusVal: revertStatus,
+        productIdVal: formData.productVal?.value ?? '0',
+        regionVal: region,
+        branchIdVal: followupBranch,
       };
       // const { data } = await getLeadsList(payload);
-        const response = await getLeadsList(payload);
-      
+      const response = await getLeadsList(payload);
+
       if (response.response === 'login_error') {
-         toast.dismiss();
+        toast.dismiss();
         toast.error(response.message);
         setShowLogoutLoader(true);
         return;
       } else if (response.response === 'error') {
-         setData([]);  
-          toast.dismiss();
+        setData([]);
+        toast.dismiss();
         toast.error(response.message);
       } else if (response.response === 'success') {
-         setData([]);  
-      setData(response.data);
+        setData([]);
+        setData(response.data);
+        
+        try {
+            const payload: any={
+                userIdVal: user.id,
+                createdByVal: user.id,
+                tokenVal: user.access_token,
+                userTypeVal: user.type,
+                countryIdVal: user.country_id,
+                counselorIdVal: execFilter,
+                fromDateVal: formatDate(fromDate),
+                toDateVal: formatDate(toDate),
+                dateTypeVal: selectedFilter,
+                statusIdVal: statusFilter,
+            }
+         
+            const res = await addSavedFilters(payload);
+  
+            if (res.data?.response === "success" && res.data.data) {
+              // const f = res.data.data;
+              // setExecFilter(f.counselorIdVal || "0");
+            }
+          } catch (err) {
+            console.error("Error loading filters:", err);
+          }
       }
     } catch {
       setError('Failed to fetch leads. Please try again.');
-       toast.dismiss();
+      toast.dismiss();
       toast.error('Failed to fetch leads. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-   useEffect(() => {
-    if (!user) return;
 
-    // Only fetch if we haven't already fetched for current params
-    if (!didFetchRef.current) {
-      fetchLeads();
-      didFetchRef.current = true;
-    }
-  }, [sourceFilter, statusFilter, fromDate, toDate, execFilter]);
-   useEffect(() => {
+  useEffect(() => {
     const fetchQualityScore = async () => {
       try {
         const quality = await getQualityList(user.id, user.access_token);
@@ -220,36 +375,57 @@ const [searchText, setSearchText] = useState('');
     };
     fetchQualityScore();
   }, [user.id, user.access_token]);
-  useEffect(() => {
-    const fetchExecutives = async () => {
-      try {
-        const executives = await ExecutiveList(user.id, user.access_token, user.region, user.type);
-        const options = executives.map((exe: any) => ({
-          value: exe.id,
-          label: exe.display_name,
-        }));
-        setExecutiveOptions([{ value: null, label: 'Select Executive' }, ...options]);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchExecutives();
-  }, [user.id, user.access_token, user.region, user.type]);
+
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const branches = await getBranchList(user.id, user.access_token,'0',user.region,user.type);
+        const branches = await getRegionBasedBranchList(user.id, user.access_token, '0', region, user.type);
         const options = branches.map((bran: any) => ({
           value: bran.id,
           label: bran.display_name,
         }));
-        setBranchOptions([{ value: null, label: 'Select Branch' }, ...options]);
+        setBranchOptions([{ value: '0', label: 'Select Branch' }, ...options]);
       } catch (err) {
         console.error(err);
       }
     };
     fetchBranches();
-  }, [user.id, user.access_token]);
+  }, [region]);
+
+
+  useEffect(() => {
+    const fetchCounsellors = async () => {
+      try {
+        const res = await getUserListByRegion(
+          user.id,
+          user.access_token,
+          region,
+          user.type,
+        );
+
+        // ✅ Filter only counsellors with type == 3
+        const filtered = res.filter((c: any) => c.type === '3');
+
+        const options = filtered.map((counsellor: any) => ({
+          value: String(counsellor.id),
+          label: counsellor.display_name || "",
+        }));
+
+        setExecutiveOptions([
+          { value: "0", label: "Select Counsellor" },
+          ...options,
+        ]);
+
+      } catch (err) {
+        console.error("Error fetching counsellors:", err);
+      }
+    };
+
+    fetchCounsellors();
+  }, [region]);
+
+
+
   useEffect(() => {
     const fetchSources = async () => {
       try {
@@ -376,7 +552,7 @@ const [searchText, setSearchText] = useState('');
     const matchedLeadStatus = leadstatusOptions.find(
       (opt) => Number(opt.value) === Number(lead.lead_status)
     ) ?? null;
-     const matchedQualityScore = qualityscoreOptions.find(
+    const matchedQualityScore = qualityscoreOptions.find(
       (opt) => Number(opt.value) === Number(lead.quality_id)
     ) ?? null;
 
@@ -394,7 +570,7 @@ const [searchText, setSearchText] = useState('');
       branchVal: matchedBranch,
       executiveIdVal: matchedExecutive,
       leadStatusVal: matchedLeadStatus,
-      qualityscoreVal:matchedQualityScore
+      qualityscoreVal: matchedQualityScore
     });
 
     setSelectedLead(lead);
@@ -468,7 +644,7 @@ const [searchText, setSearchText] = useState('');
         emailAddressVal: formData.emailAddressVal ?? '',
         phoneNumberVal: formData.phoneNumberVal ?? '',
         sourceVal: formData.sourceVal?.value ?? '',
-         qualityscoreVal:formData.qualityscoreVal?.value ?? '',
+        qualityscoreVal: formData.qualityscoreVal?.value ?? '',
         categoryVal: formData.categoryVal?.value ?? '',
         subCategoryVal: formData.subCategoryVal?.value ?? '',
         userIdVal: user.id,
@@ -481,21 +657,21 @@ const [searchText, setSearchText] = useState('');
         updatedByVal: user.id,
         regionVal: user.region,
         typeVal: user.type,
-       
+
       };
 
       const response = await updateLead(payload);
 
       if (response.response === 'login_error') {
-         toast.dismiss();
-         toast.error(response.message);
+        toast.dismiss();
+        toast.error(response.message);
         setShowLogoutLoader(true);
         return;
       } else if (response.response === 'error') {
-         toast.dismiss();
+        toast.dismiss();
         toast.error(response.message);
       } else if (response.response === 'success') {
-         toast.dismiss();
+        toast.dismiss();
         toast.success(response.message);
         handleCloseModal();
       }
@@ -503,7 +679,7 @@ const [searchText, setSearchText] = useState('');
       fetchLeads();
     } catch (err: any) {
       console.error('Update lead failed', err);
-       toast.dismiss();
+      toast.dismiss();
       toast.error(err.message || 'Failed to save follow-up.');
     } finally {
       setIsLoading(false); // Use the same loading state for consistency
@@ -512,125 +688,155 @@ const [searchText, setSearchText] = useState('');
 
   const submitFollowUp = async () => {
     if (!viewLead || !followupStatus) {
-       toast.dismiss();
+      toast.dismiss();
       toast.error('Please select a status and lead.');
       return;
     }
 
-    setLoadingFollowUp(true); // Show spinner
+   
 
     const status = followupStatus.value;
 
     if (status === '2' && (!followupDate || !followupQualityScore || !followupComment.trim())) {
-       toast.dismiss();
+      toast.dismiss();
       toast.error('Please fill in the follow-up date and quality score, comment.');
       setLoadingFollowUp(false);
       return;
     }
 
+    if ((!selectedCounsellor || selectedCounsellor === "0") && viewLead.region !== region ) {
+        toast.error("Please select a counsellor");
+        return;
+    }
+
     if (status === '3' && (!walkinDate || !followupBranch || !followupQualityScore || !followupComment.trim())) {
-       toast.dismiss();
+      toast.dismiss();
       toast.error('Please fill in walk-in date, branch, quality score and comment.');
       setLoadingFollowUp(false);
       return;
     }
+    
 
-    const payload: any = {
-      leadIdVal: viewLead.id,
-      createdByVal: user.id,
-      leadStatusVal: status,
-      userIdVal: user.id,
-      tokenVal: user.access_token,
-      commentVal: followupComment.trim(),
-       excutiveIdVal:viewLead.executive_id,
-       qualityscoreVal:followupQualityScore?.value,
-    };
+
+      const payload: any = {
+          leadIdVal: viewLead.id,
+          createdByVal: user.id,
+          leadStatusVal: status,
+          userIdVal: user.id,
+          tokenVal: user.access_token,
+          commentVal: followupComment.trim(),
+          qualityscoreVal: followupQualityScore?.value,          
+      };
+
+      if (viewLead.region !== region) {
+        payload.oldBranchIdVal = viewLead.branch_id;
+        payload.oldRegionVal = viewLead.region;
+        payload.newRegionVal = region;
+        payload.oldExcutiveIdVal = viewLead.executive_id;
+        payload.newExcutiveIdVal = selectedCounsellor;
+        payload.newBranchIdVal = followupBranch;
+        payload.regionflagVal = '1';
+        payload.transferredByIdVal = user.id;
+      }else{
+         payload.excutiveIdVal = viewLead.executive_id;
+         payload.branchIdVal = followupBranch;
+         payload.regionVal = region;
+         payload.regionflagVal = '2'
+
+      }
+     setLoadingFollowUp(true); // Show spinner
 
     if (status === '2' && followupDate) {
       // payload.followupDateVal = followupDate.toISOString().slice(0, 10);
       if (followupDate) {
-  payload.followupDateVal = `${followupDate.toLocaleDateString('en-CA')} ${followupDate.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })}`;
-} else {
-  payload.followupDateVal = '';
-}
+        payload.followupDateVal = `${followupDate.toLocaleDateString('en-CA')} ${followupDate.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}`;
+      } else {
+        payload.followupDateVal = '';
+      }
 
     }
 
-    if (status === '3' && walkinDate && followupBranch) {
+    if (status === '3' && walkinDate) {
       // payload.walkinDateVal = walkinDate.toISOString().slice(0, 10);
 
-        if (walkinDate) {
-  payload.walkinDateVal = `${walkinDate.toLocaleDateString('en-CA')} ${walkinDate.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })}`;
-} else {
-  payload.walkinDateVal = '';
-}
-      payload.branchIdVal = followupBranch.value;
+      if (walkinDate) {
+        payload.walkinDateVal = `${walkinDate.toLocaleDateString('en-CA')} ${walkinDate.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}`;
+      } else {
+        payload.walkinDateVal = '';
+      }
+     
     }
 
     try {
       const response = await addLeadFollowUp(payload);
 
       if (response.response === 'login_error') {
-         toast.dismiss();
+        toast.dismiss();
         toast.error(response.message);
         setShowLogoutLoader(true);
         return;
       } else if (response.response === 'error') {
-         toast.dismiss();
+        toast.dismiss();
         toast.error(response.message);
       } else if (response.response === 'success') {
-         toast.dismiss();
+        toast.dismiss();
         toast.success(response.message);
       }
 
       handleCloseViewModal();
       fetchLeads();
     } catch (err: any) {
-       toast.dismiss();
+      toast.dismiss();
       toast.error(err.message || 'Failed to save follow-up.');
     } finally {
       setLoadingFollowUp(false); // Hide spinner
+      setRegion(user.region);
+      setFollowupBranch(null);
     }
   };
 
-  const handleRowSelected = (state: any) => {
-    setSelectedRows(state.selectedRows);
-    console.log(selectedRows);
-  };
-const touchedOptions = [
-  { value: 'All', label: 'All' },
-  { value: '1', label: 'Touched' },
-  { value: '0', label: 'Not Touched' }
-];
 
- const [expandedData, setExpandedData] = useState<{ [id: number]: Lead }>({});
-const columns = [
+  const touchedOptions = [
+    { value: 'All', label: 'All' },
+    { value: '1', label: 'Touched' },
+    { value: '0', label: 'Not Touched' }
+  ];
+
+
+
+  const [expandedData, setExpandedData] = useState<{ [id: number]: Lead }>({});
+  const columns = [
     {
       name: 'ID',
-      cell: (_row: Lead, index: number) =>  (currentPage - 1) * perPage + index + 1,
+      cell: (_row: Lead, index: number) => (currentPage - 1) * perPage + index + 1,
       width: '60px',
     },
     {
       name: 'Action',
       cell: (row: Lead) => (
         <div style={{ display: 'flex', gap: '8px' }}>
-          <Button size="sm" variant="info" onClick={() => handleViewClick(row)}>
+          
+            <Button size="sm" variant="info" disabled={String(row.lead_status) === '4'} onClick={() => handleViewClick(row)}>
             <FaEye />
           </Button>
-          <Button size="sm" variant="primary" onClick={() => handleOpenModal(row)}>
+          <Button size="sm" variant="primary"  disabled={String(row.lead_status) === '4'} onClick={() => handleOpenModal(row)}>
             <FaEdit />
           </Button>
+              
+         
+          
         </div>
       ),
       button: true,
       width: '120px',
     },
+
     {
       name: 'Date',
       cell: (row: Lead) => (
@@ -656,109 +862,125 @@ const columns = [
     { name: 'Status', selector: (row: Lead) => row.lead_status_name || '-', sortable: true, width: '110px', wrap: true },
     { name: 'Executive', selector: (row: Lead) => row.executive_name || '-', sortable: true, width: '150px', wrap: true },
     //  { name: 'Created On', selector: (row: Lead) => row.created_at || '-', sortable: true, width: '200px', wrap: true },
- { name: 'Touched On', selector: (row: Lead) => row.touch_date_time || '-', sortable: true, width: '200px', wrap: true },
-{
-  name: 'Touched In Sec',
-  selector: (row: Lead) => {
-    if (!row.created_at || !row.touch_date_time) return '-';
-    const createdAt = new Date(row.created_at).getTime();
-    const touchedAt = new Date(row.touch_date_time).getTime();
-    if (isNaN(createdAt) || isNaN(touchedAt)) return '-';
-    const diffInSeconds = Math.floor(Math.abs(createdAt - touchedAt) / 1000);
-    const days = Math.floor(diffInSeconds / (60 * 60 * 24));
-    const hours = Math.floor((diffInSeconds % (60 * 60 * 24)) / 3600);
-    const minutes = Math.floor((diffInSeconds % 3600) / 60);
-    const seconds = diffInSeconds % 60;
-    let parts = [];
-    if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
-    if (hours) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
-    if (minutes) parts.push(`${minutes} min${minutes > 1 ? 's' : ''}`);
-    if (seconds || parts.length === 0) parts.push(`${seconds} sec${seconds > 1 ? 's' : ''}`);
-    return parts.join(' ');
-  },
-  sortable: true,
-  width: '200px',
-  wrap: true,
-}
+    { name: 'Touched On', selector: (row: Lead) => row.touch_date_time || '-', sortable: true, width: '200px', wrap: true },
+    {
+      name: 'Touched In Sec',
+      selector: (row: Lead) => {
+        if (!row.created_at || !row.touch_date_time) return '-';
+        const createdAt = new Date(row.created_at).getTime();
+        const touchedAt = new Date(row.touch_date_time).getTime();
+        if (isNaN(createdAt) || isNaN(touchedAt)) return '-';
+        const diffInSeconds = Math.floor(Math.abs(createdAt - touchedAt) / 1000);
+        const days = Math.floor(diffInSeconds / (60 * 60 * 24));
+        const hours = Math.floor((diffInSeconds % (60 * 60 * 24)) / 3600);
+        const minutes = Math.floor((diffInSeconds % 3600) / 60);
+        const seconds = diffInSeconds % 60;
+        let parts = [];
+        if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+        if (hours) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
+        if (minutes) parts.push(`${minutes} min${minutes > 1 ? 's' : ''}`);
+        if (seconds || parts.length === 0) parts.push(`${seconds} sec${seconds > 1 ? 's' : ''}`);
+        return parts.join(' ');
+      },
+      sortable: true,
+      width: '200px',
+      wrap: true,
+    }
   ];
 
 
-const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
-  if (!data || typeof data !== 'object') {
-    return <div className="text-muted mt-2">No additional data available.</div>;
-  }
+  const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
+    if (!data || typeof data !== 'object') {
+      return <div className="text-muted mt-2">No additional data available.</div>;
+    }
 
-  const { comments, ...rest } = data;
+    const { comments, ...rest } = data;
 
-  return (
-    <Card className="mt-3">
-      <Card.Body>
-        <Card.Title>Full Details</Card.Title>
-        <Row>
-          <Col md={4}>
-            <div style={{ maxHeight: '300px', overflowY: 'auto', width: '100%' }}>
-              <Table striped bordered size="sm">
-                <tbody>
-                  {Object.entries(rest)
-                    .filter(([key]) =>
-                      ![
-                        'id', 'source_id', 'category_id', 'sub_category_id', 'product_id',
-                        'country_id', 'status', 'branch_id', 'transferred_by', 'created_by',
-                        'touch_status', 'executive_id', 'lead_status'
-                      ].includes(key)
-                    )
-                    .map(([key, value]) => (
-                      <tr key={key}>
-                        <th style={{ textTransform: 'capitalize' }}>
-                          {key.replace(/_/g, ' ')}
-                        </th>
-                        <td>
-                          {typeof value === 'object' && value !== null
-                            ? JSON.stringify(value)
-                            : String(value)}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
-            </div>
-          </Col>
+    return (
+      <Card className="mt-3">
+        <Card.Body>
+          <Card.Title>Full Details</Card.Title>
+          <Row>
+            <Col md={4}>
+              <div style={{ maxHeight: '300px', overflowY: 'auto', width: '100%' }}>
+                <Table striped bordered size="sm">
+                  <tbody>
+                    {Object.entries(rest)
+                      .filter(([key]) =>
+                        ![
+                          'id', 'source_id', 'category_id', 'sub_category_id', 'product_id',
+                          'country_id', 'status', 'branch_id', 'transferred_by', 'created_by',
+                          'touch_status', 'executive_id', 'lead_status'
+                        ].includes(key)
+                      )
+                      .map(([key, value]) => (
+                        <tr key={key}>
+                          <th style={{ textTransform: 'capitalize' }}>
+                            {key.replace(/_/g, ' ')}
+                          </th>
+                          <td>
+                            {typeof value === 'object' && value !== null
+                              ? JSON.stringify(value)
+                              : String(value)}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </Table>
+              </div>
+            </Col>
 
-          <Col md={4}>
-            <h6>Comments</h6>
-            <div style={{ maxHeight: '250px', overflowY: 'auto', width: '100%' }}>
-              {Array.isArray(comments) && comments.length > 0 ? (
-                comments.map((cmt, idx) => (
-                  <Card key={idx} className="mb-2">
-                    <Card.Body>
-                      <Card.Text>{cmt.comment}</Card.Text>
-                      {cmt.created_at && (
-                        <small className="text-muted pull-right">
-                          {cmt.created_by_name}{' '}
-                          {new Date(cmt.created_at).toLocaleString()}
-                        </small>
-                      )}
-                    </Card.Body>
-                  </Card>
-                ))
-              ) : (
-                <div className="text-muted">No comments available.</div>
-              )}
-            </div>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
-  );
-};
+            <Col md={4}>
+              <h6>Comments</h6>
+              <div style={{ maxHeight: '250px', overflowY: 'auto', width: '100%' }}>
+                {Array.isArray(comments) && comments.length > 0 ? (
+                  comments.map((cmt, idx) => (
+                    <Card key={idx} className="mb-2">
+                      <Card.Body>
+                        <Card.Text>{cmt.comment}</Card.Text>
+                        {cmt.created_at && (
+                          <small className="text-muted pull-right">
+                            {cmt.created_by_name}{' '}
+                            {new Date(cmt.created_at).toLocaleString()}
+                          </small>
+                        )}
+                      </Card.Body>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="text-muted">No comments available.</div>
+                )}
+              </div>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+    );
+  };
 
+
+  const [showFilters, setShowFilters] = useState({
+    fromDate: true,
+    toDate: true,
+    source: false,
+    status: true,
+    executive: true,
+    revertStatus: false,
+    productFilter: false
+  });
+  const toggleFilter = (filter: keyof typeof showFilters) => {
+    setShowFilters((prev) => ({
+      ...prev,
+      [filter]: !prev[filter],
+    }));
+  };
 
   return (
     <Container fluid>
       {/* <h2>Leads List</h2> */}
-  
+
       <PageBreadcrumb title={`Leads List (${data.length})`} />
-      
+
       {showLogoutLoader && <LogoutOverlay
         duration={5} // 10 seconds countdown
         onComplete={async () => {
@@ -767,41 +989,138 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
       />
       }
 
-      <Form className="mb-4">
-        <Row className="align-items-end">
-          <Col md={2}>
-            <Form.Label>From Date</Form.Label>
-            <DatePicker selected={fromDate} onChange={setFromDate} className="form-control" dateFormat="yyyy-MM-dd" />
-          </Col>
-          <Col md={2}>
-            <Form.Label>To Date</Form.Label>
-            <DatePicker selected={toDate} onChange={setToDate} className="form-control" dateFormat="yyyy-MM-dd" />
-          </Col>
-          <Col md={2}>
-            <Form.Label>Source</Form.Label>
-            <SourceSelect value={sourceFilter} onChange={handleFilterSourceChange} placeholder="All Sources" />
-          </Col>
-          <Col md={2}>
-            <Form.Label>Status</Form.Label>
-            <StatusSelect value={statusFilter} onChange={handleStatusChange} placeholder="All Status" />
-          </Col>
-          <Col md={2}>
-            <Form.Label>Executive</Form.Label>
-            <ExecutiveSelect value={execFilter} onChange={handleExecChange} showAllOption />
-          </Col>
-            {showTouchedFilter && (
-                        <Col md={1}>
-              <Form.Label>Touched</Form.Label>
-              <Select
-              options={touchedOptions}
-              value={touchedOptions.find(opt => opt.value === touchedFilter) || null}
-              onChange={(opt) => setTouchedFilter(opt ? opt.value : '')}
-              placeholder="All"
-              isClearable
+      <Dropdown className="mb-3">
+        <Dropdown.Toggle variant="outline-primary" size="sm">
+          Select Filters
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu style={{ padding: "10px" }}>
+          {Object.keys(showFilters).map((key) => (
+            <Form.Check
+              key={key}
+              type="checkbox"
+              label={key.charAt(0).toUpperCase() + key.slice(1)} // nice label
+              checked={showFilters[key as keyof typeof showFilters]}
+              onChange={() => toggleFilter(key as keyof typeof showFilters)}
             />
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
+
+
+      <Form className="mb-4">
+      <Row className="align-items-end g-3">
+          <Col md={1}>
+            <Form.Label>Quick Filter</Form.Label>
+            <Form.Select
+              value={selectedFilter}
+              onChange={(e) => handleFilterChange(e.target.value)}
+            >
+              <option value="custom">Custom</option>
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="last_10_days">Last 10 Days</option>
+              <option value="this_month">This Month</option>
+              <option value="all">All</option>
+            </Form.Select>
+          </Col>
+          {showFilters.fromDate && (
+            <Col md={2}>
+              <Form.Label>From Date</Form.Label>
+              <DatePicker selected={fromDate} onChange={setFromDate} className="form-control" dateFormat="yyyy-MM-dd" />
             </Col>
           )}
-       
+          {showFilters.toDate && (
+            <Col md={2}>
+              <Form.Label>To Date</Form.Label>
+              <DatePicker selected={toDate} onChange={setToDate} className="form-control" dateFormat="yyyy-MM-dd" />
+            </Col>
+          )}
+          {showFilters.source && (
+            <Col md={2}>
+              <Form.Label>Source</Form.Label>
+              <SourceSelect value={sourceFilter} onChange={handleFilterSourceChange} placeholder="All Sources" />
+            </Col>
+          )}
+          {showFilters.status && (
+            <Col md={2}>
+              <Form.Label>Status</Form.Label>
+              <StatusSelect value={statusFilter} onChange={handleStatusChange} placeholder="All Status" />
+            </Col>
+          )}
+          {(user.type != '1' && user.type != '2') && (
+            <Col md={2}>
+              <Form.Label>Executive</Form.Label>
+              <ExecutiveSelect value={execFilter} onChange={handleExecChange} showAllOption />
+            </Col>
+          )}
+           {showFilters.productFilter && (
+             <Col md={2}>
+                <Select
+                  options={categoryOptions}
+                  value={formData.categoryVal}
+                  onChange={(opt) => handleFormChange('categoryVal', opt)}
+                  placeholder="Select Category"
+                />
+             </Col>
+        
+           )}
+                     
+            {showFilters.productFilter && (
+              <Col md={2}>
+                <Select
+                  options={ProductOptions}
+                  value={formData.productVal}
+                  onChange={(opt) => handleFormChange('productVal', opt)}
+                  placeholder="Select Product"
+                  required
+                />
+             </Col>
+            )}
+          {(user.type === '1' || user.type === '2') && (
+            <>
+              <Col md={2}>
+               <Form.Label>Region</Form.Label>
+                <Select
+                  options={regionOptions}
+                  value={regionOptions.find((opt) => opt.value === String(region)) || null}
+                  onChange={(opt) => setRegion(opt ? String(opt.value) : "0")}
+                />
+            </Col>
+        
+            <Col md={2}>
+            <Form.Label>Branch</Form.Label>
+              <Select
+                options={branchOptions}
+                value={branchOptions.find((o) => o.value === followupBranch) || null}
+                onChange={chagneFollowupBranch} // expects OptionType
+                required
+              />
+             </Col>
+            </>
+          )}
+          {showFilters.revertStatus && (
+            <Col md={2}>
+              <Form.Label>Revert Status</Form.Label>
+              <Form.Select value={revertStatus} onChange={handleRevertStatusChange} required>
+                <option value="All">All</option>
+                <option value="1">Reverted</option>
+              </Form.Select>
+            </Col>
+          )}
+          {showTouchedFilter && (
+            <Col md={1}>
+              <Form.Label>Touched</Form.Label>
+              <Select
+                options={touchedOptions}
+                value={touchedOptions.find(opt => opt.value === touchedFilter) || null}
+                onChange={(opt) => setTouchedFilter(opt ? opt.value : '')}
+                placeholder="All"
+                isClearable
+              />
+            </Col>
+          )}
+
           <Col md={1}>
             <Button variant="primary" onClick={fetchLeads}>Search</Button>
           </Col>
@@ -811,150 +1130,150 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
       {error && <Alert variant="danger">{error}</Alert>}
 
       {showTable ? (
-        
+
         <DataTable
-        columns={columns}
-        data={filteredData}
-        progressPending={loading}
-       
-        pagination
-        // selectableRows
-        // onSelectedRowsChange={handleRowSelected}
-        highlightOnHover
-        pointerOnHover
-        subHeader
-        subHeaderComponent={SubHeaderComponent}
-        responsive
-        paginationPerPage={perPage}
-        onChangePage={(page) => setCurrentPage(page)}
-        onChangeRowsPerPage={(newPerPage, page) => {
-          setPerPage(newPerPage);
-          setCurrentPage(page);
-        }}
-        conditionalRowStyles={[
-          {
-            when: row => row.touch_status == 1,
-            style: {
-              backgroundColor: '#d1ffd1', // light green
-              color: '#000',
-            },
-          },
-          {
-            when: row => row.touch_status != 1,
-            style: {
-              backgroundColor: '#ffe0e0', // light red
-              color: '#000',
-            },
-          },
-        ]}
+          columns={columns}
+          data={filteredData}
+          progressPending={loading}
 
-
-      expandableRows
-      expandableRowsComponent={({ data }) => (
-        <ExpandedComponent data={expandedData[data.id] || data} />
-      )}
-      onRowExpandToggled={async (expanded, row) => {
-        if (expanded && !expandedData[row.id]) {
-          const payload : LeadIdBasedRequestPayload= {
-            leadIdVal: row.id,
-            userIdVal: user.id,
-            tokenVal: user.access_token,
-          };
-
-          try {
-            const response = await LeadIdBasedDetails(payload);
-            const leadDetails = response.data?.[0];
-
-            setExpandedData(prev => ({
-              ...prev,
-              [row.id]: {
-                ...leadDetails, // Includes comments and other lead info
+          pagination
+          // selectableRows
+          // onSelectedRowsChange={handleRowSelected}
+          highlightOnHover
+          pointerOnHover
+          subHeader
+          subHeaderComponent={SubHeaderComponent}
+          responsive
+          paginationPerPage={perPage}
+          onChangePage={(page) => setCurrentPage(page)}
+          onChangeRowsPerPage={(newPerPage, page) => {
+            setPerPage(newPerPage);
+            setCurrentPage(page);
+          }}
+          conditionalRowStyles={[
+            {
+              when: row => row.touch_status == 1,
+              style: {
+                backgroundColor: '#d1ffd1', // light green
+                color: '#000',
               },
-            }));
-          } catch (error) {
-            console.error('Error fetching follow-up data:', error);
-
-            setExpandedData(prev => ({
-              ...prev,
-              [row.id]: {
-                ...row,
-                comments: [],
+            },
+            {
+              when: row => row.touch_status != 1,
+              style: {
+                backgroundColor: '#ffe0e0', // light red
+                color: '#000',
               },
-            }));
-          }
-        }
-      }}
-
-      />
-
-       
-      ) : (
-        
-        
-             <DataTable
-        columns={columns}
-        data={filteredData}
-        progressPending={loading}
-        pagination
-        selectableRows
-        onSelectedRowsChange={handleRowSelected}
-        highlightOnHover
-        pointerOnHover
-        subHeader
-        subHeaderComponent={SubHeaderComponent}
-        responsive
-        paginationPerPage={perPage}
-        onChangePage={(page) => setCurrentPage(page)}
-        onChangeRowsPerPage={(newPerPage, page) => {
-          setPerPage(newPerPage);
-          setCurrentPage(page);
-        }}
-        conditionalRowStyles={[
-          {
-            when: row => row.touch_status == 1,
-            style: {
-              backgroundColor: '', // light green
-              color: '#000',
             },
-          },
-          {
-            when: row => row.touch_status != 1,
-            style: {
-              backgroundColor: '#ffe0e0', // light red
-              color: '#000',
-            },
-          },
-        ]}
+          ]}
 
-        expandableRows
-        expandableRowsComponent={({ data }) => (
-          <ExpandedComponent data={expandedData[data.id] || data} />
-        )}
-        onRowExpandToggled={async (expanded, row) => {
-          if (expanded && !expandedData[row.id]) {
-            const payload : LeadIdBasedRequestPayload= {
-              leadIdVal: row.id,
-              userIdVal: user.id,
-              tokenVal: user.access_token,
-            };
 
-            try {
-               const response = await LeadIdBasedDetails(payload);
-              const leadDetails = response.data?.[0];
+          expandableRows
+          expandableRowsComponent={({ data }) => (
+            <ExpandedComponent data={expandedData[data.id] || data} />
+          )}
+          onRowExpandToggled={async (expanded, row) => {
+            if (expanded && !expandedData[row.id]) {
+              const payload: LeadIdBasedRequestPayload = {
+                leadIdVal: row.id,
+                userIdVal: user.id,
+                tokenVal: user.access_token,
+              };
 
-              setExpandedData(prev => ({
-                ...prev,
-                [row.id]: {
-                  ...row,
-                  ...leadDetails, // includes comments
-                },
-              }));
-            } catch (error) {
-              console.error('Error fetching follow-up data:', error);
+              try {
+                const response = await LeadIdBasedDetails(payload);
+                const leadDetails = response.data?.[0];
+
+                setExpandedData(prev => ({
+                  ...prev,
+                  [row.id]: {
+                    ...leadDetails, // Includes comments and other lead info
+                  },
+                }));
+              } catch (error) {
+                console.error('Error fetching follow-up data:', error);
+
+                setExpandedData(prev => ({
+                  ...prev,
+                  [row.id]: {
+                    ...row,
+                    comments: [],
+                  },
+                }));
+              }
             }
-          }
-        }}
-      />
+          }}
+
+        />
+
+
+      ) : (
+
+
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          progressPending={loading}
+          pagination
+          // selectableRows
+          // onSelectedRowsChange={handleRowSelected}
+          highlightOnHover
+          pointerOnHover
+          subHeader
+          subHeaderComponent={SubHeaderComponent}
+          responsive
+          paginationPerPage={perPage}
+          onChangePage={(page) => setCurrentPage(page)}
+          onChangeRowsPerPage={(newPerPage, page) => {
+            setPerPage(newPerPage);
+            setCurrentPage(page);
+          }}
+          conditionalRowStyles={[
+            {
+              when: row => row.touch_status == 1,
+              style: {
+                backgroundColor: '', // light green
+                color: '#000',
+              },
+            },
+            {
+              when: row => row.touch_status != 1,
+              style: {
+                backgroundColor: '#ffe0e0', // light red
+                color: '#000',
+              },
+            },
+          ]}
+
+          expandableRows
+          expandableRowsComponent={({ data }) => (
+            <ExpandedComponent data={expandedData[data.id] || data} />
+          )}
+          onRowExpandToggled={async (expanded, row) => {
+            if (expanded && !expandedData[row.id]) {
+              const payload: LeadIdBasedRequestPayload = {
+                leadIdVal: row.id,
+                userIdVal: user.id,
+                tokenVal: user.access_token,
+              };
+
+              try {
+                const response = await LeadIdBasedDetails(payload);
+                const leadDetails = response.data?.[0];
+
+                setExpandedData(prev => ({
+                  ...prev,
+                  [row.id]: {
+                    ...row,
+                    ...leadDetails, // includes comments
+                  },
+                }));
+              } catch (error) {
+                console.error('Error fetching follow-up data:', error);
+              }
+            }
+          }}
+        />
       )}
 
       <Modal show={showModal} onHide={handleCloseModal} backdrop="static" keyboard={false} size="lg" centered>
@@ -1025,7 +1344,7 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
                   placeholder="Select Source"
                 />
               </Form.Group>
-                <Form.Group controlId="qualityscoreVal" className="mb-3">
+              <Form.Group controlId="qualityscoreVal" className="mb-3">
                 <Form.Label>Quality Score</Form.Label>
                 <Select
                   options={qualityscoreOptions}
@@ -1055,8 +1374,8 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
                 </Form.Group>
               )}
 
-             
-             
+
+
               <Form.Group controlId="productVal" className="mb-3">
                 <Form.Label>Product</Form.Label>
                 <Select
@@ -1092,7 +1411,7 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
               </Form.Group>
               <Form.Group controlId="branchVal" className="mb-3">
                 <Form.Label>Branch</Form.Label>
-            
+
                 <Select
                   options={branchOptions}
                   value={formData.branchVal}
@@ -1156,18 +1475,18 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
 
                 </Form.Group>
               )}
-               
+
               <Form.Group className="mb-3">
-                  <Form.Label>Quality Score</Form.Label>
-                  <Select
+                <Form.Label>Quality Score</Form.Label>
+                <Select
                   options={qualityscoreOptions}
                   value={followupQualityScore}
                   // onChange={(opt) => handleFormChange('qualityscoreVal', opt)}
-                   onChange={setFollowupQualityScore}
+                  onChange={setFollowupQualityScore}
                   placeholder="Select Quality Score"
                 />
 
-                </Form.Group>
+              </Form.Group>
               {followupStatus?.value === '3' && (
                 <Form.Group className="mb-3">
                   <Form.Label>WalkIn Date</Form.Label>
@@ -1181,25 +1500,40 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
                   />
 
                 </Form.Group>
-              )}{followupStatus?.value === '3' && (
+              )}
+              {followupStatus?.value === '3' && (
+                <Form.Group className="mb-3">
+                  <Form.Label>Select Region<span style={{ color: 'red' }}>*</span></Form.Label>
+                  <Select
+                    options={regionOptions}
+                    value={regionOptions.find((opt) => opt.value === String(region)) || null}
+                    onChange={(opt) => setRegion(opt ? String(opt.value) : "0")}
+                  />
+                </Form.Group>
+              )}
+              {followupStatus?.value === '3' && (
                 <Form.Group className="mb-3">
                   <Form.Label>Branch</Form.Label>
                   <Select
                     options={branchOptions}
-                    value={followupBranch}
-                    onChange={setFollowupBranch} // expects OptionType
+                    value={branchOptions.find((o) => o.value === followupBranch) || null}
+                    onChange={chagneFollowupBranch} // expects OptionType
                     required
                   />
-
-
-
                 </Form.Group>
-
-
               )}
-
-
-
+              {(followupStatus?.value === '3'  && viewLead.region !== region) && (
+                <Form.Group className="mb-3">
+                  <Form.Label>Executive<span style={{ color: 'red' }}>*</span></Form.Label>
+                  <Select
+                    options={executiveOptions}
+                    value={executiveOptions.find((o) => o.value === selectedCounsellor) || null}
+                    onChange={handleNewExecChange}
+                    placeholder="Select Counselor"
+                    required
+                  />
+                </Form.Group>
+              )}
 
               <Form.Group className="mb-3">
                 <Form.Label>Comment</Form.Label>
@@ -1212,13 +1546,6 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
                 />
               </Form.Group>
 
-              {/* <Button type="submit" variant="primary">
-                  Save Follow-Up
-                </Button> */}
-
-              {/* <Button type="submit" variant="primary" disabled={loadingFollowUp}>
-    {loadingFollowUp ? <Spinner animation="border" size="sm" /> : 'Save Follow-Up'}
-  </Button> */}
               <Button type="submit" variant="primary" disabled={loadingFollowUp}>
                 {loadingFollowUp ? <Spinner animation="border" size="sm" /> : 'Save Follow-Up'}
               </Button>
@@ -1230,6 +1557,7 @@ const ExpandedComponent: React.FC<{ data: Lead }> = ({ data }) => {
           )}
         </Modal.Body>
       </Modal>
+
 
     </Container>
   );

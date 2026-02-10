@@ -52,4 +52,5 @@ export interface Lead {
   walkin_date:string;
   product: string;
   branchname: string;
+  products:any;
 }

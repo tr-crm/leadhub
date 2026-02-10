@@ -14,7 +14,7 @@ import {
 } from "react-bootstrap";
 import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
-import "../dailyreport/LeadReportTable.css";
+import "../executivewiseleadreport/report.css";
 import { getRegionwiseLeadReportList, getRegionLeadClickableDetails } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
 import type { RegionLeadReportRequest, RegionLeadClickablePayload } from "@/services/reportsservice";
@@ -161,18 +161,22 @@ const options = [
 
   const { sortedItems: sortedData, requestSort, sortConfig } = useSortableData(data);
 
-  const footerTotals = useMemo(() => {
-    return allStatuses.map((statusName) =>
-      data.reduce((sum, row) => {
-        const status = row.statuses.find((s) => s.name === statusName);
-        return sum + (status ? status.count : 0);
-      }, 0)
-    );
-  }, [data, allStatuses]);
+const footerTotals = useMemo(() => {
+  return allStatuses.map(statusName => {
+    // ⛔ Do not calculate Total Leads
+    if (statusName === "Total Leads") {
+      return 0;
+    }
 
-  const grandTotal = useMemo(() => {
-    return data.reduce((sum, row) => sum + row.total, 0);
-  }, [data]);
+    return data.reduce((sum, row) => {
+      const status = row.statuses.find(s => s.name === statusName);
+      return sum + (status ? status.count : 0);
+    }, 0);
+  });
+}, [data, allStatuses]);
+
+
+
 
   const SortArrow = ({ columnKey }: { columnKey: string }) => {
     if (sortConfig.key !== columnKey) return null;
@@ -191,6 +195,7 @@ const handleRegionChange = (selectedRegion:any) => {
     setShowModal(true);
     setLoading(true);
      setCurrentPage(1); 
+     statusIds = ["3", "4"];
     const payload : RegionLeadClickablePayload = {
       branchIdVal: branchIds,
       leadStatusVal: statusIds,
@@ -200,6 +205,7 @@ const handleRegionChange = (selectedRegion:any) => {
       yearVal: selectedYear,
       monthVal: selectedMonth,
       catgoryIdVal: category, // Use the same category filter
+       regionVal:region,
     };
 
     try {
@@ -298,7 +304,7 @@ const handleRegionChange = (selectedRegion:any) => {
 
   return (
     <Container fluid>
-      <PageBreadcrumb title="Region Wise Lead Report" />
+      <PageBreadcrumb title="Branch Wise Lead Report" />
          {showLogoutLoader && (
   <LogoutOverlay
     duration={5} 
@@ -332,6 +338,8 @@ const handleRegionChange = (selectedRegion:any) => {
                   handleRegionChange(val?.value ?? 0);
                  
                 }}
+              label="Region"
+              placeholder="All Regions"
             />
 
             
@@ -364,6 +372,7 @@ const handleRegionChange = (selectedRegion:any) => {
                 onChange={handleCategoryChange}
                 placeholder="Select categories..."
               />
+              
             </Col>
 
             <Col md="auto">
@@ -394,27 +403,28 @@ const handleRegionChange = (selectedRegion:any) => {
                   <th onClick={() => requestSort("date")}>
                     Branch <SortArrow columnKey="date" />
                   </th>
+                 
                   {allStatuses.map((status) => (
                     <th key={status} onClick={() => requestSort(status)}>
                       {status}
                       <SortArrow columnKey={status} />
                     </th>
                   ))}
-                  <th onClick={() => requestSort("total")}>
-                    Total <SortArrow columnKey="total" />
-                  </th>
+                 
                 </tr>
               </thead>
               <tbody>
-                {sortedData.map(({ id, name, statuses, total }) => (
+                {sortedData.map(({ id, name, statuses }) => (
                   <tr key={name}>
                     <td>{name}</td>
+                    
 
                     {allStatuses.map((statusName) => {
                       const status = statuses.find((s: any) => s.name === statusName);
                       const count = status?.count || 0;
                       const statusId = status?.id?.toString() || "";
-                      const branchId = id?.toString() || ""; // ✅ use id as branchId
+                      const branchId = id?.toString() || "";
+                      // const branchIds = sortedData.map((b: any) => b.id?.toString());
 
                       if (count === 0 || !branchId || !statusId) {
                         return <td key={statusName}  style={{
@@ -428,36 +438,14 @@ const handleRegionChange = (selectedRegion:any) => {
                           style={{
                             cursor: "pointer",
                           }}
-                          onClick={() => {
-                            handleOpenModalPopupClick([branchId], [statusId]);
-                          }}
+                         
                         >
                           {count}
                         </td>
                       );
                     })}
 
-                   <td
-                      style={{
-                        cursor: total > 0 ? "pointer" : "default",
-                      }}
-                      onClick={() => {
-                        if (total > 0) {
-                          const branchIds = [id?.toString()];
-                          const statusIds = statuses
-                            .filter((s: any) => s?.count > 0) // ✅ only statuses with count
-                            .map((s: any) => s.id.toString());
-
-                          if (branchIds.length && statusIds.length) {
-                            handleOpenModalPopupClick(branchIds, statusIds);
-                          } else {
-                            console.warn("No valid data to open modal");
-                          }
-                        }
-                      }}
-                    >
-                      {total}
-                    </td>
+                   
 
                   </tr>
                 ))}
@@ -468,6 +456,7 @@ const handleRegionChange = (selectedRegion:any) => {
             <tfoot>
               <tr>
                 <td>Total</td>
+        
                 {footerTotals.map((sum, idx) => (
                   <td
                     key={idx}
@@ -485,24 +474,11 @@ const handleRegionChange = (selectedRegion:any) => {
                       }
                     }}
                   >
-                    {sum}
+                   {sum}
                   </td>
                 ))}
 
-                <td
-                  style={{
-                    cursor: Number(grandTotal) > 0 ? "pointer" : "default",
-                  }}
-                  onClick={() => {
-                    if (Number(grandTotal) > 0) {
-                      const branchIds = sortedData.map((b: any) => b.id?.toString());
-                      const statusIds = sortedData[0]?.statuses.map((s: any) => s.id?.toString()) || [];
-                      handleOpenModalPopupClick(branchIds, statusIds);
-                    }
-                  }}
-                >
-                  {grandTotal}
-                </td>
+                
               </tr>
             </tfoot>
 
@@ -530,7 +506,7 @@ const handleRegionChange = (selectedRegion:any) => {
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

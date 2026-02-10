@@ -176,6 +176,12 @@ const GlobalSearch: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Enter search"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent form submission if inside <form>
+                    fetchLead();
+                  }
+                }}
               />
             </Form.Group>
           </Col>

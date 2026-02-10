@@ -170,8 +170,26 @@ export const menuItems: MenuItemType[] = [
         url: "/leads/create",
         minLevel: [1, 2, 3, 4, 5],
       },
+       {
+        key: "region-leads-transfer",
+        label: "Region Transferred List",
+        url: "/leads/regiontransferredlist",
+        minLevel: [3, 4, 5],
+      },
       
     ],
+  },
+
+  
+  {
+        key: 'datatranfer',
+        label: 'Data Transfer',
+        icon: TbSubtask,
+        minLevel: [1,2,3],
+        children: [
+            
+               {key: 'data-transfer-list', label: 'Data Transfewr List', url: '/datatransfer/studentleadlist'}
+        ]
   },
 
   {
@@ -229,23 +247,43 @@ export const menuItems: MenuItemType[] = [
     minLevel: [1, 2, 3, 4, 5,8,9],
     children: [
       {
-        key: "Daily Report",
+        key: "Daily Lead Report",
         label: "Daily Lead Report",
         url: "/report/dailyreport",
         minLevel: [1, 2, 3, 4, 5],
       },
       {
-        key: "Daily Source Wise Lead Report",
-        label: "Daily Source Wise Lead Report",
-        url: "/report/dailysoucrewiseleadreport",
+        key: "Monthly Lead Report",
+        label: "Monthly Lead Report",
+        url: "/reports/monthlywisereport",
         minLevel: [1, 2, 3, 4, 5],
       },
       {
-        key: "Region Wise Lead Report",
-        label: "Region Wise Lead Report",
-        url: "/report/region",
-        minLevel: [1, 2, 3],
+        key: "Daily Source Lead Report",
+        label: "Daily Source Lead Report",
+        url: "/report/dailysoucrewiseleadreport",
+        minLevel: [1, 2, 3, 4, 5],
       },
+        {
+        key: "Monthly Source Report",
+        label: "Monthly Source Report",
+        url: "/reports/monthlysourcewisereport",
+        minLevel: [1, 2, 3, 4, 5],
+      },
+       {
+        key: "Daily Executive Report",
+        label: "Daily Executive Report",
+        url: "/report/dailyexecutiveleadreport",
+        minLevel: [1,2,3],
+      },
+      
+       {
+        key: "Monthly Executive Report",
+        label: "Monthly Executive Report",
+        url: "/report/executivewiseleadreport",
+        minLevel: [1,2,3],
+      },
+   
       {
         key: "Branch Wise Report",
         label: "Branch Wise Report",
@@ -258,17 +296,12 @@ export const menuItems: MenuItemType[] = [
         url: "/report/dailyleaddmreport",
         minLevel: [8,9],
       },
+     
       {
-        key: "Monthly Wise Report",
-        label: "Monthly Wise Report",
-        url: "/reports/monthlywisereport",
-        minLevel: [1, 2, 3, 4, 5],
-      },
-       {
-        key: "Monthly Source Wise Report",
-        label: "Monthly Source Wise Report",
-        url: "/reports/monthlysourcewisereport",
-        minLevel: [1, 2, 3, 4, 5],
+        key: "Branch Wise Lead Report",
+        label: "Branch Wise Lead Report",
+        url: "/report/region",
+        minLevel: [1, 2, 3],
       },
       {
         key: "Product And Source Wise Report",
@@ -276,19 +309,14 @@ export const menuItems: MenuItemType[] = [
         url: "/reports/productsourcewisereport",
         minLevel: [1, 2, 3],
       },
-      {
-        key: "Month Wise Executive Report",
-        label: "Month Wise Executive Report",
-        url: "report/executivewiseleadreport",
-        minLevel: [1,2,3],
+        {
+        key: "Daily Webhook Lead Report",
+        label: "Daily Webhook Lead Report",
+        url: "/report/dailywebhookleadreport",
+        minLevel: [1, 2, 8, 9],
       },
-      {
-        key: "Daily Wise Executive Report",
-        label: "Daily Wise Executive Report",
-        url: "report/dailyexecutiveleadreport",
-        minLevel: [1,2,3],
-      },
-      
+     
+     
 
       
     ],

@@ -189,6 +189,12 @@ const GlobalSearch: React.FC = () => {
                 value={contactsearch}
                 onChange={(e) => setContactsearch(e.target.value)}
                 placeholder="Search by Phone"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent form submission if inside <form>
+                    fetchLead();
+                  }
+                }}
               />
             </Form.Group>
           </Col>
@@ -200,6 +206,12 @@ const GlobalSearch: React.FC = () => {
                 value={namesearch}
                 onChange={(e) => setNamesearch(e.target.value)}
                 placeholder="Search by Name"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent form submission if inside <form>
+                    fetchLead();
+                  }
+                }}
               />
             </Form.Group>
           </Col>

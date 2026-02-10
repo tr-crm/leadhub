@@ -9,14 +9,21 @@ import PageBreadcrumb from '@/components/PageBreadcrumb';
 import {toast } from 'react-toastify';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+import ExecutiveSelect from '@/components/executiveselect';
+
+interface OptionType {
+  value: any;
+  label: string;
+}
     const UsersDataTable: React.FC = () => {
     const [data, setData] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
      const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
     // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
-        const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
-      
-        // Ref to prevent double fetch in Strict Mode or repeated effect calls
+    const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+    const [execFilter, setExecFilter] = useState(user.id);
+      const handleExecChange = (opt: OptionType | null) => setExecFilter(opt?.value ?? '0');
+    // Ref to prevent double fetch in Strict Mode or repeated effect calls
         const didFetchRef = useRef(false);
       
         useEffect(() => {
@@ -29,7 +36,7 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
    
 
         const payload: LoginHistoryPayload = {
-            idVal: user.id,
+            idVal: execFilter,
             userIdVal: user.id,
             tokenVal: user.access_token,
         };
@@ -91,17 +98,23 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
       
          <PageBreadcrumb title={`Login History Listt (${data.length})`} />
         {showLogoutLoader && <LogoutOverlay
-  duration={5} // 10 seconds countdown
-  onComplete={async () => {
-    await logout(); // your logout function
-  }}
-/>
-}
-        <Form className="mb-4 d-flex justify-content-end">
+            duration={5} // 10 seconds countdown
+            onComplete={async () => {
+              await logout(); // your logout function
+            }}
+          />
+          }
+        <Form className="mb-4">
+      
+                    
             <Row className="align-items-end">
+               <Col md={4}>
+                  <Form.Label>Executive</Form.Label>
+                  <ExecutiveSelect value={execFilter} onChange={handleExecChange}  />
+                </Col>
                 <Col md={2} className="">
                     <Button variant="primary" onClick={handleGoClick}>
-                    Refresh
+                    Go
                     </Button>
                 </Col>
             </Row>

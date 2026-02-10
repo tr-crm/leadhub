@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo , useCallback} from 'react';
   import { FaEye, FaEdit } from 'react-icons/fa';
 
   import Select from 'react-select';
@@ -23,8 +23,8 @@ import { useState, useEffect, useMemo, useRef } from 'react';
     LeadRequestPayload,
     LeadUpdateRequestPayload,
   } from '@/services/leadservice';
-  import { getFollowUpLeadsList, updateLead, addLeadFollowUp } from '@/services/leadservice';
-  import { SourceList, getCategoryList, getSubCategoryList, getBranchList,ProductList,ExecutiveList,StatusList,getQualityList } from '@/services/generalservice';
+  import { getFollowUpLeadsList, updateLead, addLeadFollowUp,  } from '@/services/leadservice';
+  import { SourceList, getCategoryList, getSubCategoryList, ProductList ,StatusList,getQualityList, getUserListByRegion , RegionList, getRegionBasedBranchList} from '@/services/generalservice';
   import type { Lead } from '@/types/lead.types';
   import SourceSelect from '@/components/soucrelist';
   import StatusSelect from '@/components/statusselect';
@@ -32,6 +32,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
   import { toast } from 'react-toastify';
 import LogoutOverlay from '@/components/LogoutOverlay';
 import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
+import { getSavedFilters, addSavedFilters } from '@/services/userservice';
 
   interface OptionType {
     value: any;
@@ -70,6 +71,49 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 
 
   const LeadsDataTable: React.FC = () => {
+    // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
+      const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
+   
+    
+      useEffect(() => {
+        if (!user) {
+          setShowLogoutLoader(true);
+        }
+      }, [user]);
+    const today = new Date(); 
+    const [fromDate, setFromDate] = useState<Date | null>(today);
+    const [toDate, setToDate] = useState<Date | null>(today);
+    useEffect(() => {
+        const fetchSavedFilters = async () => {
+          try {
+            const payload: any = {
+              userIdVal: user.id,
+              createdByVal: user.id,
+              tokenVal: user.access_token,
+              userTypeVal: user.type,
+            };
+            const res = await getSavedFilters(payload);
+      
+            if (res.response === "success" && res.data.length > 0) {
+              const f = res.data[0];
+              const parsedFrom = f.from_date ? new Date(f.from_date) : today;
+              const parsedTo = f.to_date ? new Date(f.to_date) : today;
+      
+              setFromDate(parsedFrom);
+              setToDate(parsedTo);
+              setSelectedFilter(f.date_type || "all");
+              setExecFilter(f.counselor_id);
+              setStatusFilter(f.status_id);
+            }
+          } catch (err) {
+            console.error("Error loading filters:", err);
+          }
+        };
+      
+        fetchSavedFilters();
+      }, [user.id]);
+    
+
     const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
     const [data, setData] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
@@ -81,14 +125,52 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 
 
     const [isLoading, setIsLoading] = useState(false);
- const [selectedRows, setSelectedRows] = useState([]);
-   const [fromDate, setFromDate] = useState<Date | null>(() => {
-      const d = new Date();
-      d.setDate(1);
-      return d;
-    });
 
-    const [toDate, setToDate] = useState<Date | null>(new Date());
+    const [selectedFilter, setSelectedFilter] = useState<string>('custom');
+        const formatDate = (date: Date | null) => {
+        if (!date) return '';
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      };
+      const handleFilterChange = (val: string) => {
+        setSelectedFilter(val);
+        const today = new Date();
+        let startDate: Date | null = null;
+        let endDate: Date | null = null;
+    
+        if (val === 'today') {
+          startDate = endDate = today;
+        } else if (val === 'yesterday') {
+          const yesterday = new Date(today);
+          yesterday.setDate(today.getDate() - 1);
+          startDate = endDate = yesterday;
+        } else if (val === 'last_10_days') {
+          const past = new Date(today);
+          past.setDate(today.getDate() - 9);
+          startDate = past;
+          endDate = today;
+        } else if (val === 'this_month') {
+          const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+          const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+          startDate = firstDay;
+          endDate = lastDay;
+        } else if (val === 'custom') {
+          startDate = fromDate;
+          endDate = toDate;
+        } else if (val === 'all') {
+          startDate = new Date('2025-09-01');
+          endDate = today;
+        }
+    
+        // Update state first
+        setFromDate(startDate);
+        setToDate(endDate);
+    
+      };
+
+    
     const [sourceFilter, setSourceFilter] = useState('0');
     const [statusFilter, setStatusFilter] = useState('0');
     const [execFilter, setExecFilter] = useState('0');
@@ -102,18 +184,13 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
     const [executiveOptions, setExecutiveOptions] = useState<OptionType[]>([]);
      const [leadstatusOptions, setleadstatusOptions] = useState<OptionType[]>([]);
      const [qualityscoreOptions, setQualityscoreOptions] = useState<OptionType[]>([]);
+    const [revertStatus, setrevertStatus] = useState<string>('All'); // Default to '0' for Fresh leads
+    const handleRevertStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setrevertStatus(e.target.value);
+    };
+
   
-     // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
-        const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
-      
-        // Ref to prevent double fetch in Strict Mode or repeated effect calls
-        const didFetchRef = useRef(false);
-      
-        useEffect(() => {
-          if (!user) {
-            setShowLogoutLoader(true);
-          }
-        }, [user]);
+   
     const usertype = Number(user.type);
     const showTable = Number(usertype === 1) || Number(usertype === 2) || Number(usertype === 3);
 
@@ -148,6 +225,44 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
     const showStatusFilter = false;  // set to false to hide
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
+    const chagneFollowupBranch = useCallback((opt: OptionType | null) => {
+      setFollowupBranch(opt?.value ?? '0');
+    }, []);
+    const [selectedCounsellor, setSelectedCounsellor] = useState<any>("0");
+      const handleNewExecChange = useCallback((opt: OptionType | null) => {
+        setSelectedCounsellor(opt?.value ?? '0');
+       }, []);
+    
+      const [regionOptions, setRegionOptions] = useState<OptionType[]>([]);
+      const [region, setRegion] = useState(user.region);
+    
+      useEffect(() => {
+        if (!user) return;
+        const fetchRegion = async () => {
+          try {
+            const regions = await RegionList(user.id, user.access_token, user.region, user.type);
+            const options = regions.map((reg: any) => ({
+              value: String(reg.id),           // change according to API response
+              label: reg.display_name || ""   // adjust key as per response
+            }));
+    
+            setRegionOptions([
+              { value: "0", label: "Select Region" },
+              ...options,
+            ]);
+          } catch (err) {
+            console.error(err);
+          }
+        };
+        fetchRegion();
+      }, [user]);
+
+     useEffect(() => {
+      if (!user) return;
+      if (!fromDate || !toDate) return;
+
+      fetchLeads();
+    }, [fromDate, toDate]);
 
     const fetchLeads = async () => {
          if (!user) return;
@@ -157,14 +272,15 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
         const payload: LeadRequestPayload = {
           start: '200',
           sourceVal: sourceFilter,
-          fromDateVal: fromDate?.toISOString().slice(0, 10) ?? '',
-          toDateVal: toDate?.toISOString().slice(0, 10) ?? '',
+          fromDateVal: formatDate(fromDate),
+          toDateVal: formatDate(toDate),
           userIdVal: user.id,
           tokenVal: user.access_token,
           typeVal: user.type,
           leadstatusVal: statusFilter,
           executiveIdVal: execFilter,
-          touchStatusVal:null
+          touchStatusVal:null,
+          revertStatusVal: revertStatus,
         };
       
           const response = await getFollowUpLeadsList(payload);
@@ -181,6 +297,30 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
               } else if (response.response === 'success') {
                  setData([]);
               setData(response.data);
+                
+                try {
+                    const payload: any={
+                        userIdVal: user.id,
+                        createdByVal: user.id,
+                        tokenVal: user.access_token,
+                        userTypeVal: user.type,
+                        countryIdVal: user.country_id,
+                        counselorIdVal: execFilter,
+                        fromDateVal: fromDate?.toISOString().slice(0, 10) ?? '',
+                        toDateVal: toDate?.toISOString().slice(0, 10) ?? '',
+                        dateTypeVal: selectedFilter,
+                        statusIdVal: statusFilter,
+                    }
+                    const res = await addSavedFilters(payload);
+          
+                    if (res.data?.response === "success" && res.data.data) {
+                      // const f = res.data.data;
+                      // setExecFilter(f.counselorIdVal || "0");
+                    }
+                  } catch (err) {
+                    console.error("Error loading filters:", err);
+                  }
+                  
               }
       } catch {
         setError('Failed to fetch leads. Please try again.');
@@ -192,15 +332,7 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
       }
     };
 
-    useEffect(() => {
-      if (!user) return;
 
-    // Only fetch if we haven't already fetched for current params
-    if (!didFetchRef.current) {
-      fetchLeads();
-      didFetchRef.current = true;
-    }
-    }, [sourceFilter, statusFilter, fromDate, toDate, execFilter]);
      useEffect(() => {
         const fetchQualityScore = async () => {
           try {
@@ -216,36 +348,52 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
         };
         fetchQualityScore();
       }, [user.id, user.access_token]);
+     useEffect(() => {
+        const fetchCounsellors = async () => {
+          try {
+            const res = await getUserListByRegion(
+              user.id,
+              user.access_token,
+              region,
+              user.type,
+            );
+
+            // ✅ Filter only counsellors with type == 3
+            const filtered = res.filter((c: any) => c.type === '3');
+
+            const options = filtered.map((counsellor: any) => ({
+              value: String(counsellor.id),
+              label: counsellor.display_name || "",
+            }));
+
+            setExecutiveOptions([
+              { value: "0", label: "Select Counsellor" },
+              ...options,
+            ]);
+
+          } catch (err) {
+            console.error("Error fetching counsellors:", err);
+          }
+        };
+
+        fetchCounsellors();
+    }, [region]);
+    
     useEffect(() => {
-      const fetchExecutives = async () => {
-        try {
-          const executives = await ExecutiveList(user.id, user.access_token,user.region,user.type);
-          const options = executives.map((exe: any) => ({
-            value: exe.id,
-            label: exe.display_name,
-          }));
-          setExecutiveOptions([{ value: null, label: 'Select Executive' }, ...options]);
-        } catch (err) {
-          console.error(err);
-        }
-      };
-      fetchExecutives();
-    }, [user.id, user.access_token,user.region,user.type]);
-    useEffect(() => {
-      const fetchBranches = async () => {
-        try {
-          const branches = await getBranchList(user.id, user.access_token,'0',user.region,user.typ);
-          const options = branches.map((bran: any) => ({
-            value: bran.id,
-            label: bran.display_name,
-          }));
-          setBranchOptions([{ value: null, label: 'Select Branch' }, ...options]);
-        } catch (err) {
-          console.error(err);
-        }
-      };
-      fetchBranches();
-    }, [user.id, user.access_token]);
+       const fetchBranches = async () => {
+         try {
+           const branches = await getRegionBasedBranchList(user.id, user.access_token, '0', region, user.type);
+           const options = branches.map((bran: any) => ({
+             value: bran.id,
+             label: bran.display_name,
+           }));
+           setBranchOptions([{ value: null, label: 'Select Branch' }, ...options]);
+         } catch (err) {
+           console.error(err);
+         }
+       };
+       fetchBranches();
+     }, [region]);
     useEffect(() => {
       const fetchSources = async () => {
         try {
@@ -508,96 +656,120 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 
   const submitFollowUp = async () => {
     if (!viewLead || !followupStatus) {
-       toast.dismiss();
+      toast.dismiss();
       toast.error('Please select a status and lead.');
       return;
     }
 
-    setLoadingFollowUp(true); // Show spinner
+   
 
     const status = followupStatus.value;
 
     if (status === '2' && (!followupDate || !followupQualityScore || !followupComment.trim())) {
-       toast.dismiss();
+      toast.dismiss();
       toast.error('Please fill in the follow-up date and quality score, comment.');
       setLoadingFollowUp(false);
       return;
     }
 
+    if ((!selectedCounsellor || selectedCounsellor === "0") && viewLead.region !== region ) {
+        toast.error("Please select a counsellor");
+        return;
+    }
+
     if (status === '3' && (!walkinDate || !followupBranch || !followupQualityScore || !followupComment.trim())) {
-       toast.dismiss();
+      toast.dismiss();
       toast.error('Please fill in walk-in date, branch, quality score and comment.');
       setLoadingFollowUp(false);
       return;
     }
+    
 
-    const payload: any = {
-      leadIdVal: viewLead.id,
-      createdByVal: user.id,
-      leadStatusVal: status,
-      userIdVal: user.id,
-      tokenVal: user.access_token,
-      commentVal: followupComment.trim(),
-       excutiveIdVal:viewLead.executive_id,
-       qualityscoreVal:followupQualityScore?.value,
-    };
+
+      const payload: any = {
+          leadIdVal: viewLead.id,
+          createdByVal: user.id,
+          leadStatusVal: status,
+          userIdVal: user.id,
+          tokenVal: user.access_token,
+          commentVal: followupComment.trim(),
+          qualityscoreVal: followupQualityScore?.value,          
+      };
+
+      if (viewLead.region !== region) {
+        payload.oldBranchIdVal = viewLead.branch_id;
+        payload.oldRegionVal = viewLead.region;
+        payload.newRegionVal = region;
+        payload.oldExcutiveIdVal = viewLead.executive_id;
+        payload.newExcutiveIdVal = selectedCounsellor;
+        payload.newBranchIdVal = followupBranch;
+        payload.regionflagVal = '1';
+        payload.transferredByIdVal = user.id;
+      }else{
+         payload.excutiveIdVal = viewLead.executive_id;
+         payload.branchIdVal = followupBranch;
+         payload.regionVal = region;
+         payload.regionflagVal = '2'
+
+      }
+     setLoadingFollowUp(true); // Show spinner
 
     if (status === '2' && followupDate) {
       // payload.followupDateVal = followupDate.toISOString().slice(0, 10);
-         if (followupDate) {
-  payload.followupDateVal = `${followupDate.toLocaleDateString('en-CA')} ${followupDate.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })}`;
-} else {
-  payload.followupDateVal = '';
-}
+      if (followupDate) {
+        payload.followupDateVal = `${followupDate.toLocaleDateString('en-CA')} ${followupDate.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}`;
+      } else {
+        payload.followupDateVal = '';
+      }
+
     }
 
-    if (status === '3' && walkinDate && followupBranch) {
+    if (status === '3' && walkinDate) {
       // payload.walkinDateVal = walkinDate.toISOString().slice(0, 10);
-        if (walkinDate) {
-  payload.walkinDateVal = `${walkinDate.toLocaleDateString('en-CA')} ${walkinDate.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })}`;
-} else {
-  payload.walkinDateVal = '';
-}
-      payload.branchIdVal = followupBranch.value;
+
+      if (walkinDate) {
+        payload.walkinDateVal = `${walkinDate.toLocaleDateString('en-CA')} ${walkinDate.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}`;
+      } else {
+        payload.walkinDateVal = '';
+      }
+     
     }
 
     try {
       const response = await addLeadFollowUp(payload);
 
       if (response.response === 'login_error') {
-         toast.dismiss();
+        toast.dismiss();
         toast.error(response.message);
         setShowLogoutLoader(true);
         return;
       } else if (response.response === 'error') {
-         toast.dismiss();
+        toast.dismiss();
         toast.error(response.message);
       } else if (response.response === 'success') {
-         toast.dismiss();
+        toast.dismiss();
         toast.success(response.message);
       }
 
       handleCloseViewModal();
       fetchLeads();
     } catch (err: any) {
-       toast.dismiss();
+      toast.dismiss();
       toast.error(err.message || 'Failed to save follow-up.');
     } finally {
       setLoadingFollowUp(false); // Hide spinner
+      setRegion(user.region);
+      setFollowupBranch(null);
     }
   };
 
-    const handleRowSelected = (state:any) => {
-    setSelectedRows(state.selectedRows);
-    console.log(selectedRows);
-  };
-
+  
 
 
     const columns = [
@@ -622,6 +794,7 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
         button: true,
         width: '120px',
       },
+     
         { name: 'Follow Up Date', selector: (row: Lead) => row.followup_date || '-', sortable: true, width: '110px' },
       { name: 'Name', selector: (row: Lead) => row.full_name || '-', sortable: true ,  wrap: true },
       { name: 'Phone', selector: (row: Lead) => row.phone_number || '-', sortable: true,  wrap: true  },
@@ -767,6 +940,20 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
 }
         <Form className="mb-4">
           <Row className="align-items-end">
+            <Col md={1}>
+              <Form.Label>Quick Filter</Form.Label>
+              <Form.Select
+                value={selectedFilter}
+                onChange={(e) => handleFilterChange(e.target.value)}
+              >
+                <option value="custom">Custom</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="last_10_days">Last 10 Days</option>
+                <option value="this_month">This Month</option>
+                <option value="all">All</option>
+              </Form.Select>
+            </Col>
             <Col md={2}>
               <Form.Label>From Date</Form.Label>
               <DatePicker selected={fromDate} onChange={setFromDate} className="form-control" dateFormat="yyyy-MM-dd" />
@@ -792,6 +979,13 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
               <ExecutiveSelect value={execFilter} onChange={handleExecChange} showAllOption />
             </Col>
             <Col md={2}>
+               <Form.Label>Revert Status</Form.Label>
+                <Form.Select value={revertStatus} onChange={handleRevertStatusChange} required>
+                <option value="All">All</option>
+                <option value="1">Reverted</option>
+                </Form.Select>
+            </Col>
+            <Col md={2}>
               <Button variant="primary" onClick={fetchLeads}>Search</Button>
             </Col>
           </Row>
@@ -807,8 +1001,6 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
             expandableRows
             expandableRowsComponent={ExpandedComponent}
             pagination
-            selectableRows
-      onSelectedRowsChange={handleRowSelected}
             highlightOnHover
             pointerOnHover
               subHeader
@@ -1062,14 +1254,7 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
               {followupStatus?.value === '3' && (
                 <Form.Group className="mb-3">
                   <Form.Label>WalkIn Date</Form.Label>
-                  {/* <Form.Control
-                    type="date" required
-                    value={walkinDate ? format(walkinDate, 'yyyy-MM-dd') : ''}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const value = e.target.value;
-                      setWalkinDate(value ? new Date(value) : null);
-                    }}
-                  /> */}
+                
                    <Form.Control
                     type="datetime-local" required
                     value={walkinDate ? format(walkinDate, 'yyyy-MM-dd HH:mm') : ''}
@@ -1080,23 +1265,42 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
                   />
 
                 </Form.Group>
-              )}{followupStatus?.value === '3' && (
+              )}
+              {followupStatus?.value === '3' && (
+                <Form.Group className="mb-3">
+                  <Form.Label>Select Region<span style={{ color: 'red' }}>*</span></Form.Label>
+                  <Select
+                    options={regionOptions}
+                    value={regionOptions.find((opt) => opt.value === String(region)) || null}
+                    onChange={(opt) => setRegion(opt ? String(opt.value) : "0")}
+                  />
+                </Form.Group>
+              )}
+               {followupStatus?.value === '3' && (
                 <Form.Group className="mb-3">
                   <Form.Label>Branch</Form.Label>
                   <Select
                     options={branchOptions}
-                    value={followupBranch}
-                    onChange={setFollowupBranch} // expects OptionType
+                    value={branchOptions.find((o) => o.value === followupBranch) || null}
+                    onChange={chagneFollowupBranch} // expects OptionType
                     required
                   />
-
-
-
                 </Form.Group>
-
-
               )}
-
+              {(followupStatus?.value === '3'  && viewLead.region !== region) && (
+                <Form.Group className="mb-3">
+                  <Form.Label>Executive<span style={{ color: 'red' }}>*</span></Form.Label>
+                  <Select
+                    options={executiveOptions}
+                    value={executiveOptions.find((o) => o.value === selectedCounsellor) || null}
+                    onChange={handleNewExecChange}
+                    placeholder="Select Counselor"
+                    required
+                  />
+                </Form.Group>
+              )}
+              
+              
 
 
 
@@ -1111,13 +1315,6 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
                 />
               </Form.Group>
 
-              {/* <Button type="submit" variant="primary">
-                  Save Follow-Up
-                </Button> */}
-
-              {/* <Button type="submit" variant="primary" disabled={loadingFollowUp}>
-    {loadingFollowUp ? <Spinner animation="border" size="sm" /> : 'Save Follow-Up'}
-  </Button> */}
               <Button type="submit" variant="primary" disabled={loadingFollowUp}>
                 {loadingFollowUp ? <Spinner animation="border" size="sm" /> : 'Save Follow-Up'}
               </Button>
@@ -1129,6 +1326,7 @@ import { isAuthenticated, getUserInfo, logout } from '@/utils/auth';
           )}
         </Modal.Body>
       </Modal>
+
 
       </Container>
     );

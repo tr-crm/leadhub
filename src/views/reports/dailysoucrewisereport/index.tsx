@@ -13,7 +13,7 @@ import {
 } from "react-bootstrap";
 import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
-import "../dailyreport/LeadReportTable.css";
+import "../executivewiseleadreport/report.css";
 import { getDailySourceWiseLeadReportLeadsList, getDailySourceWiseLeadClickableDetails } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
 import type { DailyLeadReportRequest , DailySourceWiseLeadClickablePayload} from "@/services/reportsservice";
@@ -332,17 +332,27 @@ const DailyLeadReportTable: React.FC = () => {
           </Col>
           
            )}
-           {(user.type === '1' || user.type === '2') && (
-              <Col md={4}>
-                <Select
-                options={options}
-                isMulti
-                value={options.filter((opt) => category.includes(opt.value))} // must pass objects
-                onChange={handleCategoryChange}
-                placeholder="Select categories..."
-              />
+
+              {((user.type === '5') && (user.region === '1')) && (
+                <Col md={3}>
+        
+                  <Form.Select value={region} onChange={(e) => handleRegionChange(e.target.value)}>
+                      <option value="0">All Region</option>
+                      <option value="1">TR</option>
+                    </Form.Select>
                 </Col>
-           )}
+              )}
+          
+              <Col md={4}>
+                  <Select
+                  options={options}
+                  isMulti
+                  value={options.filter((opt) => category.includes(opt.value))} // must pass objects
+                  onChange={handleCategoryChange}
+                  placeholder="Select categories..."
+                />
+              </Col>
+              
             <Col md="auto">
               <button
                 type="button"
@@ -371,21 +381,33 @@ const DailyLeadReportTable: React.FC = () => {
                   <th onClick={() => requestSort("date")}>
                     Date <SortArrow columnKey="date" />
                   </th>
+                  <th onClick={() => requestSort("total")}>
+                    Total <SortArrow columnKey="total" />
+                  </th>
                   {allStatuses.map((status) => (
                     <th key={status} onClick={() => requestSort(status)}>
                       {status}
                       <SortArrow columnKey={status} />
                     </th>
                   ))}
-                  <th onClick={() => requestSort("total")}>
-                    Total <SortArrow columnKey="total" />
-                  </th>
+                
                 </tr>
               </thead>
               <tbody>
                 {sortedData.map(({ date, statuses, total }) => (
                   <tr key={date}>
                     <td>{date}</td>
+                    <td
+                      style={{ cursor: total > 0 ? "pointer" : "default", }}
+                      onClick={() => {
+                        if (total > 0) {
+                          const sourceIds = statuses.map((s) => s.id).filter(Boolean);
+                          handleOpenModelPopupClick(date, [...new Set(sourceIds)]);
+                        }
+                      }}
+                    >
+                      {total}
+                    </td>
                     {allStatuses.map((statusName) => {
                       const status = statuses.find((s) => s.name === statusName);
                       const sourceId = status?.id;
@@ -404,23 +426,29 @@ const DailyLeadReportTable: React.FC = () => {
                             {count}
                           </td>;
                     })}
-                    <td
-                    style={{ cursor: total > 0 ? "pointer" : "default", }}
-                    onClick={() => {
-                      if (total > 0) {
-                        const sourceIds = statuses.map((s) => s.id).filter(Boolean);
-                        handleOpenModelPopupClick(date, [...new Set(sourceIds)]);
-                      }
-                    }}
-                  >
-                    {total}
-                  </td>
+                    
                   </tr>
                 ))}
               </tbody>
               <tfoot>
                 <tr>
                   <td>Total</td>
+                  <td
+                    style={{
+                      cursor: grandTotal > 0 ? "pointer" : "default",
+                    }}
+                    onClick={() => {
+                      if (grandTotal > 0) {
+                        const allDates = sortedData.map((row) => row.date);
+                        const allSourceIds = sortedData
+                          .flatMap((row) => row.statuses.map((s) => s.id))
+                          .filter(Boolean);
+                        handleOpenModelPopupClick(allDates, [...new Set(allSourceIds)]);
+                      }
+                    }}
+                  >
+                    {grandTotal}
+                  </td>
                   {footerTotals.map((sum, idx) => {
                     const statusName = allStatuses[idx];
 
@@ -451,22 +479,7 @@ const DailyLeadReportTable: React.FC = () => {
                       </td>
                     );
                   })}
-                  <td
-                    style={{
-                      cursor: grandTotal > 0 ? "pointer" : "default",
-                    }}
-                    onClick={() => {
-                      if (grandTotal > 0) {
-                        const allDates = sortedData.map((row) => row.date);
-                        const allSourceIds = sortedData
-                          .flatMap((row) => row.statuses.map((s) => s.id))
-                          .filter(Boolean);
-                        handleOpenModelPopupClick(allDates, [...new Set(allSourceIds)]);
-                      }
-                    }}
-                  >
-                    {grandTotal}
-                  </td>
+                  
                 </tr>
               </tfoot>
 
@@ -493,7 +506,7 @@ const DailyLeadReportTable: React.FC = () => {
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

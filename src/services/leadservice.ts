@@ -25,6 +25,7 @@ export interface LeadRequestPayload {
   leadstatusVal:any;
   executiveIdVal:any;
   touchStatusVal:any;
+  revertStatusVal: any;
 }
 
 export interface LeadCreateRequestPayload {
@@ -75,7 +76,7 @@ export interface  LeadUpdateRequestPayload {
 
 
 
-export const getLeadsList = async (payload: LeadRequestPayload) => {
+export const getLeadsList = async (payload: any) => {
   const response = await axios.post('/api/Leads/getLeadsList', payload);
   return response.data;
 };
@@ -280,7 +281,8 @@ export interface PartialWalkinPayload {
   userIdVal: number;
   tokenVal: any;
   leadstatusVal:any;
-  executiveIdVal:any
+  executiveIdVal:any;
+  branchIdVal: string;
 }
 
 
@@ -501,3 +503,34 @@ export const UpdateOldCRMApllicantIDLeadHub = async (payload: UpdateOldCRMApllic
   return response.data;
 };
 
+
+
+//getDataTransferStudentLeadsList
+export const getDataTransferStudentLeadsList = async (payload: any) => {
+  const response = await axios.post('/api/Transfer/leadTransferList', payload);
+  return response.data;
+};
+
+// datatransferStudentLeads
+export const datatransferStudentLeads = async (payload: any) => {
+  const response = await axios.post('/api/Transfer/transferLeadhubLeads', payload);
+  return response.data;
+};
+
+//regionChangeFromWebhookByLeadId
+export const regionChangeFromWebhookByLeadId = async (payload: any) => {
+  const response = await axios.post('/api/Transfer/webhookRegionLeadTransfer', payload);
+  return response.data;
+};
+
+//regionChangeFromLeadListByLeadId
+export const regionChangeFromLeadListByLeadId = async (payload: any) => {
+  const response = await axios.post('/api/Transfer/transferLeadhubRegionLeads', payload);
+  return response.data;
+};
+
+// leadRegionTransferList
+export const leadRegionTransferList = async (payload: any) => {
+  const response = await axios.post('/api/Transfer/leadRegionTransferList', payload);
+  return response.data;
+};

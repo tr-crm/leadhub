@@ -13,16 +13,16 @@ import {
 } from "react-bootstrap";
 import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
-import "../dailyreport/LeadReportTable.css";
+import "../executivewiseleadreport/report.css";
 import { getMonthlyWiseReportLeadsList, MonthlyWiseClickableReportRequest } from "@/services/reportsservice";
 import type { MonthlyLead } from "@/services/reportsservice";
 import type { MonthlyWiseReportPayload, MonthlyWiseClickableReportPayload } from "@/services/reportsservice";
 import { getUserInfo } from "@/utils/auth";
-import { useSortableData } from "@/hooks/useSortableData";
 import YearSelect from '@/components/yearselect';
   import { toast } from 'react-toastify';
 import type { Lead } from '@/types/lead.types';
 import DataTable from 'react-data-table-component';
+import RegionSelect from '@/components/regionselect';
 
 
 const MonthlyWiseReportTable: React.FC = () => {
@@ -30,6 +30,7 @@ const MonthlyWiseReportTable: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<string>(
     now.getFullYear().toString()
   );
+  const EXCLUDED_STATUS_ID = "0"; // Branch Assigned
 
   const [data, setData] = useState<MonthlyLead[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -70,6 +71,7 @@ const MonthlyWiseReportTable: React.FC = () => {
       tokenVal: user.access_token,
       typeVal: user.type,
       catgoryIdVal: category,
+      regionVal: region,
     };
 
     try {
@@ -98,7 +100,58 @@ const MonthlyWiseReportTable: React.FC = () => {
     return Array.from(set);
   }, [data]);
 
-  const { sortedItems: sortedData, requestSort, sortConfig } = useSortableData(data);
+   
+    // 1️⃣ sort state
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof MonthlyLead | string;
+    direction: "asc" | "desc";
+  } | null>(null);
+  
+  // 2️⃣ requestSort function
+  const requestSort = (key: keyof MonthlyLead | string) => {
+    setSortConfig((prev) => {
+      if (prev?.key === key) {
+        return {
+          key,
+          direction: prev.direction === "asc" ? "desc" : "asc",
+        };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+  
+  // 3️⃣ sorted data
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return data;
+  
+    return [...data].sort((a, b) => {
+      let aValue = 0;
+      let bValue = 0;
+  
+      if (sortConfig.key === "month") {
+        aValue = parseInt(a.year_month.split("-")[1], 10);
+        bValue = parseInt(b.year_month.split("-")[1], 10);
+      } else if (sortConfig.key === "total") {
+        aValue = a.total;
+        bValue = b.total;
+      } else {
+        const aStatus = a.statuses.find(s => s.name === sortConfig.key);
+        const bStatus = b.statuses.find(s => s.name === sortConfig.key);
+        aValue = aStatus?.count ?? 0;
+        bValue = bStatus?.count ?? 0;
+      }
+  
+      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [data, sortConfig]);
+  
+   const SortArrow = ({ columnKey }: { columnKey: string }) => {
+    if (!sortConfig || sortConfig.key !== columnKey) return null;
+    return sortConfig.direction === "asc" ? <> ↑</> : <> ↓</>;
+  };
+
 
   const footerTotals = useMemo(() => {
     return allStatuses.map((statusName) =>
@@ -110,13 +163,30 @@ const MonthlyWiseReportTable: React.FC = () => {
   }, [data, allStatuses]);
 
   const grandTotal = useMemo(() => {
-    return data.reduce((sum, row) => sum + row.total, 0);
-  }, [data]);
+     return data.reduce((sum, row) => {
+       const rowTotal = row.statuses
+         .filter((s) => String(s.id) !== EXCLUDED_STATUS_ID) // ❌ exclude Branch Assigned
+         .reduce((r, s) => r + s.count, 0);
+       return sum + rowTotal;
+     }, 0);
+   }, [data]);
+ 
 
-  const SortArrow = ({ columnKey }: { columnKey: string }) => {
-    if (sortConfig.key !== columnKey) return null;
-    return sortConfig.direction === "asc" ? <> ↑</> : <> ↓</>;
-  };
+   const type=user.type;
+      const getInitialRegionValue = (): string => {
+        if (type === '1' || type === '2') {
+          return '1';
+        } else if (user.region) {
+          return String(user.region);
+        }
+        return '0';
+      };
+       const [region, setRegion] = useState<string>(getInitialRegionValue());
+       const handleRegionChange = (selectedRegion:any) => {
+     
+      setRegion(selectedRegion);
+    };
+  
    const [showModal, setShowModal] = useState<boolean>(false);
    const [modalData, setModalData] = useState<any[]>([]); 
     
@@ -132,8 +202,9 @@ const MonthlyWiseReportTable: React.FC = () => {
         userIdVal: user.id,
         tokenVal: user.access_token,
         typeVal: user.type,
-        yearVal:Array.isArray(dates) ? new Date(dates[0]).getFullYear().toString() : new Date(dates).getFullYear().toString(),
+        yearVal: selectedYear,
         catgoryIdVal : category, // Use the same category filter
+        regionVal: region,
       };
     
         try {
@@ -244,6 +315,30 @@ const MonthlyWiseReportTable: React.FC = () => {
 
               <YearSelect value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} required />
             </Col>
+             {(user.type === '1' || user.type === '2') && (
+             <Col md={2}>
+              <RegionSelect
+                value={region}
+                onChange={(val) => {
+                    handleRegionChange(val?.value ?? 0);
+                  
+                  }}
+                label="Region"
+                placeholder="All Regions"
+              />
+
+            
+          </Col>
+           )}
+             {((user.type === '5') && (user.region === '1')) && (
+                <Col md={3}>
+        
+                  <Form.Select value={region} onChange={(e) => handleRegionChange(e.target.value)}>
+                      <option value="0">All Region</option>
+                      <option value="1">TR</option>
+                    </Form.Select>
+                </Col>
+              )}
              <Col md={4}>
              <Select
               options={options}
@@ -281,31 +376,46 @@ const MonthlyWiseReportTable: React.FC = () => {
                   <th onClick={() => requestSort("month")}>
                     Date <SortArrow columnKey="month" />
                   </th>
+                   <th onClick={() => requestSort("total")}>
+                    Total <SortArrow columnKey="total" />
+                  </th>
                   {allStatuses.map((status) => (
                     <th key={status} onClick={() => requestSort(status)}>
                       {status}
                       <SortArrow columnKey={status} />
                     </th>
                   ))}
-                  <th onClick={() => requestSort("total")}>
-                    Total <SortArrow columnKey="total" />
-                  </th>
+                 
                 </tr>
               </thead>
               <tbody>
-                {sortedData.map(({ year_month, statuses, total }) => {
-                  const [year, monthNum] = year_month.split("-");
-                  const monthIndex = parseInt(monthNum, 10) - 1;
+                {sortedData.map(({ year_month, statuses }) => {
+                 const monthNo = year_month.split("-")[1].padStart(2, "0");
+                  const monthIndex = Number(monthNo) - 1;
 
-                  // Convert "2025-07" => "July 2025"
-                  const monthLabel = new Date(parseInt(year, 10), monthIndex).toLocaleString("default", {
+                  const displayMonth = new Date(0, monthIndex).toLocaleString("default", {
                     month: "long",
-                    year: "numeric",
                   });
+                   const rowTotal = statuses
+                    .filter((s) => String(s.id) !== EXCLUDED_STATUS_ID)
+                    .reduce((sum, s) => sum + s.count, 0);
 
                   return (
-                    <tr key={year_month}>
-                      <td>{monthLabel}</td>
+                    <tr key={monthNo}>
+                      <td>{displayMonth}</td>
+                       <td
+                        style={{
+                          cursor: rowTotal > 0 ? "pointer" : "default",
+                        }}
+                        onClick={() => {
+                          if (rowTotal > 0) {
+                            const allStatusIds = statuses.map((s) => s.id).filter(Boolean);
+                            handleOpenModelPopupClick(monthNo, allStatusIds);
+                          }
+                        }}
+                      >
+                        {rowTotal}
+                      </td>
                       {allStatuses.map((statusName) => {
                         const status = statuses.find((s) => s.name === statusName);
                         const count = status?.count || 0;
@@ -315,11 +425,11 @@ const MonthlyWiseReportTable: React.FC = () => {
                           <td
                             key={statusName}
                             style={{
-                              cursor: count > 0 ? "pointer" : "default",
+                              cursor: count > 0  ? "pointer" : "default",
                             }}
                             onClick={() => {
-                              if (count > 0 && statusId) {
-                                handleOpenModelPopupClick(year_month, [statusId]);
+                              if (count > 0 && statusId && statusId !== EXCLUDED_STATUS_ID) {
+                                handleOpenModelPopupClick(monthNo, [statusId]);
                               }
                             }}
                           >
@@ -327,19 +437,7 @@ const MonthlyWiseReportTable: React.FC = () => {
                           </td>
                         );
                       })}
-                      <td
-                        style={{
-                          cursor: total > 0 ? "pointer" : "default",
-                        }}
-                        onClick={() => {
-                          if (total > 0) {
-                            const allStatusIds = statuses.map((s) => s.id).filter(Boolean);
-                            handleOpenModelPopupClick(year_month, allStatusIds);
-                          }
-                        }}
-                      >
-                        {total}
-                      </td>
+                     
                     </tr>
                   );
                 })}
@@ -348,6 +446,23 @@ const MonthlyWiseReportTable: React.FC = () => {
               <tfoot>
                   <tr>
                   <td>Total</td>
+                   <td
+                    style={{
+                      cursor: grandTotal > 0 ? "pointer" : "default",
+                    }}
+                    onClick={() => {
+                      if (grandTotal > 0 ) {
+                        const allStatusIds = sortedData[0]?.statuses.map((s) => s.id).filter(Boolean) || [];
+                        const allMonthValues = sortedData.map(d => {
+                          const month = d.year_month.split("-")[1];
+                          return month.padStart(2, "0");
+                        });
+                        handleOpenModelPopupClick(allMonthValues, allStatusIds);
+                      }
+                    }}
+                  >
+                    {grandTotal}
+                  </td>
                   {footerTotals.map((sum, idx) => {
                     const statusId = sortedData[0]?.statuses[idx]?.id;
 
@@ -358,16 +473,20 @@ const MonthlyWiseReportTable: React.FC = () => {
                           cursor: sum > 0 ? "pointer" : "default",
                         }}
                         onClick={() => {
-                          if (sum > 0 && statusId) {
+                         if (sum > 0 && statusId !== EXCLUDED_STATUS_ID) {
                             const months = sortedData
                               .filter((item) => {
                                 const status = item.statuses[idx];
                                 return status && status.count > 0;
                               })
-                              .map((item) => item.year_month); // ✅ FIXED here
+                              .map((item) => {
+                                const month = item.year_month.split("-")[1]; // get month part
+                                return month.padStart(2, "0");               // pad single-digit months
+                              });
 
                             handleOpenModelPopupClick(months, [statusId]);
                           }
+
                         }}
                       >
                         {sum}
@@ -375,20 +494,7 @@ const MonthlyWiseReportTable: React.FC = () => {
                     );
                   })}
 
-                  <td
-                    style={{
-                      cursor: grandTotal > 0 ? "pointer" : "default",
-                    }}
-                    onClick={() => {
-                      if (grandTotal > 0) {
-                        const allStatusIds = sortedData[0]?.statuses.map((s) => s.id).filter(Boolean) || [];
-                        const allMonths = sortedData.map((item) => item.year_month); // ✅ FIXED here
-                        handleOpenModelPopupClick(allMonths, allStatusIds);
-                      }
-                    }}
-                  >
-                    {grandTotal}
-                  </td>
+                 
                 </tr>
               </tfoot>
 
@@ -416,7 +522,7 @@ const MonthlyWiseReportTable: React.FC = () => {
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

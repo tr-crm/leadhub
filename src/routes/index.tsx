@@ -35,6 +35,11 @@ const ProductSourceWiseLeadReport = lazy(() => import('@/views/reports/productso
 const GlobalCRMSearch = lazy(() => import('@/views/oldcrmsearch'));
 const FollowupsList = lazy(() => import('@/views/crmfollowup/crmfollowuplist'));
 const DailyExecutivewiseLeadReport = lazy(() => import('@/views/reports/dailyexecutiveleadreport'));
+const LoadableSsoLogin = lazy(() => import('@/views/login/sso'));
+const DataTransferLeadsList = lazy(() => import('@/views/datatransfer/studentleadlist'));
+const RegionTransferredList = lazy(() => import('@/views/leads/regiontransferredlist'));
+const DailyWebhookLeadReport = lazy(() => import('@/views/reports/dailywebhookleadreport'));
+
 
 export const loginRoutes: RouteObject[] = [
 
@@ -45,7 +50,11 @@ export const loginRoutes: RouteObject[] = [
            title: 'Login',
         }
     },
-   
+    {
+        path: 'login/sso',
+        element: <LoadableSsoLogin />,
+    },
+
 ]
 export const dashboardRoutes: RouteObject[] = [
     {
@@ -156,6 +165,13 @@ export const leadsRoutes: RouteObject[] = [
         handle: {
            title: 'Excel Import List',
         }
+    },
+    { 
+        path: '/leads/regiontransferredlist',
+        element: <RegionTransferredList/>,
+        handle: {
+           title: 'Transferred List',
+        }
     }
 
 
@@ -241,6 +257,13 @@ export const reportRoutes: RouteObject[] = [
            title: 'Daily Wise Executive Report',
         }
     },
+    {
+        path: '/report/dailywebhookleadreport',
+        element: <DailyWebhookLeadReport/>,
+         handle: {
+           title: 'Daily Webhook Lead Report',
+        }
+    },
     
    
 ]
@@ -286,6 +309,18 @@ export const dailyJobsRoutes: RouteObject[] = [
         }
     }
 ]
+
+export const dataTransferLeadsListRoutes: RouteObject[] = [
+    {
+        path: '/datatransfer/studentleadlist', 
+        element: <DataTransferLeadsList/>,
+        handle: {
+           title: 'Daily Job List', 
+        }
+    }
+]
+
+
 export const appRoutes: RouteObject[] = [
     {
         element: <MainLayout/>,
@@ -303,12 +338,12 @@ export const appRoutes: RouteObject[] = [
             ...reportRoutes,
             ...settingsRoutes,
             ...importRoutes,
-            ...dailyJobsRoutes
-            
+            ...dailyJobsRoutes,
+            ...dataTransferLeadsListRoutes
         ],
     },
 ];
 export const otherRoutes: RouteObject[] = [...loginRoutes, ...userRoutes,  ...globalCRMSearchRoutes, ...globalSearchRoutes, ...leadsRoutes,
-    ...crmoldFollowupsRoutes, ...reportRoutes,...settingsRoutes,...importRoutes,...dailyJobsRoutes];
+    ...crmoldFollowupsRoutes, ...reportRoutes,...settingsRoutes,...importRoutes,...dailyJobsRoutes, ...dataTransferLeadsListRoutes];
 
 export const routes: RouteObject[] = [...appRoutes, ...otherRoutes];

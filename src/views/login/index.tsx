@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axiosInstance';
 import Cookies from 'js-cookie';
+
 
 
 import {
@@ -18,11 +19,13 @@ import {
 } from 'react-bootstrap';
 import { currentYear } from '@/helpers';
 import AppLogo from '@/components/AppLogo';
-import { TbLockPassword, TbMail } from 'react-icons/tb';
+import {  TbMail, TbPhone } from 'react-icons/tb';
 import { toast } from 'react-toastify';
+
 
 interface LoginFormInputs {
   email: string;
+  phone?: string;
   password: string;
   remember?: boolean;
 }
@@ -55,11 +58,33 @@ const SignIn = () => {
   const [multiLogin, setMultiLogin] = useState(0);
   const [formEmail, setFormEmail] = useState('');
   const [formPassword, setFormPassword] = useState('');
+  const [loginMode, setLoginMode] = useState<'email' | 'phone'>('email');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [formPhone, setFormPhone] = useState('');
 
+  const toggleLoginMode = () => {
+    setLoginMode(prev => (prev === 'email' ? 'phone' : 'email'));
+    setOtpSent(false);
+    setOtp('');
+  };
+
+  const [loginFlag, setLoginFlag] = useState<'email' | 'phone'>('email');
+
+  /** ✅ Step 1: Handle Email Login **/
   const onSubmit = async (data: LoginFormInputs): Promise<void> => {
+    if (loginMode === 'phone') {
+      // For phone login, don't proceed here; use OTP flow instead
+      return;
+    }
+    setFormEmail(data.email);
+    setFormPassword(data.password);
+    setFormPhone('');
+    setLoginFlag('email');
+
+
     setLoading(true);
     setApiError(null);
-
     setFormEmail(data.email);
     setFormPassword(data.password);
 
@@ -67,36 +92,24 @@ const SignIn = () => {
       const response = await axios.post<LoginResponse>('/api/User/userLogin', {
         email: data.email,
         password: data.password,
+        loginFlagVal: loginFlag,
       });
-
-      if (response.data.response === 'success') {
+     
+         
         if (response.data.multiLogin === 1000) {
-          setMultiLogin(1000);
-        } else if (Array.isArray(response.data.data) && response.data.data.length > 0) {
-          const user: UserDetails = response.data.data[0];
-
-          Cookies.set('accessToken', user.access_token, { expires: 7 });
-          Cookies.set('LeadHubLoginAccess', JSON.stringify(user), { expires: 7 });
-          // console.log(user);
-           
-           toast.dismiss();
-          toast.success(
-            <div>
-              Hi, {user.full_name} <br />
-              Welcome to TRCRM Lead Hub
-            </div>
-          );
-
-          navigate('/dashboard');
-        }
+        setMultiLogin(1000);
+        console.log('Login Response:', response.data.multiLogin);
+        toast.error('You are logged in on another device. Please force logout.');
+      } else if (response.data.response === 'success') {
+        handleLoginSuccess(response.data.data[0]);
       } else {
-         toast.dismiss();
         toast.error(response.data.message || 'Login failed.');
       }
+
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
       const message = err.response?.data?.message || 'Login failed. Please try again.';
-       toast.dismiss();
+      toast.dismiss();
       toast.error(message);
       setApiError(message);
     } finally {
@@ -104,34 +117,93 @@ const SignIn = () => {
     }
   };
 
-  const handleForceLogout = async ({
-    emailVal,
-    password,
-  }: {
-    emailVal: string;
-    password: string;
-  }): Promise<void> => {
+  /** ✅ Step 2: Request OTP **/
+  const handleSendOtp = async (phone: string) => {
+    setLoading(true);
+    setApiError(null);
+    setFormPhone(phone);
+    setFormEmail('');
+    setLoginFlag('phone');
+    
     try {
-      const response = await axios.post<LoginResponse>('/api/User/userForceLogout', {
-        emailVal,
-        password,
-        forceLogout: '1',
+      const response = await axios.post('/api/User/verifyPhone', { phoneNumberVal: phone,  loginFlagVal: loginFlag });
+
+        if (response.data.multiLogin === 1000) {
+         
+           setMultiLogin(1000); // show Force Logout button
+        } else if (response.data.response === 'success') {
+           setOtpSent(true);
+          toast.success(response.data.message);
+        } else {
+          toast.error(response.data.message || 'Login failed.');
+        }
+    } catch (error) {
+      toast.error('Error sending OTP. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /** ✅ Step 3: Verify OTP **/
+  const handleVerifyOtp = async (phone: string, otpCode: string) => {
+    setLoading(true);
+    setLoginFlag('phone');
+    try {
+      const response = await axios.post<LoginResponse>('/api/User/userLoginWithPhoneOtp', {
+        phoneNumberVal: phone,
+        otpVal: otpCode,
+        loginFlagVal: loginFlag,
       });
 
       if (response.data.response === 'success') {
-        setMultiLogin(response.data.multiLogin || 0);
-         toast.dismiss();
-        toast.success('You have been successfully logged out from all other devices.');
+        handleLoginSuccess(response.data.data[0]);
       } else {
-         toast.dismiss();
-        toast.error(response.data.message || 'Force logout failed.');
+        toast.error(response.data.message || 'OTP verification failed.');
       }
-    } catch (error: unknown) {
-      console.error('Force logout failed:', error);
-       toast.dismiss();
-      toast.error('An error occurred while trying to force logout.');
+    } catch (error) {
+      // toast.error('An error occurred while verifying OTP.');
+    } finally {
+      setLoading(false);
     }
   };
+
+  /** ✅ Common: Handle Login Success **/
+  const handleLoginSuccess = (user: UserDetails) => {
+    Cookies.set('accessToken', user.access_token, { expires: 7 });
+    Cookies.set('LeadHubLoginAccess', JSON.stringify(user), { expires: 7 });
+
+    toast.dismiss();
+    toast.success(
+      <div>
+        Hi, {user.full_name} <br /> Welcome to TRCRM Lead Hub
+      </div>
+    );
+
+    navigate('/dashboard');
+  };
+
+  const handleForceLogout = async (): Promise<void> => {
+  try {
+    const payload: any = { password: formPassword, forceLogout: '1' ,loginFlagVal: loginFlag};
+    if (formEmail) payload.emailVal = formEmail;
+    if (formPhone) payload.emailVal = formPhone;
+
+    const response = await axios.post<LoginResponse>('/api/User/userForceLogout', payload);
+
+    if (response.data.response === 'success') {
+      setMultiLogin(0);
+      toast.success(response.data.message);
+      handleLoginSuccess(response.data.data[0]); // auto-login after force logout
+    } else {
+      toast.error(response.data.message || 'Force logout failed.');
+    }
+  } catch (error) {
+    toast.error('An error occurred while trying to force logout.');
+  }  finally {
+      setLoading(false);
+    }
+};
+
 
   return (
     <div className="auth-box d-flex align-items-center">
@@ -152,123 +224,162 @@ const SignIn = () => {
                       <h4 className="fw-bold mt-4">Welcome to Lead Hub</h4>
                     </div>
 
-                    <Form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="text-center mb-3">
+                    <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={toggleLoginMode}
+                      >
+                        Switch to {loginMode === 'email' ? 'Phone' : 'Email'} Login
+                      </Button>
+                    </div>
+
+                   <Form onSubmit={handleSubmit(onSubmit)}>
                       {apiError && <Alert variant="danger">{apiError}</Alert>}
 
-                      <div className="mb-3">
-                        <FormLabel htmlFor="userEmail">
-                          Email address <span className="text-danger">*</span>
-                        </FormLabel>
-                        <div className="input-group">
-                          <span className="input-group-text bg-light">
-                            <TbMail className="text-muted fs-xl" />
-                          </span>
-                          <FormControl
-                            type="email"
-                            id="userEmail"
-                            placeholder="you@example.com"
-                            autoComplete="email"
-                            {...register('email', {
-                              required: 'Email is required',
-                              pattern: {
-                                value: /^\S+@\S+$/i,
-                                message: 'Invalid email format',
-                              },
-                            })}
-                            isInvalid={!!errors.email}
-                          />
-                        </div>
-                        {errors.email && (
-                          <small className="text-danger">{errors.email.message}</small>
-                        )}
-                      </div>
-
-                      <div className="mb-3">
-                        <FormLabel htmlFor="userPassword">
-                          Password <span className="text-danger">*</span>
-                        </FormLabel>
-                        <div className="input-group">
-                          <span className="input-group-text bg-light">
-                            <TbLockPassword className="text-muted fs-xl" />
-                          </span>
-                          <FormControl
-                            type="password"
-                            id="userPassword"
-                            placeholder="••••••••"
-                            autoComplete="current-password"
-                            {...register('password', {
-                              required: 'Password is required',
-                              minLength: {
-                                value: 6,
-                                message: 'Password must be at least 6 characters',
-                              },
-                            })}
-                            isInvalid={!!errors.password}
-                          />
-                        </div>
-                        {errors.password && (
-                          <small className="text-danger">{errors.password.message}</small>
-                        )}
-                      </div>
-
-                      <div className="d-flex justify-content-between align-items-center mb-3">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input form-check-input-light fs-14"
-                            type="checkbox"
-                            id="rememberMe"
-                            {...register('remember')}
-                          />
-                          <label className="form-check-label" htmlFor="rememberMe">
-                            Keep me signed in
-                          </label>
-                        </div>
-
-                        <Link
-                          to="/auth-2/reset-password"
-                          className="text-decoration-underline text-muted"
-                        >
-                          Forgot Password?
-                        </Link>
-                      </div>
-
-                      <div className="d-grid">
-                        {multiLogin === 1000 ? (
-                          <>
-                            <div className="text-danger text-center mt-2 mb-2 fw-semibold">
-                              You're signed in on another device. Log out?
+                      {loginMode === 'email' ? (
+                        <>
+                          {/* Email Field */}
+                          <div className="mb-3">
+                            <FormLabel>Email address</FormLabel>
+                            <div className="input-group">
+                              <span className="input-group-text bg-light">
+                                <TbMail className="text-muted fs-xl" />
+                              </span>
+                              <FormControl
+                                type="email"
+                                placeholder="you@example.com"
+                                {...register('email', {
+                                  required: 'Email is required',
+                                  pattern: {
+                                    value: /^\S+@\S+$/i,
+                                    message: 'Invalid email format',
+                                  },
+                                })}
+                                isInvalid={!!errors.email}
+                              />
                             </div>
+                            {errors.email && (
+                              <small className="text-danger">{errors.email.message}</small>
+                            )}
+                          </div>
 
+                          {/* Password Field */}
+                          <div className="mb-3">
+                            <FormLabel>Password</FormLabel>
+                            <FormControl
+                              type="password"
+                              placeholder="••••••••"
+                              {...register('password', {
+                                required: 'Password is required',
+                              })}
+                              isInvalid={!!errors.password}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {/* Phone Field */}
+                          <div className="mb-3">
+                            <FormLabel>Phone Number</FormLabel>
+                            <div className="input-group">
+                              <span className="input-group-text bg-light">
+                                <TbPhone className="text-muted fs-xl" />
+                              </span>
+                              <FormControl
+                                type="tel"
+                                placeholder="Enter phone number"
+                                {...register('phone', {
+                                  required: 'Phone number is required',
+                                  pattern: {
+                                    value: /^[0-9]{10}$/,
+                                    message: 'Phone number must be 10 digits',
+                                  },
+                                })}
+                                isInvalid={!!errors.phone}
+                              />
+                            </div>
+                            {errors.phone && (
+                              <small className="text-danger">{errors.phone.message}</small>
+                            )}
+                          </div>
+
+                          {/* OTP Section */}
+                          {otpSent && (
+                            <div className="mb-3">
+                              <FormLabel>Enter OTP</FormLabel>
+                              <FormControl
+                                type="text"
+                                placeholder="6-digit OTP"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                              />
+                            </div>
+                          )}
+
+                          {/* Action Buttons */}
+                          {!otpSent ? (
                             <Button
-                              variant="warning"
-                              size="sm"
-                              className="mt-2 fw-semibold"
-                              onClick={() =>
-                                handleForceLogout({
-                                  emailVal: formEmail,
-                                  password: formPassword,
-                                })
-                              }
+                              variant="primary"
+                              onClick={() => {
+                                const phone = (document.querySelector(
+                                  'input[name="phone"]'
+                                ) as HTMLInputElement)?.value;
+                                if (phone) handleSendOtp(phone);
+                              }}
+                              disabled={loading}
                             >
-                              Force Logout
+                              {loading ? 'Sending OTP...' : 'Send OTP'}
                             </Button>
-                          </>
-                        ) : (
+                          ) : (
+                            <Button
+                              variant="success"
+                              onClick={() => {
+                                const phone = (document.querySelector(
+                                  'input[name="phone"]'
+                                ) as HTMLInputElement)?.value;
+                                if (phone && otp) handleVerifyOtp(phone, otp);
+                              }}
+                              disabled={loading}
+                            >
+                              {loading ? 'Verifying...' : 'Verify & Login'}
+                            </Button>
+                          )}
+                        </>
+                      )}
+
+                      {/* Email Mode Submit */}
+                      {loginMode === 'email' && (
+                        <Button
+                          type="submit"
+                          className="btn btn-primary fw-semibold py-2 mt-3"
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <>
+                              <Spinner animation="border" size="sm" /> Logging in...
+                            </>
+                          ) : (
+                            'Login'
+                          )}
+                        </Button>
+                      )}
+{/* {multiLogin} */}
+                      {multiLogin === 1000 && (
+                        <div className="mt-3 text-center">
+                          <Alert variant="warning" className="fw-semibold">
+                            You are logged in on another device.
+                          </Alert>
                           <Button
-                            type="submit"
-                            className="btn btn-primary fw-semibold py-2"
+                            variant="danger"
+                            className="mt-2 fw-semibold"
+                            onClick={handleForceLogout}
                             disabled={loading}
                           >
-                            {loading ? (
-                              <>
-                                <Spinner animation="border" size="sm" /> Logging in...
-                              </>
-                            ) : (
-                              'Login'
-                            )}
+                            {loading ? 'Processing...' : 'Force Logout & Login'}
                           </Button>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </Form>
      
                     <p className="text-center text-muted mt-4 mb-0">

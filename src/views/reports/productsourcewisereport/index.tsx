@@ -11,9 +11,8 @@ import {
   Card,
   Button
 } from "react-bootstrap";
-import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
-import "../dailyreport/LeadReportTable.css";
+import "../executivewiseleadreport/report.css";
 import { getProductSourceWiseLeadReportLeadsList, getProductSourceWiseLeadClickableDetails } from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
 import type { ProductSourceReportRequest , ProductSourceWiseLeadClickablePayload} from "@/services/reportsservice";
@@ -116,30 +115,9 @@ const ProductSourceWiseReportTable: React.FC = () => {
       return '0';
     };
      const [region, setRegion] = useState<string>(getInitialRegionValue());
-      const options = [
-      { value: "0", label: "All Products" },
-      { value: "1", label: "Test Prep" },
-      { value: "2", label: "ACS" },
-      { value: "3", label: "Immigration" },
-    ];
   
-    // ✅ keep only IDs
-    const [category, setCategory] = useState<string[]>(["1", "2"]);
   
-    const handleCategoryChange = (selected: any) => {
-      if (!selected || selected.length === 0) {
-        setCategory([]);
-        return;
-      }
-
-      if (selected.some((opt: any) => opt.value === "0")) {
-        setCategory(["0"]);
-      } else {
-        setCategory(selected.map((opt: any) => opt.value));
-      }
-    };
-
-
+   
   const fetchData = async () => {
      if (!user) return;
     setLoading(true);
@@ -152,7 +130,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
       tokenVal: user.access_token,
       typeVal: user.type,
       regionVal: region,
-      catgoryIdVal: category,
+      catgoryIdVal: ['0'],
     };
 
     try {
@@ -339,15 +317,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
 
             }
 
-              <Col md={4}>
-             <Select
-              options={options}
-              isMulti
-              value={options.filter((opt) => category.includes(opt.value))} // must pass objects
-              onChange={handleCategoryChange}
-              placeholder="Select categories..."
-            />
-            </Col>
+          
            
             <Col md="auto">
               <button
@@ -377,22 +347,33 @@ const ProductSourceWiseReportTable: React.FC = () => {
                   <th onClick={() => requestSort("date")}>
                     Source <SortArrow columnKey="date" />
                   </th>
+                   <th onClick={() => requestSort("total")}>
+                    Total <SortArrow columnKey="total" />
+                  </th>
                   {allStatuses.map((status) => (
                     <th key={status} onClick={() => requestSort(status)}>
                       {status}
                       <SortArrow columnKey={status} />
                     </th>
                   ))}
-                  <th onClick={() => requestSort("total")}>
-                    Total <SortArrow columnKey="total" />
-                  </th>
+                 
                 </tr>
               </thead>
                 <tbody>
               {sortedData.map(({ id: sourceId, name, statuses, total }) => (
                 <tr key={sourceId}>
                     <td>{name}</td>
-
+                     <td
+                        style={{ cursor: total > 0 ? "pointer" : "default" }}
+                        onClick={() => {
+                            if (total > 0) {
+                            const productIds = statuses.map((s) => s.id).filter(Boolean);
+                            handleOpenModelPopupClick([...new Set(productIds)], [sourceId]); // ✅ correct param order
+                            }
+                        }}
+                        >
+                        {total}
+                    </td>
                     {allStatuses.map((statusName) => {
                     const status = statuses.find((s) => s.name === statusName);
                     const productId = status?.id; // ✅ product ID
@@ -413,17 +394,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
                     );
                     })}
 
-                    <td
-                    style={{ cursor: total > 0 ? "pointer" : "default" }}
-                    onClick={() => {
-                        if (total > 0) {
-                        const productIds = statuses.map((s) => s.id).filter(Boolean);
-                        handleOpenModelPopupClick([...new Set(productIds)], [sourceId]); // ✅ correct param order
-                        }
-                    }}
-                    >
-                    {total}
-                    </td>
+                   
                 </tr>
                 ))}
 
@@ -434,6 +405,22 @@ const ProductSourceWiseReportTable: React.FC = () => {
                 <tfoot>
                     <tr>
                         <td>Total</td>
+                        <td
+                        style={{ cursor: grandTotal > 0 ? "pointer" : "default" }}
+                        onClick={() => {
+                            if (grandTotal > 0) {
+                            const allProductIds = sortedData
+                                .flatMap((row) => row.statuses.map((s) => s.id))
+                                .filter(Boolean);
+
+                            const allSourceIds = sortedData.map((row) => row.id);
+
+                            handleOpenModelPopupClick([...new Set(allProductIds)], allSourceIds);
+                            }
+                        }}
+                        >
+                        {grandTotal}
+                        </td>
                         {footerTotals.map((sum, idx) => {
                         const statusName = allStatuses[idx];
 
@@ -465,22 +452,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
                         })}
 
                         {/* ✅ Grand total column */}
-                        <td
-                        style={{ cursor: grandTotal > 0 ? "pointer" : "default" }}
-                        onClick={() => {
-                            if (grandTotal > 0) {
-                            const allProductIds = sortedData
-                                .flatMap((row) => row.statuses.map((s) => s.id))
-                                .filter(Boolean);
-
-                            const allSourceIds = sortedData.map((row) => row.id);
-
-                            handleOpenModelPopupClick([...new Set(allProductIds)], allSourceIds);
-                            }
-                        }}
-                        >
-                        {grandTotal}
-                        </td>
+                        
                     </tr>
                     </tfoot>
 
@@ -509,7 +481,7 @@ const ProductSourceWiseReportTable: React.FC = () => {
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

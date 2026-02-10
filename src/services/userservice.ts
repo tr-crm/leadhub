@@ -206,3 +206,12 @@ export const UpdateFirstloginSeenComment = async (payload:any) => {
   // console.log(response);
   return response.data;
 };
+
+export const addSavedFilters = async (payload: any) => {
+  const response = await axios.post('/api/User/addUserFilters', payload);
+  return response.data;
+};
+export const getSavedFilters = async (payload: any) => {
+  const response = await axios.post('/api/User/getUserFilters', payload);
+  return response.data;
+};

@@ -1,0 +1,36 @@
+/* SsoLoginDropdown.css */
+
+/* Blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Pulse (scale effect) */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* Apply blink */
+.blink {
+  animation: blink 1s ease-in-out infinite;
+}
+
+/* Optional pulse + blink */
+.blink-pulse {
+  animation: blink 1s ease-in-out infinite, pulse 2s ease-in-out infinite;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* On hover: glow + color change */
+.blink-pulse:hover {
+  color: #ffc107; /* Bootstrap warning color */
+  text-shadow: 0 0 6px #ffc107;
+  transform: scale(1.2);
+}
+

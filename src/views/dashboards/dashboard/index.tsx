@@ -184,18 +184,11 @@ const options = [
             title: 'Direct Leads',
             badgeColor: 'dark',
             badgeText: '',
-            value: res.direct_lead_count,
+            value: res.direct_source_lead_count,
             metric: 'Direct',
-            targetValue: Number(res.direct_lead_count) || 0,
+            targetValue: Number(res.direct_source_lead_count) || 0,
           },
-          // {
-          //   title: 'Webhook Lead Count',
-          //   badgeColor: 'primary',
-          //   badgeText: '',
-          //   value: res.webhook_lead_count,
-          //   metric: 'Webhook Leads',
-          //   targetValue: Number(res.webhook_lead_count) || 0,
-          // },
+        
           {
             title: 'Website Lead Count',
             badgeColor: 'info',
@@ -220,6 +213,47 @@ const options = [
             metric: 'Google Ads Leads',
             targetValue: Number(res.google_ads_lead_count) || 0,
           },
+            {
+            title: 'BDM Lead Count',
+            badgeColor: 'primary',
+            badgeText: '',
+            value: res.bdm_lead_count,
+            metric: 'BDM Leads',
+            targetValue: Number(res.bdm_lead_count) || 0,
+          },
+            {
+            title: 'Chat Lead Count',
+            badgeColor: 'primary',
+            badgeText: '',
+            value: res.chat_lead_count,
+            metric: 'Chat Leads',
+            targetValue: Number(res.chat_lead_count) || 0,
+          },
+           {
+            title: 'WhatsApp Lead Count',
+            badgeColor: 'primary',
+            badgeText: '',
+            value: res.whatsapp_lead_count,
+            metric: 'WhatsApp Leads',
+            targetValue: Number(res.whatsapp_lead_count) || 0,
+          },
+          {
+            title: 'Reference Lead Count',
+            badgeColor: 'primary',
+            badgeText: '',
+            value: res.reference_lead_count,
+            metric: 'Reference Leads',
+            targetValue: Number(res.reference_lead_count) || 0,
+          },
+          {
+            title: 'WebCall Lead Count',
+            badgeColor: 'primary',
+            badgeText: '',
+            value: res.webcall_lead_count,
+            metric: 'WebCall Leads',
+            targetValue: Number(res.webcall_lead_count) || 0,
+          },
+          
         ];
 
         setDashboard(stats);

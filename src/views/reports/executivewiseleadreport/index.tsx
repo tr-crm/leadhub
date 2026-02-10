@@ -13,7 +13,7 @@ import {
 } from "react-bootstrap";
 import Select from "react-select";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
-import "../dailyreport/LeadReportTable.css";
+import "./report.css";
 import { getExecutivewiseLeadReportList , getExecutivewiseLeadReportClickableDetails} from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
 import type { RegionLeadReportRequest,getExecutivewiseLeadReportClickablepayload } from "@/services/reportsservice";
@@ -32,7 +32,8 @@ const padMonth = (month: number) => String(month).padStart(2, "0");
 const DailyLeadReportTable: React.FC = () => {
   const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
   const now = new Date();
-
+  const EXCLUDED_STATUS_ID = "0"; // Branch Assigned
+  const EXCLUDED_STATUS_NAME = "Branch Assigned";
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -108,6 +109,7 @@ const DailyLeadReportTable: React.FC = () => {
         executiveIdVal: executiveId,
         leadStatusVal: statusId,
          catgoryIdVal: category,
+         regionVal:region,
      };
  
      try {
@@ -217,7 +219,12 @@ const DailyLeadReportTable: React.FC = () => {
   }, [data, allStatuses]);
 
   const grandTotal = useMemo(() => {
-    return data.reduce((sum, row) => sum + row.total, 0);
+    return data.reduce((sum, row) => {
+      const rowTotal = row.statuses
+        .filter((s) => s.id !== EXCLUDED_STATUS_ID) // :x: exclude Branch Assigned
+        .reduce((r, s) => r + s.count, 0);
+      return sum + rowTotal;
+    }, 0);
   }, [data]);
 
   const SortArrow = ({ columnKey }: { columnKey: string }) => {
@@ -392,92 +399,82 @@ const handleRegionChange = (selectedRegion:any) => {
                   <th onClick={() => requestSort("date")}>
                     Executive <SortArrow columnKey="date" />
                   </th>
+                    <th onClick={() => requestSort("total")}>
+                    Total <SortArrow columnKey="total" />
+                  </th>
                   {allStatuses.map((status) => (
                     <th key={status} onClick={() => requestSort(status)}>
                       {status}
                       <SortArrow columnKey={status} />
                     </th>
                   ))}
-                  <th onClick={() => requestSort("total")}>
-                    Total <SortArrow columnKey="total" />
-                  </th>
+                
                 </tr>
               </thead>
              <tbody>
-                {sortedData.map(({ id, name, statuses, total }) => (
-                  <tr key={id}>
-                    <td>{name}</td>
+                {sortedData.map(({ id, name, statuses }) => {
+                  // ✅ Calculate row total (exclude Branch Assigned)
+                  const rowTotal = statuses
+                    .filter((s) => s.id !== EXCLUDED_STATUS_ID)
+                    .reduce((sum, s) => sum + s.count, 0);
 
-                    {allStatuses.map((statusName) => {
-                      const status = statuses.find((s) => s.name === statusName);
-                      const statusId = status?.id;
-                      const count = status?.count || 0;
+                  return (
+                    <tr key={id}>
+                      <td>{name}</td>
 
-                      return (
-                        <td
-                          key={statusName}
-                          style={{ cursor: count > 0 ? "pointer" : "default" }}
-                          onClick={() => {
-                            if (count > 0 && statusId) {
-                              handleOpenModelPopupClick([id], [statusId]); // ✅ id now exists
+                      {/* ✅ TOTAL — same as footer (NOT clickable) */}
+                      <td style={{ cursor: rowTotal > 0 ? "pointer" : "default", fontWeight: 600 }}
+                      onClick={() => {
+                            if (rowTotal > 0) {
+                              const allStatusIds = statuses.map((s) => s.id);
+                              handleOpenModelPopupClick([id], allStatusIds); // ✅ id now exists
                             }
                           }}
-                        >
-                          {count}
-                        </td>
-                      );
-                    })}
+                      >
+                        {rowTotal}
+                      </td>
 
-                    <td
-                      style={{ cursor: total > 0 ? 'pointer' : 'default' }}
-                      onClick={() => {
-                        if (total > 0) {
-                          const allStatusIds = statuses.map((s) => s.id);
-                          handleOpenModelPopupClick([id], allStatusIds); // ✅ Single executive ID, multiple status IDs
-                        }
-                      }}
-                    >
-                      {total}
-                    </td>
+                      {/* Status columns */}
+                      {allStatuses.map((statusName) => {
+                        const status = statuses.find((s) => s.name === statusName);
+                        const statusId = status?.id;
+                        const count = status?.count ?? 0;
 
-                  </tr>
-                ))}
+                        return (
+                          <td
+                            key={statusName}
+                            style={{
+                              cursor:
+                                count > 0 &&
+                                statusId !== undefined &&
+                                statusId !== EXCLUDED_STATUS_ID
+                                  ? "pointer"
+                                  : "default",
+                              opacity: statusId === EXCLUDED_STATUS_ID ? 0.6 : 1,
+                            }}
+                            onClick={(): void => {
+                              if (
+                                count > 0 &&
+                                statusId !== undefined &&
+                                statusId !== EXCLUDED_STATUS_ID
+                              ) {
+                                handleOpenModelPopupClick([id], [statusId]);
+                              }
+                            }}
+                          >
+                            {count}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
 
-              <tfoot>
+               <tfoot>
                 <tr>
                   <td>Total</td>
-                  {footerTotals.map((sum, idx) => {
-                    const statusName = allStatuses[idx];
-
-                    // Collect all dates
-                    const allIds = sortedData.map((row) => row.id);
-
-                    // Collect all source IDs for this statusName across all rows
-                    const sourceIds = sortedData
-                      .flatMap((row) =>
-                        row.statuses
-                          .filter((s) => s.name === statusName && s.id)
-                          .map((s) => s.id)
-                      );
-
-                    return (
-                      <td
-                        key={idx}
-                        style={{
-                          cursor: sum > 0 ? "pointer" : "default",
-                        }}
-                        onClick={() => {
-                          if (sum > 0 && sourceIds.length > 0) {
-                            handleOpenModelPopupClick(allIds, [...new Set(sourceIds)]);
-                          }
-                        }}
-                      >
-                        {sum}
-                      </td>
-                    );
-                  })}
-                  <td
+                   <td
                     style={{
                       cursor: grandTotal > 0 ? "pointer" : "default",
                     }}
@@ -493,6 +490,47 @@ const handleRegionChange = (selectedRegion:any) => {
                   >
                     {grandTotal}
                   </td>
+                  {footerTotals.map((sum, idx) => {
+                    const statusName = allStatuses[idx];
+                    console.log(allStatuses);
+
+                    // Collect all dates
+                    const allIds = sortedData.map((row) => row.id);
+
+                    // Collect all source IDs for this statusName across all rows
+                    const sourceIds = sortedData
+                      .flatMap((row) =>
+                        row.statuses
+                          .filter((s) => s.name === statusName && s.id)
+                          .map((s) => s.id)
+                      );
+
+                    return (
+                     <td
+                      key={idx}
+                      style={{
+                        cursor:
+                          sum > 0 && statusName !== EXCLUDED_STATUS_NAME
+                            ? "pointer"
+                            : "default",
+                      
+                      }}
+                      onClick={() => {
+                        if (
+                          sum > 0 &&
+                          statusName !== EXCLUDED_STATUS_NAME &&
+                          sourceIds.length > 0
+                        ) {
+                          handleOpenModelPopupClick(allIds, [...new Set(sourceIds)]);
+                        }
+                      }}
+                    >
+                      {sum}
+                    </td>
+
+                    );
+                  })}
+                 
                 </tr>
               </tfoot>
 
@@ -519,7 +557,7 @@ const handleRegionChange = (selectedRegion:any) => {
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

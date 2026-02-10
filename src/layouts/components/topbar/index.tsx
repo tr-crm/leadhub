@@ -5,6 +5,7 @@ import {Button, Container} from "react-bootstrap";
 // import LanguageDropdown from "@/layouts/components/topbar/components/LanguageDropdown";
 // import MessageDropdown from "@/layouts/components/topbar/components/MessageDropdown";
 import NotificationDropdown from "@/layouts/components/topbar/components/NotificationDropdown";
+import SsoLoginDropdown from "@/layouts/components/topbar/components/SsoLoginDropdown";
 // import CustomizerToggler from "@/layouts/components/topbar/components/CustomizerToggler";
 import ThemeToggler from "@/layouts/components/topbar/components/ThemeToggler";
 import UserProfile from "@/layouts/components/topbar/components/UserProfile";
@@ -84,6 +85,8 @@ const Topbar = () => {
                     {/* <CustomizerToggler/> */}
 
                     <ThemeToggler/>
+
+                    <SsoLoginDropdown/>
 
                     <UserProfile/>
                 </div>

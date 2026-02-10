@@ -15,7 +15,7 @@ import Select from "react-select";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import PageBreadcrumb from "@/components/PageBreadcrumb";
-import "../dailyreport/LeadReportTable.css";
+import "../executivewiseleadreport/report.css";
 import { getDailyExecutivewiseLeadReportList , getDailyExecutivewiseLeadReportClickableDetails} from "@/services/reportsservice";
 import type { DailyLead } from "@/services/reportsservice";
 import type { getDailyExecutivewiseLeadReportPayload ,getDailyExecutivewiseLeadReportClickablepayload } from "@/services/reportsservice";
@@ -32,17 +32,61 @@ import DataTable from 'react-data-table-component';
 const DailyExecutiveLeadReportTable: React.FC = () => {
   const [showLogoutLoader, setShowLogoutLoader] = useState<boolean>(false);
   
+const EXCLUDED_STATUS_ID = "0"; // Branch Assigned
+const EXCLUDED_STATUS_NAME = "Branch Assigned";
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [fromDate, setFromDate] = useState<Date | null>(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 7);
-    return d;
-  });
-
-  const [toDate, setToDate] = useState<Date | null>(new Date());
+   const today = new Date(); 
+  const [fromDate, setFromDate] = useState<Date | null>(today);
+  const [toDate, setToDate] = useState<Date | null>(today);
+  const [selectedFilter, setSelectedFilter] = useState<string>('custom');
+      const formatDate = (date: Date | null) => {
+      if (!date) return '';
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    };
+    const handleFilterChange = (val: string) => {
+      setSelectedFilter(val);
+      const today = new Date();
+      let startDate: Date | null = null;
+      let endDate: Date | null = null;
+  
+      if (val === 'today') {
+        startDate = endDate = today;
+      } else if (val === 'yesterday') {
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        startDate = endDate = yesterday;
+      } else if (val === 'last_10_days') {
+        const past = new Date(today);
+        past.setDate(today.getDate() - 9);
+        startDate = past;
+        endDate = today;
+      } else if (val === 'this_month') {
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        startDate = firstDay;
+        endDate = lastDay;
+      } else if (val === 'custom') {
+        startDate = fromDate;
+        endDate = toDate;
+      } else if (val === 'all') {
+        startDate = new Date('2025-09-01');
+        endDate = today;
+      }
+  
+      // Update state first
+      setFromDate(startDate);
+      setToDate(endDate);
+  
+    };
+  
+  
+        
   
     // Memoize user so it doesn't cause continuous re-renders/useEffect triggers
               const user = useMemo(() => (isAuthenticated() ? getUserInfo() : null), []);
@@ -102,14 +146,15 @@ const DailyExecutiveLeadReportTable: React.FC = () => {
      setCurrentPage(1); 
  
      const payload: getDailyExecutivewiseLeadReportClickablepayload = {
-        fromDateVal: fromDate?.toISOString().slice(0, 10) ?? '',
-        toDateVal: toDate?.toISOString().slice(0, 10) ?? '',
+        fromDateVal: formatDate(fromDate),
+        toDateVal: formatDate(toDate),
         userIdVal: user.id,
         tokenVal: user.access_token,
         typeVal: user.type,
         executiveIdVal: executiveId,
         leadStatusVal: statusId,
          catgoryIdVal: category,
+          regionVal:region,
      };
  
      try {
@@ -145,8 +190,8 @@ const DailyExecutiveLeadReportTable: React.FC = () => {
     setError("");
 
     const requestBody: getDailyExecutivewiseLeadReportPayload = {
-     fromDateVal: fromDate?.toISOString().slice(0, 10) ?? '',
-     toDateVal: toDate?.toISOString().slice(0, 10) ?? '',
+     fromDateVal: formatDate(fromDate),
+     toDateVal: formatDate(toDate),
       userIdVal: user.id,
       tokenVal: user.access_token,
       typeVal: user.type,
@@ -216,9 +261,14 @@ const DailyExecutiveLeadReportTable: React.FC = () => {
     );
   }, [data, allStatuses]);
 
-  const grandTotal = useMemo(() => {
-    return data.reduce((sum, row) => sum + row.total, 0);
-  }, [data]);
+ const grandTotal = useMemo(() => {
+  return data.reduce((sum, row) => {
+    const rowTotal = row.statuses
+      .filter((s) => s.id !== EXCLUDED_STATUS_ID) // ❌ exclude Branch Assigned
+      .reduce((r, s) => r + s.count, 0);
+    return sum + rowTotal;
+  }, 0);
+}, [data]);
 
   const SortArrow = ({ columnKey }: { columnKey: string }) => {
     if (sortConfig.key !== columnKey) return null;
@@ -310,6 +360,20 @@ const handleRegionChange = (selectedRegion:any) => {
       <div className="mt-4 bg-white p-4 shadow-sm rounded">
         <Form className="mb-3">
           <Row>
+            <Col md={2}>
+            {/* <Form.Label>Quick Filter</Form.Label> */}
+            <Form.Select
+              value={selectedFilter}
+              onChange={(e) => handleFilterChange(e.target.value)}
+            >
+              <option value="custom">Custom</option>
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="last_10_days">Last 10 Days</option>
+              <option value="this_month">This Month</option>
+              <option value="all">All</option>
+            </Form.Select>
+          </Col>
            <Col md={2}>
             {/* <Form.Label>From Date</Form.Label> */}
             <DatePicker selected={fromDate} onChange={setFromDate} className="form-control" dateFormat="yyyy-MM-dd" />
@@ -352,7 +416,7 @@ const handleRegionChange = (selectedRegion:any) => {
           </Col>
            )}
 
-            <Col md={4}>
+            <Col md={3}>
              <Select
               options={options}
               isMulti
@@ -389,92 +453,77 @@ const handleRegionChange = (selectedRegion:any) => {
                   <th onClick={() => requestSort("date")}>
                     Executive <SortArrow columnKey="date" />
                   </th>
+                   <th onClick={() => requestSort("total")}>
+                    Total <SortArrow columnKey="total" />
+                  </th>
                   {allStatuses.map((status) => (
                     <th key={status} onClick={() => requestSort(status)}>
                       {status}
                       <SortArrow columnKey={status} />
                     </th>
                   ))}
-                  <th onClick={() => requestSort("total")}>
-                    Total <SortArrow columnKey="total" />
-                  </th>
+                 
                 </tr>
               </thead>
-             <tbody>
-                {sortedData.map(({ id, name, statuses, total }) => (
-                  <tr key={id}>
-                    <td>{name}</td>
+              <tbody>
+                {sortedData.map(({ id, name, statuses }) => {
+                  // ✅ Calculate row total (exclude Branch Assigned)
+                  const rowTotal = statuses
+                    .filter((s) => s.id !== EXCLUDED_STATUS_ID)
+                    .reduce((sum, s) => sum + s.count, 0);
 
-                    {allStatuses.map((statusName) => {
-                      const status = statuses.find((s) => s.name === statusName);
-                      const statusId = status?.id;
-                      const count = status?.count || 0;
+                  return (
+                    <tr key={id}>
+                      <td>{name}</td>
 
-                      return (
-                        <td
-                          key={statusName}
-                          style={{ cursor: count > 0 ? "pointer" : "default" }}
-                          onClick={() => {
-                            if (count > 0 && statusId) {
-                              handleOpenModelPopupClick([id], [statusId]); // ✅ id now exists
-                            }
-                          }}
-                        >
-                          {count}
-                        </td>
-                      );
-                    })}
-
-                    <td
-                      style={{ cursor: total > 0 ? 'pointer' : 'default' }}
+                      {/* ✅ TOTAL — same as footer (NOT clickable) */}
+                      <td style={{ cursor: rowTotal > 0 ? "pointer" : "default", fontWeight: 600 }}
                       onClick={() => {
-                        if (total > 0) {
-                          const allStatusIds = statuses.map((s) => s.id);
-                          handleOpenModelPopupClick([id], allStatusIds); // ✅ Single executive ID, multiple status IDs
-                        }
-                      }}
-                    >
-                      {total}
-                    </td>
+                                  if (rowTotal > 0) {
+                                    const allStatusIds = statuses.map((s) => s.id);
+                                    handleOpenModelPopupClick([id], allStatusIds); // ✅ id now exists
+                                  }
+                                }}
+                      >
+                        {rowTotal}
+                      </td>
 
-                  </tr>
-                ))}
+                      {/* Status columns */}
+                      {allStatuses.map((statusName) => {
+                        const status = statuses.find((s) => s.name === statusName);
+                        const statusId = status?.id;
+                        const count = status?.count ?? 0;
+
+                        return (
+                          <td
+                            key={statusName}
+                            style={{
+                              cursor:
+                                count > 0 && statusId !== EXCLUDED_STATUS_ID
+                                  ? "pointer"
+                                  : "default",
+                              opacity: statusId === EXCLUDED_STATUS_ID ? 0.6 : 1,
+                            }}
+                            onClick={() => {
+                              if (count > 0 && statusId) {
+                                handleOpenModelPopupClick([id], [statusId]);
+                              }
+                            }}
+                          >
+                            {count}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
+
 
               <tfoot>
                 <tr>
                   <td>Total</td>
-                  {footerTotals.map((sum, idx) => {
-                    const statusName = allStatuses[idx];
-
-                    // Collect all dates
-                    const allIds = sortedData.map((row) => row.id);
-
-                    // Collect all source IDs for this statusName across all rows
-                    const sourceIds = sortedData
-                      .flatMap((row) =>
-                        row.statuses
-                          .filter((s) => s.name === statusName && s.id)
-                          .map((s) => s.id)
-                      );
-
-                    return (
-                      <td
-                        key={idx}
-                        style={{
-                          cursor: sum > 0 ? "pointer" : "default",
-                        }}
-                        onClick={() => {
-                          if (sum > 0 && sourceIds.length > 0) {
-                            handleOpenModelPopupClick(allIds, [...new Set(sourceIds)]);
-                          }
-                        }}
-                      >
-                        {sum}
-                      </td>
-                    );
-                  })}
-                  <td
+                   <td
                     style={{
                       cursor: grandTotal > 0 ? "pointer" : "default",
                     }}
@@ -490,6 +539,47 @@ const handleRegionChange = (selectedRegion:any) => {
                   >
                     {grandTotal}
                   </td>
+                  {footerTotals.map((sum, idx) => {
+                    const statusName = allStatuses[idx];
+                    console.log(allStatuses);
+
+                    // Collect all dates
+                    const allIds = sortedData.map((row) => row.id);
+
+                    // Collect all source IDs for this statusName across all rows
+                    const sourceIds = sortedData
+                      .flatMap((row) =>
+                        row.statuses
+                          .filter((s) => s.name === statusName && s.id)
+                          .map((s) => s.id)
+                      );
+
+                    return (
+                     <td
+                      key={idx}
+                      style={{
+                        cursor:
+                          sum > 0 && statusName !== EXCLUDED_STATUS_NAME
+                            ? "pointer"
+                            : "default",
+                      
+                      }}
+                      onClick={() => {
+                        if (
+                          sum > 0 &&
+                          statusName !== EXCLUDED_STATUS_NAME &&
+                          sourceIds.length > 0
+                        ) {
+                          handleOpenModelPopupClick(allIds, [...new Set(sourceIds)]);
+                        }
+                      }}
+                    >
+                      {sum}
+                    </td>
+
+                    );
+                  })}
+                 
                 </tr>
               </tfoot>
 
@@ -516,7 +606,7 @@ const handleRegionChange = (selectedRegion:any) => {
                   cell: (_row, index) => (
                     <>{(currentPage - 1) * rowsPerPage + index + 1}</>
                   ),
-                  width: "60px",
+                  width: "80px",
                 },
                 {
                   name: "Date",

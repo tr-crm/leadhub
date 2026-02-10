@@ -1,10 +1,11 @@
 // import React, { useEffect, useState } from 'react';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import DataTable from 'react-data-table-component';
 import { Container, Button, Row, Col, Modal, Form } from 'react-bootstrap';
 import PageBreadcrumb from '@/components/PageBreadcrumb';
-import { getWebhookLeadsList,FreshLeadTransferToLeadList,BulkFreshLeadTransferToLeadList } from '@/services/leadservice';
-import { SourceList, getCategoryList, getSubCategoryList, ProductList, getBranchList,getQualityList } from '@/services/generalservice';
+import { getWebhookLeadsList,FreshLeadTransferToLeadList,BulkFreshLeadTransferToLeadList 
+} from '@/services/leadservice';
+import { SourceList, getCategoryList, getSubCategoryList, ProductList, getRegionBasedBranchList,getQualityList, RegionList , getUserListByRegion} from '@/services/generalservice';
 import type { WebhookLeadayload } from '@/services/leadservice';
 import type { Lead } from '@/types/lead.types';
 import RegionSelect from '@/components/regionselect';
@@ -66,13 +67,14 @@ const LeadsDataTable: React.FC = () => {
   const [walkinDate, setWalkinDate] = useState<Date | null>();
   const [followupStatus, setFollowupStatus] = useState<OptionType | null>(null);
   const [followupComment, setFollowupComment] = useState('');
-  const [followupBranch, setFollowupBranch] = useState<OptionType | null>(null);
+  const [followupBranch, setFollowupBranch] = useState<string>("0");
   const [followupQualityScore, setFollowupQualityScore] = useState<OptionType | null>(null);
 
 
   const [showSubCategory, setShowSubCategory] = useState(true);
   const [showProduct, setShowProduct] = useState(true);
   // const [showCountry, setShowCountry] = useState(false);
+  
 
   const [searchText, setSearchText] = useState('');
         const filteredData = data.filter((row: Lead) =>
@@ -106,6 +108,42 @@ const LeadsDataTable: React.FC = () => {
     }, [user]);
 
   const type = user.type;
+
+  const chagneFollowupBranch = (opt: OptionType | null) => {
+      setFollowupBranch(opt?.value ?? "0");
+    };
+
+  const [selectedCounsellor, setSelectedCounsellor] = useState<any>("0");
+    const handleNewExecChange = useCallback((opt: OptionType | null) => {
+      setSelectedCounsellor(opt?.value ?? '0');
+      }, []);
+         const [executiveOptions, setExecutiveOptions] = useState<OptionType[]>([]);
+    const [regionOptions, setRegionOptions] = useState<OptionType[]>([]);
+    const [region, setRegion] = useState(user.region);
+    const [selectedRegion , setSelectedRegion] = useState('');
+    useEffect(() => {
+      if (!user) return;
+      const fetchRegion = async () => {
+        try {
+          const regions = await RegionList(user.id, user.access_token, user.region, user.type);
+          const options = regions.map((reg: any) => ({
+            value: String(reg.id),           // change according to API response
+            label: reg.display_name || ""   // adjust key as per response
+          }));
+  
+          setRegionOptions([
+            { value: "0", label: "Select Region" },
+            ...options,
+          ]);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchRegion();
+    }, [user]);
+
+
+    
    useEffect(() => {
       const fetchQualityScore = async () => {
         try {
@@ -194,36 +232,53 @@ const LeadsDataTable: React.FC = () => {
       fetchProductList(categoryId);
     }
   }, [category]);
-  // useEffect(() => {
-  //   const fetchCountry = async () => {
-  //     try {
-  //       const countries = await CountryList(user.id, user.access_token);
-  //       const options = countries.map(item => ({
-  //         value: item.id,
-  //         label: item.display_name,
-  //       }));
-  //       setCountryOptions([{ value: '0', label: 'Select Country' }, ...options]);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-  //   fetchCountry();
-  // }, [user.id, user.access_token]);
+
   useEffect(() => {
-    const fetchBranch = async () => {
-      try {
-        const branches = await getBranchList(user.id, user.access_token,'0',user.region,user.typ);
-        const options = branches.map(item => ({
-          value: item.id,
-          label: item.display_name,
-        }));
-        setBranchOptions([{ value: '0', label: 'Select Branch' }, ...options]);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchBranch();
-  }, [user.id, user.access_token]);
+  const fetchCounsellors = async () => {
+    try {
+      const res = await getUserListByRegion(
+        user.id,
+        user.access_token,
+        region,
+        user.type,
+      );
+
+      // ✅ Filter only counsellors with type == 3
+      const filtered = res.filter((c: any) => c.type === '3');
+
+      const options = filtered.map((counsellor: any) => ({
+        value: String(counsellor.id),
+        label: counsellor.display_name || "",
+      }));
+
+      setExecutiveOptions([
+        { value: "0", label: "Select Counsellor" },
+        ...options,
+      ]);
+
+    } catch (err) {
+      console.error("Error fetching counsellors:", err);
+    }
+  };
+
+  fetchCounsellors();
+}, [region]);
+
+useEffect(() => {
+const fetchBranches = async () => {
+  try {
+    const branches = await getRegionBasedBranchList(user.id, user.access_token, '0', region, user.type);
+    const options = branches.map((bran: any) => ({
+      value: bran.id,
+      label: bran.display_name,
+    }));
+    setBranchOptions([{ value: null, label: 'Select Branch' }, ...options]);
+  } catch (err) {
+    console.error(err);
+  }
+};
+fetchBranches();
+}, [region]);
 
   const getInitialRegionValue = (): string => {
     if (type === '1' || type === '2') {
@@ -382,7 +437,8 @@ const LeadsDataTable: React.FC = () => {
     const sourceId = String(row.source_id);
     const foundSource = sourceOptions.find(option => option.value == sourceId) || null;
     const foundCategory = categoryOptions.find(option => option.value == String(row.category_id)) || null;
-    const foundBranch = branchOptions.find(option => option.value == String(row.branch_id)) || null;
+    const foundBranch =  String(row.branch_id);
+    const foundRegion =  String(row.region);
 
     //    if (!foundCategory) {
     //   // Handle cleared selection
@@ -432,6 +488,7 @@ const LeadsDataTable: React.FC = () => {
      setCampaignName(row.campaign_name || '');
       setExcecutive(row.executive_id || '0');
       setFollowupBranch(foundBranch);
+      setSelectedRegion(foundRegion);
     setShowModal(true);
 
     
@@ -454,7 +511,7 @@ const LeadsDataTable: React.FC = () => {
        setCampaign(null);
      setCampaignName(null);
        setExcecutive(null);
-         setFollowupBranch(null);
+         setFollowupBranch('');
         setFollowupDate(null);
         setFollowupStatus(null);
           setFollowupComment('');
@@ -465,11 +522,12 @@ const LeadsDataTable: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
+
+    
 
     try {
       // console.log(selectedLead?.id);
-      const transferPayload = {
+      const transferPayload : any = {
         
         leadDateVal: leadDate,
         firstNameVal: firstName,
@@ -492,10 +550,7 @@ const LeadsDataTable: React.FC = () => {
         executiveIdVal: excecutive,
         userIdVal: user.id,
         tokenVal: user.access_token,
-        idVal:selectedLead?.id,
-       regionVal : selectedLead?.region ? selectedLead.region : user.region,
-        // branchVal: branch ? parseInt(branch.value) : null,
-        branchVal: followupBranch?.value ? parseInt(followupBranch?.value) : null,
+        idVal:selectedLead?.id,        
         qualityscoreVal: followupQualityScore?.value,
         leadStatusVal: followupStatus?.value,
         commentVal: followupComment.trim(),
@@ -503,6 +558,22 @@ const LeadsDataTable: React.FC = () => {
         walkinDateVal: '',
         createdAtVal:selectedLead?.created_at,
       };
+    
+      if (selectedRegion !== region) {
+        transferPayload.newRegionVal = region;
+        transferPayload.oldRegionVal = selectedRegion;
+        transferPayload.executiveIdVal = selectedCounsellor;
+        transferPayload.branchVal = followupBranch;
+        transferPayload.regionflagVal = '1';
+        transferPayload.transferredByIdVal = user.id;
+      }else{
+         transferPayload.executiveIdVal = excecutive;
+         transferPayload.branchVal = followupBranch;
+         transferPayload.regionVal = region;
+         transferPayload.regionflagVal = '2'
+
+      }
+
        if (followupStatus?.value === '2' && followupDate) {
         if (followupDate) {
           transferPayload.followupDateVal = `${followupDate.toLocaleDateString('en-CA')} ${followupDate.toLocaleTimeString('en-GB', {
@@ -528,7 +599,8 @@ const LeadsDataTable: React.FC = () => {
 
       }
 
-      // console.log(transferPayload.monthVal);
+      setSubmitting(true);
+
 
       // Simulate API call
       // await new Promise((res) => setTimeout(res, 1000));
@@ -649,8 +721,10 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     else if (name === 'phoneNumber') setPhoneNumber(updatedValue);
   };
 
-
-
+    useEffect(() => {
+    // When region changes, reset status
+    setFollowupStatus(null);
+  }, [region]);
 
   const columns = [
     {
@@ -663,20 +737,20 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       cell: (row: Lead) => (
 
 
-<button
-  title={
-    isTransferDisabled(row)
-      ? 'Cannot transfer due to lead status or missing executive'
-      : ''
-  }
-  onClick={() => handleButtonClick(row)}
-  className={
-    Number(row.lead_status) === 2 ? 'btn btn-primary btn-sm' : 'btn btn-danger btn-sm'
-  }
-  disabled={isTransferDisabled(row)}
->
-  {Number(row.lead_status) === 2 ? 'Transferred' : 'Transfer'}
-</button>
+        <button
+          title={
+            isTransferDisabled(row)
+              ? 'Cannot transfer due to lead status or missing executive'
+              : ''
+          }
+          onClick={() => handleButtonClick(row)}
+          className={
+            Number(row.lead_status) === 2 ? 'btn btn-primary btn-sm' : 'btn btn-danger btn-sm'
+          }
+          disabled={isTransferDisabled(row)}
+        >
+          {Number(row.lead_status) === 2 ? 'Transferred' : 'Transfer'}
+        </button>
 
 
       ),
@@ -837,17 +911,17 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         </Col>
          <Col md={2} className="text-end">
           {selectedRows.length > 0 && (
- <ExecutiveSelect value={execFilter} onChange={handleExecChange1} showAllOption />
+          <ExecutiveSelect value={execFilter} onChange={handleExecChange1} showAllOption />
         
       )}
         </Col>
         <Col md={2} className="text-end">
           {selectedRows.length > 0 && (
-        <button onClick={handleTransfer} className="btn btn-danger btn-sm">
-          Transfer ({selectedRows.length})
-        </button>
-        
-      )}
+            <button onClick={handleTransfer} className="btn btn-danger btn-sm">
+              Transfer ({selectedRows.length})
+            </button>
+            
+          )}
         </Col>
 
       </Row>
@@ -859,11 +933,13 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         expandableRows
         expandableRowsComponent={ExpandedComponent}
         pagination
-       selectableRows
-        onSelectedRowsChange={handleSelectedRowsChange}
+        selectableRows={user.type !== '5'}          // 👈 disable checkbox for type 5
+        onSelectedRowsChange={
+          user.type !== 5 ? handleSelectedRowsChange : undefined
+        }
         clearSelectedRows={toggleCleared}
-subHeader
-   subHeaderComponent={SubHeaderComponent}
+        subHeader
+        subHeaderComponent={SubHeaderComponent}
         highlightOnHover
         pointerOnHover
         responsive
@@ -874,6 +950,7 @@ subHeader
           setCurrentPage(page);
         }}
       />
+
 
       {/* Modal */}
       <Modal show={showModal} onHide={handleCloseModal} backdrop="static" keyboard={false} centered>
@@ -1027,22 +1104,78 @@ subHeader
                 <Select options={qualityscoreOptions} value={followupQualityScore} onChange={setFollowupQualityScore} placeholder="Select Quality Score" required />
               </Col>
             </Row>
-
             <Row className="mb-3">
-              <Col md={3}><Form.Label>Lead Status  <span style={{ color: 'red' }}>*</span></Form.Label></Col>
+              <Col md={3}><Form.Label>Selected Region<span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                <Col md={9}>
+                  <Select
+                    options={regionOptions}
+                    value={regionOptions.find((opt) => opt.value === String(region)) || null}
+                    onChange={(opt) => setRegion(opt ? String(opt.value) : "0")}
+                  />
+                </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={3}>
+                <Form.Label>
+                  Lead Status <span style={{ color: "red" }}>*</span>
+                </Form.Label>
+              </Col>
+
               <Col md={9}>
-                <Form.Select value={followupStatus?.value || ''} onChange={(e) => {
-                  const val = e.target.value;
-                  setFollowupStatus(val ? { value: val, label: val } : null);
-                }} required>
+                <Form.Select
+                  value={followupStatus?.value || ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFollowupStatus(val ? { value: val, label: val } : null);
+                  }}
+                  required
+                >
                   <option value="" disabled>Select Status</option>
-                  <option value="2">Follow Up</option>
-                  <option value="3">Partial Walk-In</option>
-                  <option value="5">Not Interested</option>
-                  <option value="6">Joined Some Where Else</option>
+
+                  {/* Fresh Lead */}
+                  <option
+                    value="1"
+                    disabled={selectedRegion === region}   // disable only when region matches
+                  >
+                    Fresh Lead
+                  </option>
+
+                  {/* Follow Up */}
+                  <option
+                    value="2"
+                    disabled={selectedRegion !== region}
+                  >
+                    Follow Up
+                  </option>
+
+                  {/* Partial Walk-In */}
+                  <option
+                    value="3"
+                    disabled={selectedRegion !== region}
+                  >
+                    Partial Walk-In
+                  </option>
+
+                  {/* Not Interested */}
+                  <option
+                    value="5"
+                    disabled={selectedRegion !== region}
+                  >
+                    Not Interested
+                  </option>
+
+                  {/* Joined Somewhere Else */}
+                  <option
+                    value="6"
+                    disabled={selectedRegion !== region}
+                  >
+                    Joined Somewhere Else
+                  </option>
+
                 </Form.Select>
               </Col>
             </Row>
+
 
             {followupStatus?.value === '2' && (
               <>
@@ -1059,7 +1192,11 @@ subHeader
                 <Row className="mb-3">
                   <Col md={3}><Form.Label>Branch</Form.Label></Col>
                   <Col md={9}>
-                                      <Select options={branchOptions} value={followupBranch} onChange={setFollowupBranch} required />
+                                     <Select
+                            options={branchOptions}
+                            value={branchOptions.find((o) => o.value === followupBranch) || null}
+                            onChange={chagneFollowupBranch}
+                          />
 
                     {/* <Select options={branchOptions} value={branch} onChange={handleBranchList} placeholder="Select Branch" /> */}
                   </Col>
@@ -1078,15 +1215,35 @@ subHeader
                     }} />
                   </Col>
                 </Row>
-
+                
                 <Row className="mb-3">
-                  <Col md={3}><Form.Label>Branch <span style={{ color: 'red' }}>*</span></Form.Label></Col>
-                  <Col md={9}>
-                    <Select options={branchOptions} value={followupBranch} onChange={setFollowupBranch} required />
-                  </Col>
+                  <Col md={3}><Form.Label>Branch<span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                    <Col md={9}>
+                      <Select
+                        options={branchOptions}
+                        value={branchOptions.find((o) => o.value === String(followupBranch)) || null}
+                        onChange={chagneFollowupBranch} // expects OptionType
+                        required
+                      />
+                    </Col>
                 </Row>
               </>
             )}
+
+               {(followupStatus?.value === '3'  && selectedRegion !== region) && (
+                <Row className="mb-3">
+                  <Col md={3}><Form.Label>Tele Executive<span style={{ color: 'red' }}>*</span></Form.Label></Col>
+                    <Col md={9}>
+                  <Select
+                    options={executiveOptions}
+                    value={executiveOptions.find((o) => o.value === selectedCounsellor) || null}
+                    onChange={handleNewExecChange}
+                    placeholder="Select Counselor"
+                    required
+                  />
+                 </Col>
+                </Row>
+              )}
 
             <Row className="mb-3">
               <Col md={3}><Form.Label>Comment <span style={{ color: 'red' }}>*</span></Form.Label></Col>
@@ -1106,6 +1263,8 @@ subHeader
         </Modal.Footer>
       </Form>
     </Modal>
+
+
    
     </Container>
   );

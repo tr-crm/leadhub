@@ -391,8 +391,81 @@ export const getQualityList = async (
   }
 };
 
+// getUserListByRegion
+
+
+export const getUserListByRegion = async (
+  userId: number,
+  token: string,
+  region: string = '', // Default to 0 if not provided
+  type: string = ''    // Type 1 typically means "Executive"
+): Promise<Executive[]> => {
+  try {
+    const response = await axios.post('/api/Masters/getUserListByRegion', {
+      userIdVal: userId,
+      tokenVal: token,
+      typeVal: type,
+      regionVal: region,
+    });
+
+    const data = response.data;
+
+    if (Array.isArray(data?.data)) {
+      return data.data.map((exec: any) => ({
+        id: Number(exec.id),
+        name: exec.full_name,
+        type: exec.type,
+        display_name: exec.full_name || exec.first_name,
+      }));
+    } else {
+      console.warn('Unexpected executive list format:', data);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching executive list:', error);
+    return [];
+  }
+};
 
 
 
 
+export interface Branch {
+  id: string;
+  display_name: string;
+  State:string;
+  data: Branch[];
+  // Add other fields if needed
+}
+
+export const getRegionBasedBranchList = async (
+  userId: string,
+  token: string,
+  start: string = '0',
+  region:string,
+  type:string
+): Promise<Branch[]> => {
+  try {
+    // const response = await axios.post('/api/Masters/getBranchList', {
+        const response = await axios.post('/api/Masters/getBranchesListByRegionDup', {
+      userIdVal: userId,
+      tokenVal: token,
+      start,
+      regionVal:region,
+      typeVal:type
+    });
+
+    const json = response.data;
+
+    if (json.response === 'success' && Array.isArray(json.data)) {
+      return json.data as Branch[];
+    } else {
+      console.error('getBranchList failed:', json.message);
+      return [];
+    }
+  } catch (error) {
+    console.error('API error in getBranchList:', error);
+    return [];
+  }
+};
 

@@ -28,7 +28,7 @@ createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <BrowserRouter>
             <AppWrapper>
-                <App/>
+                <App/> 
             </AppWrapper>
         </BrowserRouter>
     </StrictMode>
